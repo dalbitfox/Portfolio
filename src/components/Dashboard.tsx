@@ -1,147 +1,251 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 
 interface DashboardProps {
   setActiveTab: (tab: string) => void;
 }
 
 export const Dashboard: React.FC<DashboardProps> = ({ setActiveTab }) => {
-  const getGreeting = () => {
-    const hour = new Date().getHours();
-    if (hour < 12) return '좋은 아침입니다! ☀️';
-    if (hour < 18) return '즐거운 오후입니다! ☕';
-    return '오늘 하루도 수고 많으셨습니다! 🌙';
-  };
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  // High-fidelity Floating Particle Network (chronark.com style)
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    let animationFrameId: number;
+    let width = (canvas.width = window.innerWidth);
+    let height = (canvas.height = window.innerHeight);
+
+    const particles: Array<{
+      x: number;
+      y: number;
+      vx: number;
+      vy: number;
+      radius: number;
+    }> = [];
+
+    // Fewer particles for a highly elegant, non-intrusive minimal feel
+    const particleCount = Math.min(40, Math.floor((width * height) / 30000));
+
+    for (let i = 0; i < particleCount; i++) {
+      particles.push({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        vx: (Math.random() - 0.5) * 0.3,
+        vy: (Math.random() - 0.5) * 0.3,
+        radius: Math.random() * 1.5 + 0.5,
+      });
+    }
+
+    let mouseX = 0;
+    let mouseY = 0;
+    let isMouseActive = false;
+
+    const handleMouseMove = (e: MouseEvent) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      isMouseActive = true;
+    };
+
+    const handleMouseLeave = () => {
+      isMouseActive = false;
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseleave', handleMouseLeave);
+
+    const handleResize = () => {
+      if (!canvas) return;
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    };
+    window.addEventListener('resize', handleResize);
+
+    const render = () => {
+      ctx.clearRect(0, 0, width, height);
+
+      // Draw faint connections
+      ctx.lineWidth = 0.5;
+      for (let i = 0; i < particles.length; i++) {
+        const p1 = particles[i];
+        
+        // Drift particles gently
+        p1.x += p1.vx;
+        p1.y += p1.vy;
+
+        // Bounce off walls
+        if (p1.x < 0 || p1.x > width) p1.vx *= -1;
+        if (p1.y < 0 || p1.y > height) p1.vy *= -1;
+
+        // Draw particle
+        ctx.beginPath();
+        ctx.arc(p1.x, p1.y, p1.radius, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.15)';
+        ctx.fill();
+
+        // Connect particles close to each other
+        for (let j = i + 1; j < particles.length; j++) {
+          const p2 = particles[j];
+          const dist = Math.hypot(p1.x - p2.x, p1.y - p2.y);
+          if (dist < 120) {
+            const alpha = (1 - dist / 120) * 0.08;
+            ctx.strokeStyle = `rgba(15, 23, 42, ${alpha})`;
+            ctx.beginPath();
+            ctx.moveTo(p1.x, p1.y);
+            ctx.lineTo(p2.x, p2.y);
+            ctx.stroke();
+          }
+        }
+
+        // Pull lines toward mouse cursor for premium interactive feel
+        if (isMouseActive) {
+          const mDist = Math.hypot(p1.x - mouseX, p1.y - mouseY);
+          if (mDist < 180) {
+            const mAlpha = (1 - mDist / 180) * 0.12;
+            ctx.strokeStyle = `rgba(59, 130, 246, ${mAlpha})`;
+            ctx.beginPath();
+            ctx.moveTo(p1.x, p1.y);
+            ctx.lineTo(mouseX, mouseY);
+            ctx.stroke();
+          }
+        }
+      }
+
+      animationFrameId = requestAnimationFrame(render);
+    };
+
+    render();
+
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseleave', handleMouseLeave);
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
 
   return (
-    <div style={{ animation: 'fadeIn 0.5s ease-out' }}>
-      {/* Editorial Welcome Banner */}
-      <div className="hero" style={{ paddingBottom: '2.5rem' }}>
-        <span className="hero-tag">Team Workspace & Portfolio</span>
-        <h1>{getGreeting()}</h1>
-        <p style={{ marginTop: '0.5rem', fontSize: '1.2rem', fontWeight: 300 }}>
-          팀원들과 자료를 공유하고, 직접 만든 유용한 포트폴리오 도구를 경험할 수 있는 워크스페이스 포털입니다.
+    <div 
+      style={{ 
+        position: 'relative', 
+        minHeight: '80vh', 
+        display: 'flex', 
+        flexDirection: 'column', 
+        justifyContent: 'center', 
+        alignItems: 'center',
+        textAlign: 'center',
+        padding: '2rem 1rem',
+        animation: 'fadeIn 0.8s ease-out'
+      }}
+    >
+      {/* Background Interactive Particle Canvas */}
+      <canvas
+        ref={canvasRef}
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100vw',
+          height: '100vh',
+          zIndex: -2,
+          pointerEvents: 'none'
+        }}
+      />
+
+      {/* Floating Mini Menu (chronark.com Style) */}
+      <nav 
+        style={{ 
+          display: 'flex', 
+          gap: '2.5rem', 
+          marginBottom: '3.5rem',
+          fontSize: '0.95rem',
+          fontFamily: 'var(--font-headings)',
+          letterSpacing: '0.05em',
+          fontWeight: 500,
+          zIndex: 10
+        }}
+      >
+        <button 
+          onClick={() => setActiveTab('projects')} 
+          style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)', transition: 'var(--transition-smooth)' }}
+          onMouseEnter={(e) => e.currentTarget.style.color = 'var(--text-primary)'}
+          onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}
+        >
+          PROJECTS
+        </button>
+        <button 
+          onClick={() => setActiveTab('resources')} 
+          style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)', transition: 'var(--transition-smooth)' }}
+          onMouseEnter={(e) => e.currentTarget.style.color = 'var(--text-primary)'}
+          onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}
+        >
+          RESOURCE HUB
+        </button>
+        <a 
+          href="https://github.com/dalbitfox/Portfolio" 
+          target="_blank" 
+          rel="noreferrer"
+          style={{ textDecoration: 'none', color: 'var(--text-secondary)', transition: 'var(--transition-smooth)' }}
+          onMouseEnter={(e) => e.currentTarget.style.color = 'var(--text-primary)'}
+          onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}
+        >
+          GITHUB
+        </a>
+      </nav>
+
+      {/* Hero Content */}
+      <div style={{ maxWidth: '650px', zIndex: 10 }}>
+        {/* Large Central Title */}
+        <h1 
+          style={{ 
+            fontSize: '4.5rem', 
+            fontWeight: 800, 
+            fontFamily: 'var(--font-headings)', 
+            letterSpacing: '-0.05em',
+            lineHeight: '1.05',
+            color: 'transparent',
+            backgroundImage: 'linear-gradient(to right, #0f172a, #475569)',
+            WebkitBackgroundClip: 'text',
+            backgroundClip: 'text',
+            marginBottom: '2rem'
+          }}
+        >
+          dalbitfox
+        </h1>
+
+        {/* Minimal Subtitle Description */}
+        <p 
+          style={{ 
+            fontSize: '1.15rem', 
+            color: 'var(--text-secondary)', 
+            fontWeight: 300, 
+            lineHeight: '1.75', 
+            marginBottom: '2.5rem',
+            fontFamily: 'var(--font-body)'
+          }}
+        >
+          네트워크 자동화 어드민 플랫폼 **Netbox** 구축, 실시간 인터랙티브 **점심 사다리타기 게임**을 개발하는 엔지니어입니다. 팀 업무 협업 속도를 높이기 위한 **전용 자료실**을 설계하고 운영합니다.
         </p>
-      </div>
 
-      {/* Stats Board */}
-      <div className="editorial-grid" style={{ marginBottom: '3rem' }}>
-        <div className="card span-4" style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-          <span style={{ fontSize: '0.85rem', color: 'var(--text-tertiary)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-            공유 자료 수
-          </span>
-          <span style={{ fontSize: '2.5rem', fontWeight: 700, fontFamily: 'var(--font-headings)', color: 'var(--accent-primary)' }}>
-            14 <span style={{ fontSize: '1rem', fontWeight: 400, color: 'var(--text-secondary)' }}>개 등록됨</span>
-          </span>
-          <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-            업무 보고서, 리포트, 소스 코드 등
-          </span>
-        </div>
-
-        <div className="card span-4" style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-          <span style={{ fontSize: '0.85rem', color: 'var(--text-tertiary)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-            구동 가능한 도구
-          </span>
-          <span style={{ fontSize: '2.5rem', fontWeight: 700, fontFamily: 'var(--font-headings)', color: 'var(--accent-warm)' }}>
-            2 <span style={{ fontSize: '1rem', fontWeight: 400, color: 'var(--text-secondary)' }}>개 활성화</span>
-          </span>
-          <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-            점심메뉴 사다리타기 및 Netbox 소개
-          </span>
-        </div>
-
-        <div className="card span-4" style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-          <span style={{ fontSize: '0.85rem', color: 'var(--text-tertiary)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-            워크스페이스 연동
-          </span>
-          <span style={{ fontSize: '2.5rem', fontWeight: 700, fontFamily: 'var(--font-headings)', color: '#10b981' }}>
-            Active
-          </span>
-          <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-            GitHub Push시 Vercel 자동 배포 설정 완료
-          </span>
-        </div>
-      </div>
-
-      {/* Feature Navigation Cards */}
-      <h2 style={{ fontSize: '1.75rem', marginBottom: '1.5rem', fontFamily: 'var(--font-headings)', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem' }}>
-        포트폴리오 & 자료실 둘러보기
-      </h2>
-
-      <div className="editorial-grid">
-        {/* Resource Hub Card */}
-        <div className="card span-6" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '320px' }}>
-          <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-              <span className="tag tag-blue">Resource Center</span>
-              <span style={{ fontSize: '1.5rem' }}>📁</span>
-            </div>
-            <h3 style={{ fontSize: '1.35rem', marginBottom: '0.75rem', fontFamily: 'var(--font-headings)' }}>
-              업무 자료실 (Resource Hub)
-            </h3>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem' }}>
-              업무에 필요한 문서, 디자인 가이드, 소스 코드 자료를 실시간으로 분류하고 보관할 수 있는 클라우드 느낌의 라이트 아키이브입니다. 검색 및 태그 필터링을 지원합니다.
-            </p>
-          </div>
-          <button className="btn btn-primary" onClick={() => setActiveTab('resources')} style={{ alignSelf: 'flex-start' }}>
-            자료실 바로가기 →
+        {/* Secondary Navigation Indicators */}
+        <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
+          <button 
+            className="btn btn-primary" 
+            onClick={() => setActiveTab('projects')}
+            style={{ padding: '0.85rem 2rem', fontSize: '0.88rem' }}
+          >
+            프로젝트 피드백 모음 →
           </button>
-        </div>
-
-        {/* Ladder Game Card */}
-        <div className="card span-6" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '320px' }}>
-          <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-              <span className="tag tag-warm">Interactive App</span>
-              <span style={{ fontSize: '1.5rem' }}>🎯</span>
-            </div>
-            <h3 style={{ fontSize: '1.35rem', marginBottom: '0.75rem', fontFamily: 'var(--font-headings)' }}>
-              점심 사다리타기 게임
-            </h3>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem' }}>
-              팀원들과 점심 메뉴 선택이나 가벼운 내기를 할 수 있는 인터랙티브 애니메이션 게임입니다. 사다리가 동적으로 렌더링되며, 클릭 시 짜릿한 결과가 나타납니다.
-            </p>
-          </div>
-          <button className="btn btn-primary" onClick={() => setActiveTab('ladder')} style={{ alignSelf: 'flex-start' }}>
-            사다리타기 시작 →
+          <button 
+            className="btn btn-secondary" 
+            onClick={() => setActiveTab('resources')}
+            style={{ padding: '0.85rem 2rem', fontSize: '0.88rem' }}
+          >
+            자료실 탐색
           </button>
-        </div>
-
-        {/* Netbox Portfolio Card */}
-        <div className="card span-8" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minHeight: '240px' }}>
-          <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-              <span className="tag" style={{ backgroundColor: '#f1f5f9', color: '#334155' }}>Network System</span>
-              <span style={{ fontSize: '1.5rem' }}>🌐</span>
-            </div>
-            <h3 style={{ fontSize: '1.4rem', marginBottom: '0.75rem', fontFamily: 'var(--font-headings)' }}>
-              이전 개발작: Netbox 쇼케이스
-            </h3>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', maxWidth: '650px' }}>
-              네트워크 설정 및 관리를 획기적으로 개선했던 Netbox 프로젝트의 핵심 강점과 설계 철학, 주요 UI 아키텍처를 깔끔하고 우아한 다이어그램 및 설명서로 소개합니다.
-            </p>
-          </div>
-          <button className="btn btn-secondary" onClick={() => setActiveTab('netbox')} style={{ alignSelf: 'flex-start', marginTop: '1.5rem' }}>
-            쇼케이스 보기 →
-          </button>
-        </div>
-
-        {/* Team Collaboration Panel */}
-        <div className="card span-4" style={{ backgroundColor: 'var(--bg-primary)', borderStyle: 'dashed', borderWidth: '2px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-          <div>
-            <h3 style={{ fontSize: '1.2rem', marginBottom: '0.75rem', fontFamily: 'var(--font-headings)', color: 'var(--text-primary)' }}>
-              팀원 공유 및 피드백
-            </h3>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '0.88rem', lineHeight: '1.5' }}>
-              이 사이트는 GitHub 저장소와 연동되어 작동합니다. 수정 사항을 push하면 Vercel을 통해 10초 이내에 자동 업데이트되어 배포됩니다!
-            </p>
-            <div style={{ marginTop: '1rem', padding: '0.75rem', backgroundColor: 'white', borderRadius: '8px', border: '1px solid var(--border-color)', fontSize: '0.82rem' }}>
-              <code>git push origin main</code>
-            </div>
-          </div>
-          <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem' }}>
-            <span className="tag tag-blue">Deploy Auto-sync</span>
-            <span className="tag">React SPA</span>
-          </div>
         </div>
       </div>
     </div>

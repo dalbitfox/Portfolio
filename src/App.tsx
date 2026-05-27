@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Dashboard } from './components/Dashboard';
+import { ProjectsPage } from './components/ProjectsPage';
 import { LadderGame } from './components/LadderGame';
 import { NetboxShowcase } from './components/NetboxShowcase';
 import { ResourceHub } from './components/ResourceHub';
@@ -11,12 +12,14 @@ function App() {
     switch (activeTab) {
       case 'home':
         return <Dashboard setActiveTab={setActiveTab} />;
+      case 'projects':
+        return <ProjectsPage setActiveTab={setActiveTab} />;
+      case 'resources':
+        return <ResourceHub />;
       case 'ladder':
         return <LadderGame />;
       case 'netbox':
         return <NetboxShowcase />;
-      case 'resources':
-        return <ResourceHub />;
       default:
         return <Dashboard setActiveTab={setActiveTab} />;
     }
@@ -24,28 +27,29 @@ function App() {
 
   return (
     <div className="app-container">
-      {/* Premium Header */}
+      {/* chronark.com Style Minimal Header */}
       <header className="header">
         <div className="header-inner">
           <div className="logo-section" onClick={() => setActiveTab('home')}>
-            <div className="logo-icon">P</div>
-            <span className="logo-text">Portfolio Portal</span>
-            <span className="logo-tag">Workplace</span>
+            dalbitfox <span className="logo-dot"></span>
           </div>
 
           <nav>
             <ul className="nav-menu">
               <li className={`nav-item ${activeTab === 'home' ? 'active' : ''}`}>
-                <button onClick={() => setActiveTab('home')}>🏠 대시보드</button>
+                <button onClick={() => setActiveTab('home')}>Home</button>
+              </li>
+              <li className={`nav-item ${activeTab === 'projects' ? 'active' : ''}`}>
+                <button onClick={() => setActiveTab('projects')}>Projects</button>
               </li>
               <li className={`nav-item ${activeTab === 'resources' ? 'active' : ''}`}>
-                <button onClick={() => setActiveTab('resources')}>📁 업무 자료실</button>
+                <button onClick={() => setActiveTab('resources')}>Resource Hub</button>
               </li>
               <li className={`nav-item ${activeTab === 'ladder' ? 'active' : ''}`}>
-                <button onClick={() => setActiveTab('ladder')}>🎯 점심 사다리타기</button>
+                <button onClick={() => setActiveTab('ladder')}>Ladder Game</button>
               </li>
               <li className={`nav-item ${activeTab === 'netbox' ? 'active' : ''}`}>
-                <button onClick={() => setActiveTab('netbox')}>🌐 Netbox 쇼케이스</button>
+                <button onClick={() => setActiveTab('netbox')}>Netbox</button>
               </li>
             </ul>
           </nav>
@@ -61,19 +65,19 @@ function App() {
       <footer className="footer">
         <div className="footer-inner">
           <div>
-            <strong>© 2026 Portfolio & Work Portal.</strong> Built for high-efficiency team collaboration.
+            <strong>© 2026 dalbitfox.</strong> Built with clean craftsmanship.
           </div>
-          <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-            <span style={{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#10b981' }}></span>
-            <span>Vercel 배포 연동 완료</span>
+          <div style={{ display: 'flex', gap: '1.25rem', alignItems: 'center' }}>
+            <span style={{ display: 'inline-block', width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#3b82f6' }}></span>
+            <span>Vercel Deploy Auto-sync</span>
             <span>|</span>
             <a 
-              href="https://github.com" 
+              href="https://github.com/dalbitfox/Portfolio" 
               target="_blank" 
               rel="noreferrer" 
-              style={{ color: 'var(--text-secondary)', textDecoration: 'none', fontWeight: 600 }}
+              style={{ textDecoration: 'none', fontWeight: 600 }}
             >
-              GitHub 저장소
+              GitHub
             </a>
           </div>
         </div>
