@@ -75,34 +75,12 @@ export const Dashboard: React.FC<DashboardProps> = ({ setActiveTab }) => {
             color: 'rgba(255, 255, 255, 0.55)', 
             fontWeight: 300, 
             lineHeight: '1.8', 
-            marginBottom: '2.5rem',
+            marginBottom: '0',
             fontFamily: 'var(--font-body)'
           }}
         >
           서부기술(SeobuTech)의 인프라 효율과 협업 속도를 극어올리기 위한 자동화 포털입니다. 네트워크 유틸리티 통합 스위트인 **netbox**와 **점심 메뉴 사다리타기** 등의 생산성 도구를 설계합니다.
         </p>
-
-        {/* Secondary Navigation Indicators */}
-        <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
-          <button 
-            className="btn" 
-            onClick={() => setActiveTab('about')}
-            style={{ padding: '0.85rem 2.25rem', fontSize: '0.88rem', backgroundColor: '#ffffff', color: '#000000' }}
-            onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.85)'; }}
-            onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#ffffff'; }}
-          >
-            소개 (ABOUT) →
-          </button>
-          <button 
-            className="btn" 
-            onClick={() => setActiveTab('projects')}
-            style={{ padding: '0.85rem 2.25rem', fontSize: '0.88rem', backgroundColor: 'transparent', border: '1px solid rgba(255,255,255,0.15)', color: '#ffffff' }}
-            onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.06)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.3)'; }}
-            onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)'; }}
-          >
-            프로젝트 (PROJECTS) 📂
-          </button>
-        </div>
       </div>
     </div>
   );
