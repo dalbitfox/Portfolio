@@ -10,7 +10,7 @@ function App() {
   const [activeTab, setActiveTab] = useState<string>('home');
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  // Global High-Fidelity Starry Night Canvas Particle System
+  // Global High-Fidelity Starry Night Canvas Particle System (Antigravity Physics Engine)
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -30,22 +30,48 @@ function App() {
       alpha: number;
       vx: number;
       vy: number;
+      baseVx: number;
+      baseVy: number;
       twinkleSpeed: number;
     }> = [];
 
-    const starCount = Math.min(100, Math.floor((width * height) / 12000));
+    const starCount = Math.min(100, Math.floor((width * height) / 11000));
 
     for (let i = 0; i < starCount; i++) {
+      // Base float slightly tilted upwards to simulate anti-gravity vertical drift!
+      const baseVx = (Math.random() - 0.5) * 0.05;
+      const baseVy = Math.random() * -0.15 - 0.05; // Slow drift upwards
+      
       stars.push({
         x: Math.random() * width,
         y: Math.random() * height,
-        size: Math.random() * 1.3 + 0.3,
+        size: Math.random() * 1.4 + 0.3,
         alpha: Math.random() * 0.7 + 0.1,
-        vx: (Math.random() - 0.5) * 0.06, // extremely slow cosmic drift
-        vy: (Math.random() - 0.5) * 0.06,
-        twinkleSpeed: Math.random() * 0.01 + 0.002,
+        vx: baseVx,
+        vy: baseVy,
+        baseVx,
+        baseVy,
+        twinkleSpeed: Math.random() * 0.008 + 0.002,
       });
     }
+
+    // Mouse interactive capture
+    let mouseX = 0;
+    let mouseY = 0;
+    let isMouseActive = false;
+
+    const handleMouseMove = (e: MouseEvent) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      isMouseActive = true;
+    };
+
+    const handleMouseLeave = () => {
+      isMouseActive = false;
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseleave', handleMouseLeave);
 
     const handleResize = () => {
       if (!canvas) return;
@@ -75,34 +101,130 @@ function App() {
         ctx.stroke();
       }
 
-      // Draw starry particles
+      // Draw and calculate physics for starry particles
       for (let i = 0; i < stars.length; i++) {
         const star = stars[i];
 
+        // Apply friction/damping
+        star.vx *= 0.97;
+        star.vy *= 0.97;
+
+        // Apply gentle return force to base drift
+        star.vx += (star.baseVx - star.vx) * 0.03;
+        star.vy += (star.baseVy - star.vy) * 0.03;
+
+        // Apply Antigravity Interactive Gravitational Magnetic Forces
+        if (isMouseActive) {
+          const dx = mouseX - star.x;
+          const dy = mouseY - star.y;
+          const dist = Math.hypot(dx, dy);
+
+          if (dist < 220) {
+            const pull = (220 - dist) / 220;
+            
+            // 1. Magnetic pull towards cursor
+            star.vx += (dx / dist) * pull * 0.22;
+            star.vy += (dy / dist) * pull * 0.22;
+
+            // 2. Swirling orbit component (gently rotates around cursor)
+            const perpX = -dy / dist;
+            const perpY = dx / dist;
+            star.vx += perpX * pull * 0.08;
+            star.vy += perpY * pull * 0.08;
+
+            // 3. Prevent clumping close to cursor (attract-repel bounce)
+            if (dist < 40) {
+              const push = (40 - dist) / 40;
+              star.vx -= (dx / dist) * push * 0.65;
+              star.vy -= (dy / dist) * push * 0.65;
+            }
+          }
+        }
+
+        // Apply position updates
         star.x += star.vx;
         star.y += star.vy;
 
-        if (star.x < 0) star.x = width;
-        if (star.x > width) star.x = 0;
-        if (star.y < 0) star.y = height;
-        if (star.y > height) star.y = 0;
+        // Wrap around screen bounds (including a 10px buffer)
+        if (star.x < -10) star.x = width + 10;
+        if (star.x > width + 10) star.x = -10;
+        if (star.y < -10) star.y = height + 10;
+        if (star.y > height + 10) star.y = -10;
 
+        // Twinkle calculation
         star.alpha += star.twinkleSpeed;
         if (star.alpha > 0.85 || star.alpha < 0.15) {
           star.twinkleSpeed *= -1;
         }
 
+        // Draw star core
         ctx.beginPath();
         ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(255, 255, 255, ${Math.max(0.1, star.alpha)})`;
+        ctx.fillStyle = `rgba(255, 255, 255, ${Math.max(0.12, star.alpha)})`;
         ctx.fill();
 
+        // Soft halo glow around larger stars
         if (star.size > 0.95) {
           ctx.beginPath();
-          ctx.arc(star.x, star.y, star.size * 3, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(255, 255, 255, ${star.alpha * 0.1})`;
+          ctx.arc(star.x, star.y, star.size * 3.5, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(255, 255, 255, ${star.alpha * 0.08})`;
           ctx.fill();
         }
+
+        // Draw glowing connection lines (constellation network centered on active cursor)
+        for (let j = i + 1; j < stars.length; j++) {
+          const star2 = stars[j];
+          const dist2 = Math.hypot(star.x - star2.x, star.y - star2.y);
+          
+          if (dist2 < 90) {
+            if (isMouseActive) {
+              const d1 = Math.hypot(mouseX - star.x, mouseY - star.y);
+              const d2 = Math.hypot(mouseX - star2.x, mouseY - star2.y);
+              
+              if (d1 < 170 && d2 < 170) {
+                const alpha = (1 - dist2 / 90) * 0.1 * Math.min(star.alpha, star2.alpha);
+                ctx.strokeStyle = `rgba(96, 165, 250, ${alpha})`; // premium royal blue glow
+                ctx.lineWidth = 0.5;
+                ctx.beginPath();
+                ctx.moveTo(star.x, star.y);
+                ctx.lineTo(star2.x, star2.y);
+                ctx.stroke();
+              }
+            }
+          }
+        }
+
+        // Draw faint glowing thread from mouse to nearest stars
+        if (isMouseActive) {
+          const mDist = Math.hypot(star.x - mouseX, star.y - mouseY);
+          if (mDist < 150) {
+            const mAlpha = (1 - mDist / 150) * 0.12 * star.alpha;
+            ctx.strokeStyle = `rgba(255, 255, 255, ${mAlpha})`;
+            ctx.lineWidth = 0.5;
+            ctx.beginPath();
+            ctx.moveTo(star.x, star.y);
+            ctx.lineTo(mouseX, mouseY);
+            ctx.stroke();
+          }
+        }
+      }
+
+      // Draw ambient mouse gravity aura glow & aesthetic micro-dot
+      if (isMouseActive) {
+        ctx.beginPath();
+        const mouseGlow = ctx.createRadialGradient(mouseX, mouseY, 0, mouseX, mouseY, 180);
+        mouseGlow.addColorStop(0, 'rgba(59, 130, 246, 0.08)'); // Premium soft blue glow
+        mouseGlow.addColorStop(0.5, 'rgba(96, 165, 250, 0.02)');
+        mouseGlow.addColorStop(1, 'rgba(0, 0, 0, 0)');
+        ctx.fillStyle = mouseGlow;
+        ctx.arc(mouseX, mouseY, 180, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Draw a delicate physical micro-center
+        ctx.beginPath();
+        ctx.arc(mouseX, mouseY, 2, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+        ctx.fill();
       }
 
       animationFrameId = requestAnimationFrame(render);
@@ -112,6 +234,8 @@ function App() {
 
     return () => {
       cancelAnimationFrame(animationFrameId);
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseleave', handleMouseLeave);
       window.removeEventListener('resize', handleResize);
     };
   }, []);

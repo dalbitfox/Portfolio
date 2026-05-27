@@ -48,7 +48,6 @@ body {
   flex-direction: column;
   min-height: 100vh;
   position: relative;
-  background-color: var(--bg-primary);
   
   background-image: 
     linear-gradient(to right, rgba(255, 255, 255, 0.015) 1px, transparent 1px),
@@ -64,7 +63,7 @@ body {
   left: 0;
   width: 100vw;
   height: 100vh;
-  z-index: -2;
+  z-index: -1;
   pointer-events: none;
 }
 
