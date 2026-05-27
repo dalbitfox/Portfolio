@@ -8,222 +8,273 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ setActiveTab }) => {
   return (
     <div style={{ animation: 'fadeIn 0.6s ease-out' }}>
       
-      {/* magic-portfolio.com/about Grid Structure */}
-      <div className="magic-grid">
-        
-        {/* Left Profile Sidebar Card (span 4) */}
-        <div className="magic-profile-card">
-          <div className="avatar-placeholder">
-            ⚙️
-          </div>
-          <h2 style={{ fontSize: '1.6rem', fontWeight: 800, fontFamily: 'var(--font-headings)', marginBottom: '0.25rem' }}>
-            서부기술 (SeobuTech)
-          </h2>
-          <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '1.25rem' }}>
-            Infrastructure & Workspace Portal
-          </p>
+      {/* magic-portfolio.com/work Title Header */}
+      <div style={{ marginBottom: '3.5rem', textAlign: 'center' }}>
+        <span className="tag tag-blue" style={{ marginBottom: '0.75rem', fontSize: '0.75rem' }}>Projects</span>
+        <h2 style={{ fontSize: '2.5rem', fontWeight: 800, fontFamily: 'var(--font-headings)', letterSpacing: '-0.04em' }}>
+          SeobuTech Projects
+        </h2>
+        <p style={{ color: 'var(--text-secondary)', fontSize: '1rem', marginTop: '0.5rem', maxWidth: '650px', marginLeft: 'auto', marginRight: 'auto', fontWeight: 300 }}>
+          서부기술(SeobuTech)의 인프라 모니터링, 리포트 생성 및 운영 업무를 자동화하기 위해 구축된 솔루션 및 도구 포트폴리오입니다.
+        </p>
+      </div>
+
+      {/* 1. Large Hero Mockup Card (Netbox) */}
+      <div 
+        onClick={() => window.open('https://net-box.vercel.app', '_blank')}
+        className="magic-card" 
+        style={{ 
+          marginBottom: '3rem', 
+          cursor: 'pointer', 
+          padding: '2.5rem', 
+          border: '1px solid rgba(255, 255, 255, 0.1)',
+          backgroundColor: 'rgba(9, 9, 11, 0.7)',
+          overflow: 'hidden'
+        }}
+      >
+        <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '2.5rem', alignItems: 'center' }}>
           
-          <div className="line-divider" style={{ margin: '1rem 0' }}></div>
-          
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.88rem', lineHeight: '1.6', marginBottom: '1.5rem', textAlign: 'left', fontWeight: 300 }}>
-            서부기술(SeobuTech)의 네트워크 자산 효율을 높이고, 팀원들 간의 자료 관리 및 소통을 촉진하기 위한 자동화 솔루션 본부입니다. Django 백엔드와 React 클라이언트를 결합하여 고도의 네트워크 자동화 툴과 내부 유틸리티를 배포합니다.
-          </p>
-          
-          <div className="line-divider" style={{ margin: '1rem 0' }}></div>
-          
-          {/* Quick Stats / Info List */}
-          <div style={{ width: '100%', textAlign: 'left', display: 'flex', flexDirection: 'column', gap: '0.75rem', fontSize: '0.82rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ color: 'var(--text-muted)' }}>대표 개발 엔지니어</span>
-              <strong style={{ color: 'var(--text-primary)' }}>달빛폭스 (dalbitfox)</strong>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ color: 'var(--text-muted)' }}>주요 배포 서비스</span>
-              <strong style={{ color: 'var(--text-primary)' }}>netbox, 사다리타기, 자료실</strong>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ color: 'var(--text-muted)' }}>연동 방식</span>
-              <strong style={{ color: '#10b981' }}>GitHub ➔ Vercel Auto-sync</strong>
-            </div>
-          </div>
-          
-          <div className="line-divider" style={{ margin: '1.25rem 0' }}></div>
-          
-          {/* GitHub repo redirect link button */}
-          <a 
-            href="https://github.com/dalbitfox/Portfolio" 
-            target="_blank" 
-            rel="noreferrer" 
-            className="btn btn-secondary" 
-            style={{ width: '100%', padding: '0.6rem 0' }}
+          {/* Hero Mockup image styled with pure CSS to look high-tech dark admin dashboard */}
+          <div 
+            style={{ 
+              borderRadius: '12px', 
+              backgroundColor: '#0c0a09', 
+              border: '1px solid rgba(255, 255, 255, 0.08)',
+              padding: '1.5rem',
+              boxShadow: '0 20px 40px rgba(0,0,0,0.6)',
+              minHeight: '260px',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between',
+              position: 'relative'
+            }}
           >
-            🐙 깃허브 코드 저장소 방문
-          </a>
-        </div>
-
-        {/* Right Details Column (span 8) */}
-        <div className="magic-details-col">
-          
-          {/* Section: Main Portfolios (Projects & Experiences) */}
-          <div className="magic-card">
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem' }}>
-              <span style={{ fontSize: '1.35rem' }}>💼</span>
-              <h3 style={{ fontSize: '1.3rem', fontWeight: 800, fontFamily: 'var(--font-headings)' }}>
-                Projects & Utilities Showcase
-              </h3>
+            {/* Soft background glow */}
+            <div style={{ position: 'absolute', bottom: 0, right: 0, width: '150px', height: '150px', background: 'radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, transparent 70%)', pointerEvents: 'none' }}></div>
+            
+            {/* Header bar inside mockup */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(255, 255, 255, 0.05)', paddingBottom: '0.5rem' }}>
+              <span style={{ color: '#60a5fa', fontSize: '0.75rem', fontWeight: 'bold' }}>🌐 netbox-automation-console</span>
+              <span style={{ color: '#10b981', fontSize: '0.65rem' }}>● LIVE</span>
             </div>
             
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-              
-              {/* Project 1: Netbox */}
-              <div style={{ borderLeft: '3px solid #3b82f6', paddingLeft: '1.25rem', position: 'relative' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.5rem' }}>
-                  <div>
-                    <h4 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--text-primary)' }}>
-                      1. Netbox Network Utility Suite
-                    </h4>
-                    <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 500 }}>
-                      Django REST Framework Backend & React Frontend SPA
-                    </span>
-                  </div>
-                  <span className="tag tag-blue" style={{ fontSize: '0.65rem' }}>Active Service</span>
-                </div>
-                
-                <p style={{ color: 'var(--text-secondary)', fontSize: '0.88rem', lineHeight: '1.6', marginBottom: '1rem', fontWeight: 300 }}>
-                  실제 배포 운영 중인 통합 네트워크 유틸리티 포털입니다. 서부기술(SeobuTech) 등 네트워크 인프라 팀원들이 매일 수동으로 계산하는 서브넷 주소 할당 업무를 전면 자동화하기 위해 탄생했습니다. 사이트에 탑재된 핵심 기능 명세는 다음과 같습니다:
-                </p>
-                
-                {/* 7 core tools bullet description from source code analysis */}
-                <div 
-                  style={{ 
-                    display: 'grid', 
-                    gridTemplateColumns: '1fr 1fr', 
-                    gap: '0.5rem 1rem', 
-                    fontSize: '0.82rem', 
-                    backgroundColor: 'var(--bg-secondary)', 
-                    padding: '1rem', 
-                    borderRadius: '12px', 
-                    border: '1px solid var(--border-color)',
-                    marginBottom: '1.25rem'
-                  }}
-                >
-                  <div><strong>• IPv4 Subnet Calculator:</strong> 비트 조절형 대역폭 및 범위 산출</div>
-                  <div><strong>• CIDR Calculator:</strong> 클래스리스 주소 도식 매핑</div>
-                  <div><strong>• IPv6 Subnet Tool:</strong> 차세대 IP 마스크 연산 및 표기</div>
-                  <div><strong>• IP Tracker & Trace:</strong> IP 주소 홉 역추적 및 위치 수집</div>
-                  <div><strong>• Web Ping Tester:</strong> 게이트웨이 왕복 시간(RTT) 진단</div>
-                  <div><strong>• Security Port Scanner:</strong> 개방 포트 스캔 취약점 스펙 체크</div>
-                  <div style={{ gridColumn: 'span 2' }}><strong>• Todo Checklist:</strong> 인프라 작업 보드 (Firebase 영구 연동)</div>
-                </div>
-
-                <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
-                  <a 
-                    href="https://net-box.vercel.app" 
-                    target="_blank" 
-                    rel="noreferrer" 
-                    className="btn btn-primary"
-                    style={{ padding: '0.5rem 1.25rem', fontSize: '0.8rem' }}
-                  >
-                    🌐 실물 웹서비스 방문하기 (net-box.vercel.app) ↗
-                  </a>
-                  <button 
-                    onClick={() => setActiveTab('netbox')} 
-                    className="btn btn-secondary"
-                    style={{ padding: '0.5rem 1.25rem', fontSize: '0.8rem' }}
-                  >
-                    🔍 상세 아키텍처 쇼케이스 보기
-                  </button>
-                </div>
+            {/* Metrics */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', margin: '1rem 0' }}>
+              <div style={{ padding: '0.6rem', backgroundColor: '#1c1917', borderRadius: '6px' }}>
+                <span style={{ fontSize: '0.6rem', color: 'var(--text-secondary)' }}>IPAM 대역폭</span>
+                <div style={{ fontSize: '1rem', fontWeight: 'bold', color: '#60a5fa', marginTop: '0.1rem' }}>IPv4 / IPv6 Active</div>
               </div>
-
-              {/* Project 2: Ladder Game */}
-              <div style={{ borderLeft: '3px solid #f97316', paddingLeft: '1.25rem' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.5rem' }}>
-                  <div>
-                    <h4 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--text-primary)' }}>
-                      2. 점심메뉴 선택 사다리타기 게임 (Lunch Ladder)
-                    </h4>
-                    <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 500 }}>
-                      SVG Path Crawling Animation & React state
-                    </span>
-                  </div>
-                  <span className="tag tag-orange" style={{ fontSize: '0.65rem' }}>Playable App</span>
-                </div>
-                
-                <p style={{ color: 'var(--text-secondary)', fontSize: '0.88rem', lineHeight: '1.6', marginBottom: '1rem', fontWeight: 300 }}>
-                  매일 직면하는 점심 메뉴 선택 피로를 해소하고 팀원 간 친목을 다지기 위한 인터랙티브 토이입니다. 참가자와 결과 목록을 실시간으로 입력하면, 정밀하게 계산된 SVG 선을 따라 파란 광선이 움직이며 deterministic 경로를 실시간 추적해 줍니다.
-                </p>
-                
-                <button 
-                  onClick={() => setActiveTab('ladder')} 
-                  className="btn btn-secondary"
-                  style={{ padding: '0.5rem 1.25rem', fontSize: '0.8rem' }}
-                >
-                  🎯 사이트 내에서 플레이 시작하기
-                </button>
+              <div style={{ padding: '0.6rem', backgroundColor: '#1c1917', borderRadius: '6px' }}>
+                <span style={{ fontSize: '0.6rem', color: 'var(--text-secondary)' }}>보안 스캔 노드</span>
+                <div style={{ fontSize: '1rem', fontWeight: 'bold', color: '#10b981', marginTop: '0.1rem' }}>24 Switch Ports</div>
               </div>
-
-              {/* Project 3: Resource Hub */}
-              <div style={{ borderLeft: '3px solid #10b981', paddingLeft: '1.25rem' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.5rem' }}>
-                  <div>
-                    <h4 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--text-primary)' }}>
-                      3. 팀 업무 자료실 (Workspace Resource Hub)
-                    </h4>
-                    <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 500 }}>
-                      Local State Management & Drag-Drop File System
-                    </span>
-                  </div>
-                  <span className="tag" style={{ backgroundColor: 'rgba(16, 185, 129, 0.08)', color: '#10b981', fontSize: '0.65rem' }}>Internal Utility</span>
-                </div>
-                
-                <p style={{ color: 'var(--text-secondary)', fontSize: '0.88rem', lineHeight: '1.6', marginBottom: '1rem', fontWeight: 300 }}>
-                  서부기술 팀의 자료 공유 아카이브 역할을 수행하는 아키타이프 스토리지입니다. 카테고리 태그 분류, 파일 검색 필터, 드래그 앤 드롭 업로드 모사 및 실제 파일 다운로드 동작 트리거를 지원하여 가볍고 견고하게 서류를 공유합니다.
-                </p>
-                
-                <button 
-                  onClick={() => setActiveTab('resources')} 
-                  className="btn btn-secondary"
-                  style={{ padding: '0.5rem 1.25rem', fontSize: '0.8rem' }}
-                >
-                  📁 자료실 대시보드 바로 열기
-                </button>
-              </div>
-
+            </div>
+            
+            {/* Code lines */}
+            <div style={{ fontFamily: 'monospace', fontSize: '0.65rem', color: 'rgba(255, 255, 255, 0.4)', backgroundColor: '#141414', padding: '0.6rem', borderRadius: '6px' }}>
+              <span style={{ color: '#34d399' }}>$</span> npx port-scanner --host gateway.seobu.net --port 22,80,443<br/>
+              <span style={{ color: '#93c5fd' }}>[info]</span> Port 80 is open. Subnet mask: 255.255.255.240 (/28)
             </div>
           </div>
 
-          {/* Section: Professional Capabilities (Tech Stack) */}
-          <div className="magic-card">
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.25rem' }}>
-              <span style={{ fontSize: '1.35rem' }}>🛠️</span>
-              <h3 style={{ fontSize: '1.3rem', fontWeight: 800, fontFamily: 'var(--font-headings)' }}>
-                Skills & Technologies
-              </h3>
-            </div>
-            
-            <p style={{ color: 'var(--text-secondary)', fontSize: '0.88rem', marginBottom: '1.25rem', fontWeight: 300 }}>
-              서부기술(SeobuTech) 솔루션에 연계되어 작동하는 주요 인프라, 백엔드 프레임워크 및 프론트엔드 언어 스택 목록입니다.
+          {/* Hero text details */}
+          <div>
+            <span className="tag tag-blue" style={{ marginBottom: '1rem', fontSize: '0.65rem' }}>Lead Portfolio Project</span>
+            <h3 style={{ fontSize: '1.8rem', fontWeight: 800, fontFamily: 'var(--font-headings)', marginBottom: '0.75rem', letterSpacing: '-0.03em' }}>
+              NetBox Network Suite
+            </h3>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.88rem', lineHeight: '1.6', marginBottom: '1.5rem', fontWeight: 300 }}>
+              서부기술(SeobuTech)의 인프라 스위치 포트 장애, IP 범위 연산, 핑 모니터링 체크를 위해 실물 배포된 자동화 플랫폼입니다. 서브넷팅 연산 외 7가지 고정밀 네트워크 분석 도구가 완벽 연동되어 있습니다.
             </p>
-            
-            <div>
-              <span className="skill-badge">IPAM/Subnetting</span>
-              <span className="skill-badge">CIDR Mapping</span>
-              <span className="skill-badge">Port Scanning</span>
-              <span className="skill-badge">React.js SPA</span>
-              <span className="skill-badge">TypeScript</span>
-              <span className="skill-badge">Django REST Framework</span>
-              <span className="skill-badge">PostgreSQL</span>
-              <span className="skill-badge">Firebase Realtime DB</span>
-              <span className="skill-badge">SVG Node Computing</span>
-              <span className="skill-badge">Git & Version Control</span>
-              <span className="skill-badge">Vercel & GitHub Actions</span>
-              <span className="skill-badge">Bespoke CSS Modules</span>
+            <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+              <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#3b82f6' }}>
+                실물 사이트 즉시 방문하기 (net-box.vercel.app) ↗
+              </span>
             </div>
           </div>
 
         </div>
+      </div>
 
+      <div className="line-divider" style={{ marginBottom: '3rem' }}></div>
+
+      {/* Grid of Other Projects */}
+      <h3 style={{ fontSize: '1.2rem', color: 'var(--text-secondary)', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: '1.5rem', fontFamily: 'var(--font-headings)' }}>
+        Other Active Projects
+      </h3>
+
+      <div 
+        style={{ 
+          display: 'grid', 
+          gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', 
+          gap: '1.5rem',
+          marginBottom: '4rem'
+        }}
+      >
+        
+        {/* Project 2: AX-자동메일시스템 */}
+        <div className="magic-card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minHeight: '220px', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+              <span className="tag" style={{ backgroundColor: 'rgba(255,255,255,0.05)', color: 'var(--text-secondary)', fontSize: '0.65rem' }}>Python & SMTP</span>
+              <span style={{ fontSize: '1.25rem' }}>✉️</span>
+            </div>
+            <h4 style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: '0.5rem', fontFamily: 'var(--font-headings)' }}>
+              AX-자동메일시스템
+            </h4>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.82rem', lineHeight: '1.5', fontWeight: 300 }}>
+              서부기술 대량 장비 상태 수집 서버 로그와 긴급 오류 알림 이메일 발송을 완전 자동화하는 경량 크론 스케줄러 시스템입니다.
+            </p>
+          </div>
+          <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontWeight: 500, marginTop: '1rem' }}>
+            🛠️ 내부 전용 서버에서 구동 중
+          </span>
+        </div>
+
+        {/* Project 3: AX-월간정기리포트 */}
+        <div className="magic-card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minHeight: '220px', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+              <span className="tag" style={{ backgroundColor: 'rgba(255,255,255,0.05)', color: 'var(--text-secondary)', fontSize: '0.65rem' }}>React & Chart.js</span>
+              <span style={{ fontSize: '1.25rem' }}>📊</span>
+            </div>
+            <h4 style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: '0.5rem', fontFamily: 'var(--font-headings)' }}>
+              AX-월간정기리포트
+            </h4>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.82rem', lineHeight: '1.5', fontWeight: 300 }}>
+              매월 사내 네트워크 트래픽 로그 및 가동 시간을 가공하여 시각 차트와 PDF 리포트로 자동 생성하고 다운로드해주는 기안 보조 툴입니다.
+            </p>
+          </div>
+          <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontWeight: 500, marginTop: '1rem' }}>
+            📊 인프라 통계 탭과 연동 예정
+          </span>
+        </div>
+
+        {/* Project 4: 배움마당 스마트 도우미 */}
+        <div className="magic-card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minHeight: '220px', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+              <span className="tag" style={{ backgroundColor: 'rgba(255,255,255,0.05)', color: 'var(--text-secondary)', fontSize: '0.65rem' }}>Node.js & Bot</span>
+              <span style={{ fontSize: '1.25rem' }}>🤖</span>
+            </div>
+            <h4 style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: '0.5rem', fontFamily: 'var(--font-headings)' }}>
+              배움마당 스마트 도우미
+            </h4>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.82rem', lineHeight: '1.5', fontWeight: 300 }}>
+              사내 교육 플랫폼인 배움마당의 교육 수강 일정을 자동 스캔 수집하여 사내 메신저로 챗봇 알림을 전송하는 스마트 교육 보조 도우미입니다.
+            </p>
+          </div>
+          <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontWeight: 500, marginTop: '1rem' }}>
+            💡 메신저 연계 작동 확인
+          </span>
+        </div>
+
+        {/* Project 5: 점심메뉴고르기 사다리타기 (Live App) */}
+        <div 
+          onClick={() => setActiveTab('ladder')}
+          className="magic-card" 
+          style={{ 
+            display: 'flex', 
+            flexDirection: 'column', 
+            justifyContent: 'space-between', 
+            minHeight: '220px', 
+            border: '1px solid rgba(249, 115, 22, 0.25)', 
+            cursor: 'pointer',
+            backgroundColor: 'rgba(249, 115, orange, 0.01)'
+          }}
+        >
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+              <span className="tag tag-orange" style={{ fontSize: '0.65rem' }}>SVG Animation</span>
+              <span style={{ fontSize: '1.25rem' }}>🎯</span>
+            </div>
+            <h4 style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: '0.5rem', fontFamily: 'var(--font-headings)', color: '#f97316' }}>
+              점심메뉴고르기 사다리타기
+            </h4>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.82rem', lineHeight: '1.5', fontWeight: 300 }}>
+              부드러운 SVG 선 그리기 물리 트랙킹과 사다리 알고리즘을 융합한 점심 선택 토이입니다. (클릭 시 사이트 내에서 즉시 플레이 가능!)
+            </p>
+          </div>
+          <span style={{ fontSize: '0.78rem', color: '#f97316', fontWeight: 600, marginTop: '1rem' }}>
+            🎮 즉시 플레이하러 가기 →
+          </span>
+        </div>
+
+        {/* Project 6: 업무 자료실 (Live Storage) */}
+        <div 
+          onClick={() => setActiveTab('resources')}
+          className="magic-card" 
+          style={{ 
+            display: 'flex', 
+            flexDirection: 'column', 
+            justifyContent: 'space-between', 
+            minHeight: '220px', 
+            border: '1px solid rgba(16, 185, 129, 0.25)', 
+            cursor: 'pointer'
+          }}
+        >
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+              <span className="tag" style={{ backgroundColor: 'rgba(16, 185, 129, 0.08)', color: '#10b981', fontSize: '0.65rem' }}>File Database</span>
+              <span style={{ fontSize: '1.25rem' }}>📁</span>
+            </div>
+            <h4 style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: '0.5rem', fontFamily: 'var(--font-headings)', color: '#10b981' }}>
+              팀 업무 자료실 (Resource Hub)
+            </h4>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.82rem', lineHeight: '1.5', fontWeight: 300 }}>
+              디자인, 보고서, 기획 문서를 보관하는 사내 자료 캐비닛입니다. 드래그 앤 드롭 업로드 및 필터링 검색을 지원합니다.
+            </p>
+          </div>
+          <span style={{ fontSize: '0.78rem', color: '#10b981', fontWeight: 600, marginTop: '1rem' }}>
+            📁 자료실 보관함 바로 열기 →
+          </span>
+        </div>
+
+      </div>
+
+      <div className="line-divider" style={{ marginBottom: '3rem' }}></div>
+
+      {/* 4 Empty Placeholder Cards for Future Projects (비어있는 예비 카드 4개 구성) */}
+      <h3 style={{ fontSize: '1.2rem', color: 'var(--text-muted)', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: '1.5rem', fontFamily: 'var(--font-headings)' }}>
+        Upcoming Projects
+      </h3>
+
+      <div 
+        style={{ 
+          display: 'grid', 
+          gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', 
+          gap: '1.5rem',
+          marginBottom: '2rem'
+        }}
+      >
+        {Array.from({ length: 4 }).map((_, i) => (
+          <div 
+            key={`placeholder-${i}`}
+            className="magic-card" 
+            style={{ 
+              border: '1px dashed rgba(255, 255, 255, 0.12)', 
+              backgroundColor: 'rgba(255, 255, 255, 0.005)', 
+              color: 'var(--text-muted)', 
+              textAlign: 'center', 
+              justifyContent: 'center', 
+              alignItems: 'center',
+              minHeight: '160px', 
+              cursor: 'not-allowed',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '0.5rem',
+              boxShadow: 'none'
+            }}
+          >
+            <span style={{ fontSize: '1.5rem', opacity: 0.2 }}>🔒</span>
+            <div style={{ fontFamily: 'var(--font-headings)', fontWeight: 600, fontSize: '0.88rem', color: 'rgba(255, 255, 255, 0.25)' }}>
+              Project Spaceholder #{i + 1}
+            </div>
+            <span style={{ fontSize: '0.72rem', color: 'rgba(255, 255, 255, 0.15)', fontWeight: 300 }}>
+              준비 중 (Coming Soon)
+            </span>
+          </div>
+        ))}
       </div>
 
     </div>

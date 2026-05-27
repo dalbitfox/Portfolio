@@ -122,7 +122,7 @@ export const NetboxShowcase: React.FC = () => {
 
       {/* Architecture Tab */}
       {activeTab === 'architecture' && (
-        <div className="card span-12" style={{ backgroundColor: 'white' }}>
+        <div className="magic-card span-12" style={{ border: '1px solid var(--border-color)' }}>
           <h3 style={{ fontFamily: 'var(--font-headings)', fontSize: '1.4rem', marginBottom: '1.5rem', textAlign: 'center' }}>
             ⚙️ Netbox 데이터 및 자동화 흐름도
           </h3>
@@ -130,32 +130,32 @@ export const NetboxShowcase: React.FC = () => {
           {/* Custom Pure CSS Diagram */}
           <div style={{ display: 'flex', justifyContent: 'space-around', alignItems: 'center', flexWrap: 'wrap', gap: '2rem', padding: '2rem 0' }}>
             {/* Box 1 */}
-            <div style={{ width: '200px', padding: '1.5rem', backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border-color)', borderRadius: '12px', textAlign: 'center', boxShadow: 'var(--shadow-sm)' }}>
+            <div style={{ width: '200px', padding: '1.5rem', backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border-color)', borderRadius: '12px', textAlign: 'center', boxShadow: 'var(--shadow-sm)' }}>
               <span style={{ fontSize: '1.5rem' }}>🖥️</span>
               <h4 style={{ fontSize: '1rem', marginTop: '0.5rem', fontFamily: 'var(--font-headings)' }}>스마트 클라이언트</h4>
               <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '0.25rem' }}>React SPA 기반 실시간 모니터링 대시보드</p>
             </div>
 
-            <div style={{ fontSize: '1.5rem', color: 'var(--text-tertiary)' }}>➔</div>
+            <div style={{ fontSize: '1.5rem', color: 'var(--text-muted)' }}>➔</div>
 
             {/* Box 2 */}
-            <div style={{ width: '220px', padding: '1.5rem', backgroundColor: 'var(--accent-light)', border: '1px solid #bfdbfe', borderRadius: '12px', textAlign: 'center', boxShadow: 'var(--shadow-sm)' }}>
+            <div style={{ width: '220px', padding: '1.5rem', backgroundColor: 'rgba(59, 130, 246, 0.08)', border: '1px solid rgba(59, 130, 246, 0.25)', borderRadius: '12px', textAlign: 'center', boxShadow: 'var(--shadow-sm)' }}>
               <span style={{ fontSize: '1.5rem' }}>🛡️</span>
-              <h4 style={{ fontSize: '1rem', marginTop: '0.5rem', fontFamily: 'var(--font-headings)', color: 'var(--accent-primary)' }}>자동화 백엔드 API</h4>
+              <h4 style={{ fontSize: '1rem', marginTop: '0.5rem', fontFamily: 'var(--font-headings)', color: '#60a5fa' }}>자동화 백엔드 API</h4>
               <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '0.25rem' }}>Django REST Framework 토큰 기반 권한 관리 및 통신</p>
             </div>
 
-            <div style={{ fontSize: '1.5rem', color: 'var(--text-tertiary)' }}>➔</div>
+            <div style={{ fontSize: '1.5rem', color: 'var(--text-muted)' }}>➔</div>
 
             {/* Box 3 */}
-            <div style={{ width: '200px', padding: '1.5rem', backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border-color)', borderRadius: '12px', textAlign: 'center', boxShadow: 'var(--shadow-sm)' }}>
+            <div style={{ width: '200px', padding: '1.5rem', backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border-color)', borderRadius: '12px', textAlign: 'center', boxShadow: 'var(--shadow-sm)' }}>
               <span style={{ fontSize: '1.5rem' }}>💾</span>
               <h4 style={{ fontSize: '1rem', marginTop: '0.5rem', fontFamily: 'var(--font-headings)' }}>분산 관계형 DB</h4>
               <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '0.25rem' }}>PostgreSQL 유효 데이터 및 Redis 캐시 서버 분리</p>
             </div>
           </div>
 
-          <div style={{ padding: '1.5rem', backgroundColor: 'var(--bg-primary)', borderRadius: '8px', marginTop: '1.5rem' }}>
+          <div style={{ padding: '1.5rem', backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border-color)', borderRadius: '8px', marginTop: '1.5rem' }}>
             <h4 style={{ fontFamily: 'var(--font-headings)', fontSize: '1.05rem', marginBottom: '0.5rem' }}>
               💡 핵심 시뮬레이션 메커니즘
             </h4>
