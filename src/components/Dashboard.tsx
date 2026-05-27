@@ -7,7 +7,7 @@ interface DashboardProps {
 export const Dashboard: React.FC<DashboardProps> = ({ setActiveTab }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  // High-fidelity Floating Particle Network (chronark.com style)
+  // High-fidelity Starry Night Canvas Particle System (chronark.com style)
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -19,43 +19,30 @@ export const Dashboard: React.FC<DashboardProps> = ({ setActiveTab }) => {
     let width = (canvas.width = window.innerWidth);
     let height = (canvas.height = window.innerHeight);
 
-    const particles: Array<{
+    // Star representations
+    const stars: Array<{
       x: number;
       y: number;
+      size: number;
+      alpha: number;
       vx: number;
       vy: number;
-      radius: number;
+      twinkleSpeed: number;
     }> = [];
 
-    // Fewer particles for a highly elegant, non-intrusive minimal feel
-    const particleCount = Math.min(40, Math.floor((width * height) / 30000));
+    const starCount = Math.min(80, Math.floor((width * height) / 15000));
 
-    for (let i = 0; i < particleCount; i++) {
-      particles.push({
+    for (let i = 0; i < starCount; i++) {
+      stars.push({
         x: Math.random() * width,
         y: Math.random() * height,
-        vx: (Math.random() - 0.5) * 0.3,
-        vy: (Math.random() - 0.5) * 0.3,
-        radius: Math.random() * 1.5 + 0.5,
+        size: Math.random() * 1.2 + 0.3,
+        alpha: Math.random() * 0.7 + 0.1,
+        vx: (Math.random() - 0.5) * 0.05, // very slow drift
+        vy: (Math.random() - 0.5) * 0.05,
+        twinkleSpeed: Math.random() * 0.01 + 0.002,
       });
     }
-
-    let mouseX = 0;
-    let mouseY = 0;
-    let isMouseActive = false;
-
-    const handleMouseMove = (e: MouseEvent) => {
-      mouseX = e.clientX;
-      mouseY = e.clientY;
-      isMouseActive = true;
-    };
-
-    const handleMouseLeave = () => {
-      isMouseActive = false;
-    };
-
-    window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('mouseleave', handleMouseLeave);
 
     const handleResize = () => {
       if (!canvas) return;
@@ -65,52 +52,58 @@ export const Dashboard: React.FC<DashboardProps> = ({ setActiveTab }) => {
     window.addEventListener('resize', handleResize);
 
     const render = () => {
-      ctx.clearRect(0, 0, width, height);
+      ctx.fillStyle = '#000000';
+      ctx.fillRect(0, 0, width, height);
 
-      // Draw faint connections
+      // Draw faint grid-like intersecting lines in deep background
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.01)';
       ctx.lineWidth = 0.5;
-      for (let i = 0; i < particles.length; i++) {
-        const p1 = particles[i];
-        
-        // Drift particles gently
-        p1.x += p1.vx;
-        p1.y += p1.vy;
-
-        // Bounce off walls
-        if (p1.x < 0 || p1.x > width) p1.vx *= -1;
-        if (p1.y < 0 || p1.y > height) p1.vy *= -1;
-
-        // Draw particle
+      const gridSize = 100;
+      for (let x = 0; x < width; x += gridSize) {
         ctx.beginPath();
-        ctx.arc(p1.x, p1.y, p1.radius, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(15, 23, 42, 0.15)';
-        ctx.fill();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, height);
+        ctx.stroke();
+      }
+      for (let y = 0; y < height; y += gridSize) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(width, y);
+        ctx.stroke();
+      }
 
-        // Connect particles close to each other
-        for (let j = i + 1; j < particles.length; j++) {
-          const p2 = particles[j];
-          const dist = Math.hypot(p1.x - p2.x, p1.y - p2.y);
-          if (dist < 120) {
-            const alpha = (1 - dist / 120) * 0.08;
-            ctx.strokeStyle = `rgba(15, 23, 42, ${alpha})`;
-            ctx.beginPath();
-            ctx.moveTo(p1.x, p1.y);
-            ctx.lineTo(p2.x, p2.y);
-            ctx.stroke();
-          }
+      // Draw starry particles
+      for (let i = 0; i < stars.length; i++) {
+        const star = stars[i];
+
+        // Star drift
+        star.x += star.vx;
+        star.y += star.vy;
+
+        // Wrap around screen
+        if (star.x < 0) star.x = width;
+        if (star.x > width) star.x = 0;
+        if (star.y < 0) star.y = height;
+        if (star.y > height) star.y = 0;
+
+        // Twinkle alpha calculation
+        star.alpha += star.twinkleSpeed;
+        if (star.alpha > 0.85 || star.alpha < 0.1) {
+          star.twinkleSpeed *= -1;
         }
 
-        // Pull lines toward mouse cursor for premium interactive feel
-        if (isMouseActive) {
-          const mDist = Math.hypot(p1.x - mouseX, p1.y - mouseY);
-          if (mDist < 180) {
-            const mAlpha = (1 - mDist / 180) * 0.12;
-            ctx.strokeStyle = `rgba(59, 130, 246, ${mAlpha})`;
-            ctx.beginPath();
-            ctx.moveTo(p1.x, p1.y);
-            ctx.lineTo(mouseX, mouseY);
-            ctx.stroke();
-          }
+        // Draw soft glow star
+        ctx.beginPath();
+        ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255, 255, 255, ${Math.max(0.1, star.alpha)})`;
+        ctx.fill();
+
+        // Ambient glow around larger stars
+        if (star.size > 0.9) {
+          ctx.beginPath();
+          ctx.arc(star.x, star.y, star.size * 3, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(255, 255, 255, ${star.alpha * 0.15})`;
+          ctx.fill();
         }
       }
 
@@ -121,8 +114,6 @@ export const Dashboard: React.FC<DashboardProps> = ({ setActiveTab }) => {
 
     return () => {
       cancelAnimationFrame(animationFrameId);
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseleave', handleMouseLeave);
       window.removeEventListener('resize', handleResize);
     };
   }, []);
@@ -141,46 +132,46 @@ export const Dashboard: React.FC<DashboardProps> = ({ setActiveTab }) => {
         animation: 'fadeIn 0.8s ease-out'
       }}
     >
-      {/* Background Interactive Particle Canvas */}
+      {/* Starry Night Canvas Overlay */}
       <canvas
         ref={canvasRef}
         style={{
-          position: 'fixed',
+          position: 'absolute',
           top: 0,
           left: 0,
-          width: '100vw',
-          height: '100vh',
-          zIndex: -2,
+          width: '100%',
+          height: '100%',
+          zIndex: -1,
           pointerEvents: 'none'
         }}
       />
 
-      {/* Floating Mini Menu (chronark.com Style) */}
+      {/* Floating Mini Menu (chronark.com Style in White text) */}
       <nav 
         style={{ 
           display: 'flex', 
           gap: '2.5rem', 
           marginBottom: '3.5rem',
-          fontSize: '0.95rem',
+          fontSize: '0.9rem',
           fontFamily: 'var(--font-headings)',
-          letterSpacing: '0.05em',
+          letterSpacing: '0.08em',
           fontWeight: 500,
           zIndex: 10
         }}
       >
         <button 
           onClick={() => setActiveTab('projects')} 
-          style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)', transition: 'var(--transition-smooth)' }}
-          onMouseEnter={(e) => e.currentTarget.style.color = 'var(--text-primary)'}
-          onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}
+          style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255, 255, 255, 0.45)', transition: 'var(--transition-smooth)' }}
+          onMouseEnter={(e) => e.currentTarget.style.color = '#ffffff'}
+          onMouseLeave={(e) => e.currentTarget.style.color = 'rgba(255, 255, 255, 0.45)'}
         >
           PROJECTS
         </button>
         <button 
           onClick={() => setActiveTab('resources')} 
-          style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)', transition: 'var(--transition-smooth)' }}
-          onMouseEnter={(e) => e.currentTarget.style.color = 'var(--text-primary)'}
-          onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}
+          style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255, 255, 255, 0.45)', transition: 'var(--transition-smooth)' }}
+          onMouseEnter={(e) => e.currentTarget.style.color = '#ffffff'}
+          onMouseLeave={(e) => e.currentTarget.style.color = 'rgba(255, 255, 255, 0.45)'}
         >
           RESOURCE HUB
         </button>
@@ -188,9 +179,9 @@ export const Dashboard: React.FC<DashboardProps> = ({ setActiveTab }) => {
           href="https://github.com/dalbitfox/Portfolio" 
           target="_blank" 
           rel="noreferrer"
-          style={{ textDecoration: 'none', color: 'var(--text-secondary)', transition: 'var(--transition-smooth)' }}
-          onMouseEnter={(e) => e.currentTarget.style.color = 'var(--text-primary)'}
-          onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}
+          style={{ textDecoration: 'none', color: 'rgba(255, 255, 255, 0.45)', transition: 'var(--transition-smooth)' }}
+          onMouseEnter={(e) => e.currentTarget.style.color = '#ffffff'}
+          onMouseLeave={(e) => e.currentTarget.style.color = 'rgba(255, 255, 255, 0.45)'}
         >
           GITHUB
         </a>
@@ -198,53 +189,55 @@ export const Dashboard: React.FC<DashboardProps> = ({ setActiveTab }) => {
 
       {/* Hero Content */}
       <div style={{ maxWidth: '650px', zIndex: 10 }}>
-        {/* Large Central Title */}
+        {/* Large Central Title in Chronark Font Style */}
         <h1 
           style={{ 
-            fontSize: '4.5rem', 
+            fontSize: '5rem', 
             fontWeight: 800, 
             fontFamily: 'var(--font-headings)', 
             letterSpacing: '-0.05em',
-            lineHeight: '1.05',
-            color: 'transparent',
-            backgroundImage: 'linear-gradient(to right, #0f172a, #475569)',
-            WebkitBackgroundClip: 'text',
-            backgroundClip: 'text',
+            lineHeight: '1',
+            color: '#ffffff',
+            textShadow: '0 0 40px rgba(255,255,255,0.08)',
             marginBottom: '2rem'
           }}
         >
-          dalbitfox
+          SeobuTech
         </h1>
 
         {/* Minimal Subtitle Description */}
         <p 
           style={{ 
-            fontSize: '1.15rem', 
-            color: 'var(--text-secondary)', 
+            fontSize: '1.05rem', 
+            color: 'rgba(255, 255, 255, 0.55)', 
             fontWeight: 300, 
-            lineHeight: '1.75', 
+            lineHeight: '1.8', 
             marginBottom: '2.5rem',
             fontFamily: 'var(--font-body)'
           }}
         >
-          네트워크 자동화 어드민 플랫폼 **Netbox** 구축, 실시간 인터랙티브 **점심 사다리타기 게임**을 개발하는 엔지니어입니다. 팀 업무 협업 속도를 높이기 위한 **전용 자료실**을 설계하고 운영합니다.
+          서부기술(SeobuTech)의 인프라 효율과 협업 속도를 끌어올리기 위한 자동화 포털입니다. 네트워크 유틸리티 통합 스위트인 **netbox**와 **점심 메뉴 사다리타기** 등의 생산성 도구를 설계합니다.
         </p>
 
         {/* Secondary Navigation Indicators */}
         <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
           <button 
-            className="btn btn-primary" 
+            className="btn" 
             onClick={() => setActiveTab('projects')}
-            style={{ padding: '0.85rem 2rem', fontSize: '0.88rem' }}
+            style={{ padding: '0.85rem 2.25rem', fontSize: '0.88rem', backgroundColor: '#ffffff', color: '#000000' }}
+            onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.85)'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#ffffff'; }}
           >
-            프로젝트 피드백 모음 →
+            프로젝트 리스트 →
           </button>
           <button 
-            className="btn btn-secondary" 
+            className="btn" 
             onClick={() => setActiveTab('resources')}
-            style={{ padding: '0.85rem 2rem', fontSize: '0.88rem' }}
+            style={{ padding: '0.85rem 2.25rem', fontSize: '0.88rem', backgroundColor: 'transparent', border: '1px solid rgba(255,255,255,0.15)', color: '#ffffff' }}
+            onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.06)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.3)'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)'; }}
           >
-            자료실 탐색
+            업무 자료실
           </button>
         </div>
       </div>

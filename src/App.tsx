@@ -25,13 +25,15 @@ function App() {
     }
   };
 
+  const isHome = activeTab === 'home';
+
   return (
-    <div className="app-container">
-      {/* chronark.com Style Minimal Header */}
+    <div className={`app-container ${isHome ? 'dark-theme' : ''}`}>
+      {/* chronark.com Dynamic Header (Dark on Home, Light on Inner Pages) */}
       <header className="header">
         <div className="header-inner">
           <div className="logo-section" onClick={() => setActiveTab('home')}>
-            dalbitfox <span className="logo-dot"></span>
+            SeobuTech <span className="logo-dot"></span>
           </div>
 
           <nav>
@@ -61,21 +63,21 @@ function App() {
         {renderContent()}
       </main>
 
-      {/* Premium Footer */}
+      {/* Dynamic Footer (Dark on Home, Light on Inner Pages) */}
       <footer className="footer">
         <div className="footer-inner">
           <div>
-            <strong>© 2026 dalbitfox.</strong> Built with clean craftsmanship.
+            <strong>© 2026 SeobuTech.</strong> Built with premium craftsmanship.
           </div>
           <div style={{ display: 'flex', gap: '1.25rem', alignItems: 'center' }}>
-            <span style={{ display: 'inline-block', width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#3b82f6' }}></span>
+            <span style={{ display: 'inline-block', width: '6px', height: '6px', borderRadius: '50%', backgroundColor: isHome ? '#ffffff' : '#3b82f6' }}></span>
             <span>Vercel Deploy Auto-sync</span>
             <span>|</span>
             <a 
               href="https://github.com/dalbitfox/Portfolio" 
               target="_blank" 
               rel="noreferrer" 
-              style={{ textDecoration: 'none', fontWeight: 600 }}
+              style={{ textDecoration: 'none', fontWeight: 600, color: isHome ? '#ffffff' : 'var(--text-secondary)' }}
             >
               GitHub
             </a>
