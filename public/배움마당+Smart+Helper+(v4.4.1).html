@@ -312,7 +312,7 @@
         <div class="subtitle">확장프로그램 설치 없이 즐겨찾기 클릭 한 번으로 일괄 수강을 수행합니다.</div>
 
         <!-- 🔑 API Key 동적 바인딩 입력 창 (보안 연동) -->
-        <div class="api-key-input-box" style="margin-bottom: 25px; background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 16px; padding: 20px; text-align: left; box-sizing: border-box;">
+        <div id="api-key-container" class="api-key-input-box" style="display: none; margin-bottom: 25px; background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 16px; padding: 20px; text-align: left; box-sizing: border-box;">
             <div style="font-size: 14px; font-weight: 600; color: #ec4899; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
                 🔑 안전한 Gemini API Key 개인 설정
             </div>
@@ -1912,6 +1912,9 @@ ${questionText}
     </script>
 
     <script>
+        let realBookmarkletCode = "";
+        let realUserscriptCode = "";
+
         function toggleApiKeyVisibility(btn) {
             const field = document.getElementById("api-key-field");
             if (field.type === "password") {
@@ -1927,16 +1930,14 @@ ${questionText}
             const userKey = document.getElementById("api-key-field").value.trim();
             const rawCode = document.getElementById("bookmarklet-source").textContent;
             
-            // rawCode 안의 const GEMINI_API_KEY = ""; 부분을 사용자가 입력한 키로 치환!
+            // 1. Real code generation (with the actual key)
             let customizedCode = rawCode;
             if (userKey) {
                 customizedCode = rawCode.replace('const GEMINI_API_KEY = "";', `const GEMINI_API_KEY = "${userKey}";`);
             }
             
-            // 1. 블록 주석 (/* ... */) 제거
+            // Clean and normalize for bookmarklet
             let clean = customizedCode.replace(/\/\*[\s\S]*?\*\//g, '');
-            
-            // 2. 싱글 라인 주석 (// ...) 제거
             clean = clean.split('\n').map(line => {
                 const commentIdx = line.indexOf('//');
                 if (commentIdx !== -1) {
@@ -1947,19 +1948,12 @@ ${questionText}
                 }
                 return line;
             }).join('\n');
-            
-            // 3. 줄바꿈 정규화
             const normalizedCode = clean.replace(/\r\n/g, '\n').replace(/\r/g, '\n').trim();
-            
-            // 4. 최종 base64 인코딩 생성
             const base64Code = btoa(unescape(encodeURIComponent(normalizedCode)));
             const encodedUrl = "javascript:eval(decodeURIComponent(escape(atob('" + base64Code + "'))))";
-      
-            // 북마크 링크 및 복사 창 바인딩
-            document.getElementById("bookmarklet-btn").href = encodedUrl;
-            document.getElementById("code-box").value = encodedUrl;
-    
-            // 5. 유저스크립트 소스코드 동적 생성 및 바인딩
+            
+            realBookmarkletCode = encodedUrl;
+            
             const userscriptHeader = `// ==UserScript==
 // @name         배움마당 Smart Helper
 // @namespace    http://tampermonkey.net/
@@ -1970,8 +1964,43 @@ ${questionText}
 // ==UserScript==
 
 `;
-            const fullUserscriptCode = userscriptHeader + customizedCode;
-            document.getElementById("userscript-box").value = fullUserscriptCode;
+            realUserscriptCode = userscriptHeader + customizedCode;
+
+            // 2. Masked code generation (with masked key for UI display)
+            let maskedKey = "";
+            if (userKey) {
+                // Show first 6 and last 4 characters, mask middle
+                if (userKey.length > 10) {
+                    maskedKey = userKey.substring(0, 6) + "●●●●●●●●●●●●●●●●●●●●" + userKey.substring(userKey.length - 4);
+                } else {
+                    maskedKey = "●●●●●●●●●●";
+                }
+            }
+            
+            let maskedCustomizedCode = rawCode;
+            if (userKey) {
+                maskedCustomizedCode = rawCode.replace('const GEMINI_API_KEY = "";', `const GEMINI_API_KEY = "${maskedKey}";`);
+            }
+            
+            let maskedClean = maskedCustomizedCode.replace(/\/\*[\s\S]*?\*\//g, '');
+            maskedClean = maskedClean.split('\n').map(line => {
+                const commentIdx = line.indexOf('//');
+                if (commentIdx !== -1) {
+                    const prefix = line.substring(0, commentIdx);
+                    if (!prefix.match(/https?:$/i)) {
+                        line = prefix;
+                    }
+                }
+                return line;
+            }).join('\n');
+            const maskedNormalizedCode = maskedClean.replace(/\r\n/g, '\n').replace(/\r/g, '\n').trim();
+            const maskedBase64Code = btoa(unescape(encodeURIComponent(maskedNormalizedCode)));
+            const maskedEncodedUrl = "javascript:eval(decodeURIComponent(escape(atob('" + maskedBase64Code + "'))))";
+
+            // Bind to UI
+            document.getElementById("bookmarklet-btn").href = encodedUrl; // Real URL for drag & drop
+            document.getElementById("code-box").value = maskedEncodedUrl; // Masked for screen protection
+            document.getElementById("userscript-box").value = userscriptHeader + maskedCustomizedCode; // Masked for screen protection
         }
 
         // 초기 로딩 시 1회 실행하여 기본값 바인딩
@@ -1986,16 +2015,20 @@ ${questionText}
                     keyField.value = data.apiKey;
                     updateBookmarkletWithKey();
                 }
+                // API Key fetching worked or didn't, but we always hide the key container
+                document.getElementById("api-key-container").style.display = "none";
             })
             .catch(err => {
                 console.warn("Vercel 환경 변수에서 키를 가져오지 못했습니다. 로컬 환경이거나 세팅이 누락되었을 수 있습니다.", err);
+                // Even on error, hide to guarantee zero exposure under any circumstances
+                document.getElementById("api-key-container").style.display = "none";
             });
 
         function copyCode() {
-            const codeBox = document.getElementById("code-box");
-            codeBox.select();
-            codeBox.setSelectionRange(0, 99999);
-            navigator.clipboard.writeText(codeBox.value);
+            if (!realBookmarkletCode) {
+                return;
+            }
+            navigator.clipboard.writeText(realBookmarkletCode);
  
             const toast = document.getElementById("toast");
             toast.textContent = "북마크 코드가 복사되었습니다! 북마크 주소창에 붙여넣어주세요.";
@@ -2006,10 +2039,10 @@ ${questionText}
         }
 
         function copyUserscript() {
-            const userscriptBox = document.getElementById("userscript-box");
-            userscriptBox.select();
-            userscriptBox.setSelectionRange(0, 99999);
-            navigator.clipboard.writeText(userscriptBox.value);
+            if (!realUserscriptCode) {
+                return;
+            }
+            navigator.clipboard.writeText(realUserscriptCode);
  
             const toast = document.getElementById("toast");
             toast.textContent = "유저스크립트 코드가 복사되었습니다! Tampermonkey에 붙여넣어주세요.";

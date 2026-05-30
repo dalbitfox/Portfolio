@@ -144,9 +144,9 @@ export const HelperShowcase: React.FC = () => {
               📸 실제 구동 화면 및 기능 상세
             </h3>
             
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '2rem', alignItems: 'start' }}>
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
               {/* Screenshot 1: Background Multi-player widget */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem', maxWidth: '600px', width: '100%' }}>
                 <div style={{ borderRadius: '12px', border: '1px solid rgba(255, 255, 255, 0.1)', overflow: 'hidden', boxShadow: '0 12px 24px rgba(0, 0, 0, 0.4)' }}>
                   <img src="/helper-widget.png" alt="Baeummadang Smart Helper Widget Interface" style={{ width: '100%', display: 'block' }} />
                 </div>
@@ -155,19 +155,6 @@ export const HelperShowcase: React.FC = () => {
                 </h4>
                 <p style={{ fontSize: '0.88rem', color: 'var(--text-secondary)', lineHeight: '1.5', margin: 0, fontWeight: 300 }}>
                   가상 iFrame 창을 생성하여 백그라운드 무음 모드로 동시 수강을 보조하는 위젯입니다. 진행률(%) 그래디언트 바와 완료 체크 마크를 통해 여러 강의의 실시간 상태를 한눈에 통제할 수 있습니다.
-                </p>
-              </div>
-
-              {/* Screenshot 2: Gemini AI Exam Solving Engine */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
-                <div style={{ borderRadius: '12px', border: '1px solid rgba(255, 255, 255, 0.1)', overflow: 'hidden', boxShadow: '0 12px 24px rgba(0, 0, 0, 0.4)' }}>
-                  <img src="/helper-exam.png" alt="Gemini AI Exam Solving Engine Interface" style={{ width: '100%', display: 'block' }} />
-                </div>
-                <h4 style={{ fontFamily: 'var(--font-headings)', fontSize: '1.05rem', margin: '0.5rem 0 0.25rem 0', color: '#60a5fa' }}>
-                  🤖 Gemini AI 지능형 평가 시험 풀이 엔진
-                </h4>
-                <p style={{ fontSize: '0.88rem', color: 'var(--text-secondary)', lineHeight: '1.5', margin: 0, fontWeight: 300 }}>
-                  시험 문항과 다지선다식 보기를 실시간으로 정교하게 자동 파싱하고, 무간섭 상태에서 최신 거대 언어 모델(Gemini AI)의 상황 추론을 연동하여 백그라운드 고득점 시험 통과 루프를 가동합니다.
                 </p>
               </div>
             </div>
