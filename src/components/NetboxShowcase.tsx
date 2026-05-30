@@ -184,7 +184,7 @@ export const NetboxShowcase: React.FC = () => {
             </div>
 
             {/* Grid mockup */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 3fr', gap: '1.5rem' }}>
+            <div className="netbox-mockup-grid">
               {/* Left sidebar mockup */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', borderRight: '1px solid #1e293b', paddingRight: '1rem' }}>
                 <div style={{ padding: '0.5rem', backgroundColor: '#1e293b', borderRadius: '6px', fontSize: '0.82rem', fontWeight: 600, color: '#38bdf8' }}>📊 대시보드 홈</div>
@@ -196,7 +196,7 @@ export const NetboxShowcase: React.FC = () => {
               {/* Right main area mockup */}
               <div>
                 {/* Stats cards in mockup */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
+                <div className="netbox-stats-grid">
                   <div style={{ backgroundColor: '#1e293b', padding: '1rem', borderRadius: '8px' }}>
                     <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>전체 라우팅 IP</span>
                     <h4 style={{ fontSize: '1.5rem', fontWeight: 700, marginTop: '0.25rem', color: '#38bdf8' }}>1,024 / 2,048</h4>

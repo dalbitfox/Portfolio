@@ -32,7 +32,7 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ setActiveTab }) => {
           overflow: 'hidden'
         }}
       >
-        <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '2.5rem', alignItems: 'center' }}>
+        <div className="hero-grid">
           
           {/* Hero Mockup image styled with pure CSS to look high-tech dark admin dashboard */}
           <div 
@@ -98,9 +98,9 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ setActiveTab }) => {
 
       <div className="line-divider" style={{ marginBottom: '3rem' }}></div>
 
-      {/* Grid of Other Projects */}
+      {/* Grid of AX TEAM Projects */}
       <h3 style={{ fontSize: '1.2rem', color: 'var(--text-secondary)', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: '1.5rem', fontFamily: 'var(--font-headings)' }}>
-        Other Active Projects
+        2026 AX TEAM Projects
       </h3>
 
       <div 
@@ -151,25 +151,116 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ setActiveTab }) => {
         </div>
 
         {/* Project 4: 배움마당 스마트 도우미 */}
-        <div className="magic-card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minHeight: '220px', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
+        <div 
+          onClick={() => setActiveTab('helper')}
+          className="magic-card" 
+          style={{ 
+            display: 'flex', 
+            flexDirection: 'column', 
+            justifyContent: 'space-between', 
+            minHeight: '220px', 
+            border: '1px solid rgba(249, 115, 22, 0.25)', 
+            cursor: 'pointer',
+            backgroundColor: 'rgba(249, 115, 22, 0.01)'
+          }}
+        >
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-              <span className="tag" style={{ backgroundColor: 'rgba(255,255,255,0.05)', color: 'var(--text-secondary)', fontSize: '0.65rem' }}>Node.js & Bot</span>
+              <span className="tag tag-orange" style={{ fontSize: '0.65rem' }}>Node.js & Bot</span>
               <span style={{ fontSize: '1.25rem' }}>🤖</span>
             </div>
             <h4 style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: '0.5rem', fontFamily: 'var(--font-headings)' }}>
               배움마당 스마트 도우미
             </h4>
             <p style={{ color: 'var(--text-secondary)', fontSize: '0.82rem', lineHeight: '1.5', fontWeight: 300 }}>
-              사내 교육 플랫폼인 배움마당의 교육 수강 일정을 자동 스캔 수집하여 사내 메신저로 챗봇 알림을 전송하는 스마트 교육 보조 도우미입니다.
+              일정 스캔 알림뿐 아니라 인간 개입 없이 동영상 강의 백그라운드 학습 및 100% 자동 시험 대행을 완수해주는 스마트 헬러 엔진입니다.
             </p>
           </div>
-          <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontWeight: 500, marginTop: '1rem' }}>
-            💡 메신저 연계 작동 확인
+          <span style={{ fontSize: '0.78rem', color: '#f97316', fontWeight: 600, marginTop: '1rem' }}>
+            🎮 즉시 플레이 / 상세 보기 →
           </span>
         </div>
 
-        {/* Project 5: 점심메뉴고르기 사다리타기 (Live App) */}
+      </div>
+
+      <div className="line-divider" style={{ marginBottom: '3rem' }}></div>
+
+      {/* Grid of Other Projects */}
+      <h3 style={{ fontSize: '1.2rem', color: 'var(--text-secondary)', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: '1.5rem', fontFamily: 'var(--font-headings)' }}>
+        Other Active Projects
+      </h3>
+
+      <div 
+        style={{ 
+          display: 'grid', 
+          gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', 
+          gap: '1.5rem',
+          marginBottom: '4rem'
+        }}
+      >
+        {/* Project 5: 점심 룰렛 (Live App) */}
+        <div 
+          onClick={() => setActiveTab('roulette')}
+          className="magic-card" 
+          style={{ 
+            display: 'flex', 
+            flexDirection: 'column', 
+            justifyContent: 'space-between', 
+            minHeight: '220px', 
+            border: '1px solid rgba(249, 115, 22, 0.25)', 
+            cursor: 'pointer',
+            backgroundColor: 'rgba(249, 115, 22, 0.01)'
+          }}
+        >
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+              <span className="tag tag-orange" style={{ fontSize: '0.65rem' }}>Interactive Web Tool</span>
+              <span style={{ fontSize: '1.25rem' }}>🎡</span>
+            </div>
+            <h4 style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: '0.5rem', fontFamily: 'var(--font-headings)', color: '#f97316' }}>
+              점심 룰렛 (Lunch Roulette)
+            </h4>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.82rem', lineHeight: '1.5', fontWeight: 300 }}>
+              음식 카테고리를 룰렛판으로 돌려 오늘 점심 메뉴를 무작위로 빠르고 유쾌하게 추천해주는 웹 도구입니다. (즉시 플레이 가능)
+            </p>
+          </div>
+          <span style={{ fontSize: '0.78rem', color: '#f97316', fontWeight: 600, marginTop: '1rem' }}>
+            🎮 즉시 플레이하러 가기 →
+          </span>
+        </div>
+
+        {/* Project 6: 다트 게임 (Live App) */}
+        <div 
+          onClick={() => setActiveTab('dart')}
+          className="magic-card" 
+          style={{ 
+            display: 'flex', 
+            flexDirection: 'column', 
+            justifyContent: 'space-between', 
+            minHeight: '220px', 
+            border: '1px solid rgba(249, 115, 22, 0.25)', 
+            cursor: 'pointer',
+            backgroundColor: 'rgba(249, 115, 22, 0.01)'
+          }}
+        >
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+              <span className="tag tag-orange" style={{ fontSize: '0.65rem' }}>Interactive Web Tool</span>
+              <span style={{ fontSize: '1.25rem' }}>🎯</span>
+            </div>
+            <h4 style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: '0.5rem', fontFamily: 'var(--font-headings)', color: '#f97316' }}>
+              다트 게임 (Dart Game)
+            </h4>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.82rem', lineHeight: '1.5', fontWeight: 300 }}>
+              회전하는 과녁판에 다트를 날려 점심값 지불 당첨자를 공정하게 선정하거나 식사 메뉴를 결정하는 미니 게임입니다. (즉시 플레이 가능)
+            </p>
+          </div>
+          <span style={{ fontSize: '0.78rem', color: '#f97316', fontWeight: 600, marginTop: '1rem' }}>
+            🎮 즉시 플레이하러 가기 →
+          </span>
+        </div>
+
+        {/* Project 7: 사다리 타기 (Live App) */}
         <div 
           onClick={() => setActiveTab('ladder')}
           className="magic-card" 
@@ -180,53 +271,23 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ setActiveTab }) => {
             minHeight: '220px', 
             border: '1px solid rgba(249, 115, 22, 0.25)', 
             cursor: 'pointer',
-            backgroundColor: 'rgba(249, 115, orange, 0.01)'
+            backgroundColor: 'rgba(249, 115, 22, 0.01)'
           }}
         >
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-              <span className="tag tag-orange" style={{ fontSize: '0.65rem' }}>SVG Animation</span>
-              <span style={{ fontSize: '1.25rem' }}>🎯</span>
+              <span className="tag tag-orange" style={{ fontSize: '0.65rem' }}>Interactive Web Tool</span>
+              <span style={{ fontSize: '1.25rem' }}>🪜</span>
             </div>
             <h4 style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: '0.5rem', fontFamily: 'var(--font-headings)', color: '#f97316' }}>
-              점심메뉴고르기 사다리타기
+              사다리 타기 (Ladder Game)
             </h4>
             <p style={{ color: 'var(--text-secondary)', fontSize: '0.82rem', lineHeight: '1.5', fontWeight: 300 }}>
-              부드러운 SVG 선 그리기 물리 트랙킹과 사다리 알고리즘을 융합한 점심 선택 토이입니다. (클릭 시 사이트 내에서 즉시 플레이 가능!)
+              참여자 명단과 각각의 매칭 메뉴를 기입한 후 선을 타고 내려가 당첨 결과를 추첨하는 클래식 도구입니다. (즉시 플레이 가능)
             </p>
           </div>
           <span style={{ fontSize: '0.78rem', color: '#f97316', fontWeight: 600, marginTop: '1rem' }}>
             🎮 즉시 플레이하러 가기 →
-          </span>
-        </div>
-
-        {/* Project 6: 업무 자료실 (Live Storage) */}
-        <div 
-          onClick={() => setActiveTab('resources')}
-          className="magic-card" 
-          style={{ 
-            display: 'flex', 
-            flexDirection: 'column', 
-            justifyContent: 'space-between', 
-            minHeight: '220px', 
-            border: '1px solid rgba(16, 185, 129, 0.25)', 
-            cursor: 'pointer'
-          }}
-        >
-          <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-              <span className="tag" style={{ backgroundColor: 'rgba(16, 185, 129, 0.08)', color: '#10b981', fontSize: '0.65rem' }}>File Database</span>
-              <span style={{ fontSize: '1.25rem' }}>📁</span>
-            </div>
-            <h4 style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: '0.5rem', fontFamily: 'var(--font-headings)', color: '#10b981' }}>
-              팀 업무 자료실 (Resource Hub)
-            </h4>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '0.82rem', lineHeight: '1.5', fontWeight: 300 }}>
-              디자인, 보고서, 기획 문서를 보관하는 사내 자료 캐비닛입니다. 드래그 앤 드롭 업로드 및 필터링 검색을 지원합니다.
-            </p>
-          </div>
-          <span style={{ fontSize: '0.78rem', color: '#10b981', fontWeight: 600, marginTop: '1rem' }}>
-            📁 자료실 보관함 바로 열기 →
           </span>
         </div>
 

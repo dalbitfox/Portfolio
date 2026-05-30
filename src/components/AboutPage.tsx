@@ -1,7 +1,49 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import avatarImg from '../assets/avatar.png';
 
 export const AboutPage: React.FC = () => {
+  const [activeSection, setActiveSection] = useState<string>('intro');
+
+  useEffect(() => {
+    const sections = ['intro', 'experience', 'studies', 'skills'];
+    
+    const observerCallback = (entries: IntersectionObserverEntry[]) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          setActiveSection(entry.target.id);
+        }
+      });
+    };
+
+    const observerOptions = {
+      root: null,
+      rootMargin: '-25% 0px -50% 0px', // trigger when section occupies middle region of screen
+      threshold: 0,
+    };
+
+    const observer = new IntersectionObserver(observerCallback, observerOptions);
+
+    sections.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) {
+        observer.observe(el);
+      }
+    });
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
+
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
+    e.preventDefault();
+    const el = document.getElementById(id);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      setActiveSection(id);
+    }
+  };
+
   return (
     <div style={{ animation: 'fadeIn 0.6s ease-out' }}>
       
@@ -38,17 +80,69 @@ export const AboutPage: React.FC = () => {
           
           {/* Vertical edge index navigations matching screenshot */}
           <div style={{ width: '100%', textAlign: 'left', display: 'flex', flexDirection: 'column', gap: '0.85rem', padding: '0.5rem 0' }}>
-            <a href="#intro" style={{ color: 'var(--text-primary)', textDecoration: 'none', fontSize: '0.82rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <span style={{ color: '#3b82f6' }}>—</span> Introduction
+            <a 
+              href="#intro" 
+              onClick={(e) => handleNavClick(e, 'intro')}
+              style={{ 
+                color: activeSection === 'intro' ? 'var(--text-primary)' : 'var(--text-secondary)', 
+                textDecoration: 'none', 
+                fontSize: '0.82rem', 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '0.5rem',
+                fontWeight: activeSection === 'intro' ? 600 : 400,
+                transition: 'var(--transition-smooth)'
+              }}
+            >
+              <span style={{ color: activeSection === 'intro' ? '#3b82f6' : 'transparent', fontWeight: 'bold', transition: 'var(--transition-smooth)' }}>—</span> Introduction
             </a>
-            <a href="#experience" style={{ color: 'var(--text-secondary)', textDecoration: 'none', fontSize: '0.82rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <span style={{ color: 'transparent' }}>—</span> Work Experience
+            <a 
+              href="#experience" 
+              onClick={(e) => handleNavClick(e, 'experience')}
+              style={{ 
+                color: activeSection === 'experience' ? 'var(--text-primary)' : 'var(--text-secondary)', 
+                textDecoration: 'none', 
+                fontSize: '0.82rem', 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '0.5rem',
+                fontWeight: activeSection === 'experience' ? 600 : 400,
+                transition: 'var(--transition-smooth)'
+              }}
+            >
+              <span style={{ color: activeSection === 'experience' ? '#3b82f6' : 'transparent', fontWeight: 'bold', transition: 'var(--transition-smooth)' }}>—</span> Work Experience
             </a>
-            <a href="#studies" style={{ color: 'var(--text-secondary)', textDecoration: 'none', fontSize: '0.82rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <span style={{ color: 'transparent' }}>—</span> Studies
+            <a 
+              href="#studies" 
+              onClick={(e) => handleNavClick(e, 'studies')}
+              style={{ 
+                color: activeSection === 'studies' ? 'var(--text-primary)' : 'var(--text-secondary)', 
+                textDecoration: 'none', 
+                fontSize: '0.82rem', 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '0.5rem',
+                fontWeight: activeSection === 'studies' ? 600 : 400,
+                transition: 'var(--transition-smooth)'
+              }}
+            >
+              <span style={{ color: activeSection === 'studies' ? '#3b82f6' : 'transparent', fontWeight: 'bold', transition: 'var(--transition-smooth)' }}>—</span> Studies
             </a>
-            <a href="#skills" style={{ color: 'var(--text-secondary)', textDecoration: 'none', fontSize: '0.82rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <span style={{ color: 'transparent' }}>—</span> Technical skills
+            <a 
+              href="#skills" 
+              onClick={(e) => handleNavClick(e, 'skills')}
+              style={{ 
+                color: activeSection === 'skills' ? 'var(--text-primary)' : 'var(--text-secondary)', 
+                textDecoration: 'none', 
+                fontSize: '0.82rem', 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '0.5rem',
+                fontWeight: activeSection === 'skills' ? 600 : 400,
+                transition: 'var(--transition-smooth)'
+              }}
+            >
+              <span style={{ color: activeSection === 'skills' ? '#3b82f6' : 'transparent', fontWeight: 'bold', transition: 'var(--transition-smooth)' }}>—</span> Technical skills
             </a>
           </div>
         </div>

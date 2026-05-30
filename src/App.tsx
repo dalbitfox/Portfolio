@@ -4,8 +4,7 @@ import { AboutPage } from './components/AboutPage';
 import { ProjectsPage } from './components/ProjectsPage';
 import { LadderGame } from './components/LadderGame';
 import { NetboxShowcase } from './components/NetboxShowcase';
-import { ResourceHub } from './components/ResourceHub';
-
+import { HelperShowcase } from './components/HelperShowcase';
 function App() {
   const [activeTab, setActiveTab] = useState<string>('home');
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -248,12 +247,16 @@ function App() {
         return <AboutPage />;
       case 'projects':
         return <ProjectsPage setActiveTab={setActiveTab} />;
-      case 'resources':
-        return <ResourceHub />;
+      case 'roulette':
+        return <LadderGame gameType="roulette" />;
+      case 'dart':
+        return <LadderGame gameType="dart" />;
       case 'ladder':
-        return <LadderGame />;
+        return <LadderGame gameType="ladder" />;
       case 'netbox':
         return <NetboxShowcase />;
+      case 'helper':
+        return <HelperShowcase />;
       default:
         return <Dashboard setActiveTab={setActiveTab} />;
     }
@@ -290,7 +293,7 @@ function App() {
       {/* Main Content Area */}
       <main className="main-content">
         {/* Render a navigation back breadcrumb if we are in a sub-tool */}
-        {['resources', 'ladder', 'netbox'].includes(activeTab) && (
+        {['roulette', 'dart', 'ladder', 'netbox', 'helper'].includes(activeTab) && (
           <div style={{ marginBottom: '2rem', animation: 'fadeIn 0.4s ease-out' }}>
             <button 
               onClick={() => setActiveTab('projects')}

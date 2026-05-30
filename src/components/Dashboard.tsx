@@ -53,18 +53,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ setActiveTab }) => {
       {/* Hero Content */}
       <div style={{ maxWidth: '650px' }}>
         {/* Large Central Title in Chronark Font Style */}
-        <h1 
-          style={{ 
-            fontSize: '5rem', 
-            fontWeight: 800, 
-            fontFamily: 'var(--font-headings)', 
-            letterSpacing: '-0.05em',
-            lineHeight: '1',
-            color: '#ffffff',
-            textShadow: '0 0 45px rgba(255,255,255,0.08)',
-            marginBottom: '2rem'
-          }}
-        >
+        <h1 className="hero-title">
           SeobuTech
         </h1>
 
@@ -79,7 +68,11 @@ export const Dashboard: React.FC<DashboardProps> = ({ setActiveTab }) => {
             fontFamily: 'var(--font-body)'
           }}
         >
-          서부기술(SeobuTech)의 인프라 효율과 협업 속도를 극어올리기 위한 자동화 포털입니다. 네트워크 유틸리티 통합 스위트인 **netbox**와 **점심 메뉴 사다리타기** 등의 생산성 도구를 설계합니다.
+          업무 협업과 효율성 향상을 위한 서부기술지원팀 자동화 포털입니다.
+          <br />
+          네트워크 전문가 통합 유틸리티인 NetBox, AX-자동메일시스템, AX-월간정기리포트 등
+          <br />
+          생산성을 높이는 다양한 자동화 도구를 설계하고 구축합니다.
         </p>
       </div>
     </div>

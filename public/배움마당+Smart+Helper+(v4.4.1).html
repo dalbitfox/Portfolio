@@ -1,0 +1,1973 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>배움마당 스마트 도우미 설치 포털 (v4.4.1)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Pretendard:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0b0b0f;
+            --card-bg: rgba(20, 20, 28, 0.6);
+            --primary: #ec4899;
+            --secondary: #8b5cf6;
+            --accent: #10b981;
+            --text-color: #f3f4f6;
+            --text-muted: #9ca3af;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Outfit', 'Pretendard', sans-serif;
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+            overflow-x: hidden;
+        }
+
+        .glow-bg {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(236, 72, 153, 0.08) 0%, rgba(139, 92, 246, 0.05) 50%, rgba(0,0,0,0) 100%);
+            z-index: -1;
+            filter: blur(80px);
+            pointer-events: none;
+        }
+
+        .container {
+            max-width: 680px;
+            width: 100%;
+            background: var(--card-bg);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 28px;
+            padding: 40px;
+            box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6);
+            text-align: center;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            background: linear-gradient(90deg, #ec4899, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -1px;
+        }
+
+        .subtitle {
+            font-size: 16px;
+            color: var(--text-muted);
+            margin-bottom: 35px;
+            line-height: 1.5;
+        }
+
+        .install-box {
+            background: rgba(255, 255, 255, 0.02);
+            border: 2px dashed rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 35px 20px;
+            margin-bottom: 35px;
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .install-box:hover {
+            border-color: var(--primary);
+            background: rgba(236, 72, 153, 0.02);
+        }
+
+        .drag-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 16px 36px;
+            font-size: 18px;
+            font-weight: 800;
+            color: white;
+            background: linear-gradient(135deg, #ec4899, #8b5cf6);
+            border-radius: 50px;
+            text-decoration: none;
+            box-shadow: 0 8px 30px rgba(236, 72, 153, 0.4);
+            cursor: grab;
+            user-select: none;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .drag-btn:active {
+            cursor: grabbing;
+            transform: scale(0.98);
+        }
+
+        .drag-btn:hover {
+            box-shadow: 0 12px 40px rgba(236, 72, 153, 0.6);
+            transform: translateY(-3px);
+        }
+
+        .drag-instruction {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-top: 18px;
+            line-height: 1.5;
+        }
+
+        .highlight {
+            color: #fb7185;
+            font-weight: 600;
+        }
+
+        .steps {
+            text-align: left;
+            margin-bottom: 35px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .step-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            background: rgba(255, 255, 255, 0.02);
+            padding: 16px 20px;
+            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .step-num {
+            background: linear-gradient(135deg, #ec4899, #8b5cf6);
+            color: white;
+            font-weight: 800;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 14px;
+        }
+
+        .step-text {
+            font-size: 14.5px;
+            color: #d1d5db;
+            line-height: 1.6;
+        }
+
+        .manual-box {
+            text-align: left;
+            margin-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            padding-top: 30px;
+        }
+
+        .manual-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-color);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .textarea-container {
+            display: flex;
+            gap: 10px;
+        }
+
+        .code-input {
+            flex-grow: 1;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            color: #a78bfa;
+            padding: 10px;
+            font-family: monospace;
+            font-size: 12px;
+            resize: none;
+            height: 38px;
+            outline: none;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        .copy-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            border-radius: 10px;
+            padding: 0 18px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .copy-btn:hover {
+            background: white;
+            color: black;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--accent);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 600;
+            box-shadow: 0 8px 30px rgba(16, 185, 129, 0.4);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 1000;
+            opacity: 0;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        /* Tampermonkey 영속성 안내 섹션 스타일 */
+        .persistent-box {
+            text-align: left;
+            margin-top: 35px;
+            background: rgba(139, 92, 246, 0.03);
+            border: 1px solid rgba(139, 92, 246, 0.15);
+            border-radius: 20px;
+            padding: 28px;
+            box-sizing: border-box;
+        }
+
+        .persistent-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #c084fc;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
+        .persistent-desc {
+            font-size: 13.5px;
+            color: #d1d5db;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .persistent-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 22px;
+        }
+
+        .persistent-step {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            font-size: 13.5px;
+            color: #9ca3af;
+            line-height: 1.5;
+        }
+
+        .persistent-step strong {
+            color: #f3f4f6;
+        }
+
+        .persistent-badge {
+            background: rgba(139, 92, 246, 0.2);
+            color: #c084fc;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-weight: 600;
+            letter-spacing: -0.2px;
+        }
+    </style>
+</head>
+<body>
+    <div class="glow-bg"></div>
+    <div class="container">
+        <h1>배움마당 Smart Helper (v4.4.1)</h1>
+        <div class="subtitle">확장프로그램 설치 없이 즐겨찾기 클릭 한 번으로 일괄 수강을 수행합니다.</div>
+
+        <!-- 드래그 설치 존 -->
+        <div class="install-box">
+            <a class="drag-btn" id="bookmarklet-btn" href="">
+                <span>🎓 배움마당 Smart Helper (v4.4.1)</span>
+            </a>
+            <div class="drag-instruction">
+                위 보라색 버튼을 마우스로 누른 채, <span class="highlight">브라우저 북마크(즐겨찾기) 바</span>로 끌어다 놓으세요!<br>
+                <span style="font-size:12px;color:var(--text-muted);">* 북마크 바가 안 보인다면 키보드의 <strong>Ctrl + Shift + B</strong>를 누르세요.</span>
+            </div>
+        </div>
+
+        <div class="steps">
+            <div class="step-item">
+                <div class="step-num">1</div>
+                <div class="step-text">
+                    LGU+ 배움마당 사이트에 로그인한 뒤 <strong>수강 대상 과목 상세 화면</strong>(차수별 학습하기가 나열된 곳)으로 이동합니다.
+                </div>
+            </div>
+            <div class="step-item">
+                <div class="step-num">2</div>
+                <div class="step-text">
+                    등록해 둔 즐겨찾기 바의 <strong>[🎓 배움마당 도우미]</strong> 북마크를 마우스로 가볍게 클릭합니다.
+                </div>
+            </div>
+            <div class="step-item">
+                <div class="step-num">3</div>
+                <div class="step-text">
+                    화면에 즉시 스마트 대시보드가 로드되며, 수강율 100% 미만인 강의들을 대상으로 <strong>백그라운드 동시 수강</strong>을 진행합니다!
+                </div>
+            </div>
+        </div>
+
+        <div class="manual-box">
+            <div class="manual-title">💡 드래그가 잘 되지 않거나 동료에게 메신저로 전달할 때:</div>
+            <div class="textarea-container">
+                <input class="code-input" id="code-box" readonly value="">
+                <button class="copy-btn" onclick="copyCode()">코드 복사</button>
+            </div>
+            <div class="drag-instruction" style="text-align:left; margin-top:10px;">
+                복사 후, 북마크 관리자나 아무 사이트나 북마크를 만드신 뒤 <strong>[주소(URL)] 입력칸에 복사한 코드를 그대로 붙여넣고 저장</strong>해 쓰시면 됩니다.
+            </div>
+        </div>
+
+        <!-- 🔄 Tampermonkey 자동 지속 솔루션 안내 -->
+        <div class="persistent-box">
+            <div class="persistent-title">
+                <span>🔄 [시험 자동 풀이 무한 지속] 100% 전자동 연속 풀이 가이드 (권장)</span>
+                <span class="persistent-badge">영속화 솔루션</span>
+            </div>
+            <div class="persistent-desc">
+                일반 즐겨찾기(북마크클릿) 방식은 브라우저 보안 규격상 <strong>페이지가 새로고침되거나 이동할 때 도우미 작동이 초기화</strong>됩니다.<br>
+                아래 <strong>Tampermonkey(템퍼몽키)</strong> 방식을 이용하시면, 시험 페이지가 넘어가도 <strong>어떠한 조작이나 재클릭 없이 AI가 다음 문제를 연속해서 완전 자동으로 풀이</strong>합니다.
+            </div>
+            <div class="persistent-steps">
+                <div class="persistent-step">
+                    <span class="step-num" style="width:18px; height:18px; font-size:11px; line-height:18px;">1</span>
+                    <div>
+                        브라우저에 맞는 마켓에서 <strong><a href="https://chromewebstore.google.com/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo" target="_blank" style="color:#a78bfa; text-decoration:underline; font-weight: 600;">Tampermonkey 확장프로그램 (클릭하여 설치)</a></strong>을 설치합니다.
+                    </div>
+                </div>
+                <div class="persistent-step">
+                    <span class="step-num" style="width:18px; height:18px; font-size:11px; line-height:18px;">2</span>
+                    <div>
+                        아래 <strong>[유저스크립트 코드 복사]</strong> 버튼을 클릭합니다.
+                    </div>
+                </div>
+                <div class="persistent-step">
+                    <span class="step-num" style="width:18px; height:18px; font-size:11px; line-height:18px;">3</span>
+                    <div>
+                        브라우저 우측 상단의 Tampermonkey 아이콘 클릭 ➔ <strong>"새 스크립트 만들기..."</strong>를 선택합니다.<br>
+                        기존에 적힌 템플릿 텍스트를 전부 지운 뒤, <strong>복사한 코드를 그대로 붙여넣고 저장(Ctrl + S)</strong>하면 즉시 영구 적용 완료!
+                    </div>
+                </div>
+            </div>
+            <div class="textarea-container">
+                <input class="code-input" id="userscript-box" readonly value="유저스크립트 소스코드 생성 중...">
+                <button class="copy-btn" onclick="copyUserscript()">유저스크립트 복사</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast">코드가 복사되었습니다! 북마크 주소창에 붙여넣어주세요.</div>
+
+    <!-- 💡 격리형 텍스트 소스코드 영역 (세미콜론 누락 전수 보완 및 Newline 유지형) -->
+    <script type="text/plain" id="bookmarklet-source">
+(function() {
+    /* [v4.4.1] Gemini AI API Key 설정 (파일에 직접 저장하여 영구 사용 가능) */
+    const GEMINI_API_KEY = ""; // 여기에 발급받은 API 키를 입력하면 매번 설정 창을 열 필요가 없습니다.
+
+    /* 1. 스타일 인라인 전처리 보조 */
+    const styleSheet = document.createElement("style");
+    styleSheet.textContent = ".smart-main-content{display:flex;flex-direction:column;width:100%;height:100%;padding:20px;box-sizing:border-box}.smart-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;border-bottom:1px solid rgba(255,255,255,0.06);padding-bottom:12px}.smart-title-area{display:flex;flex-direction:column}.smart-title{font-size:16px;font-weight:700;background:linear-gradient(90deg,#f472b6,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:-0.5px}.smart-subtitle{font-size:11px;color:#9ca3af;margin-top:2px}.smart-close-btn{background:rgba(255,255,255,0.06);border:none;color:#9ca3af;width:26px;height:26px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:all 0.2s}.smart-close-btn:hover{background:rgba(255,255,255,0.15);color:#ffffff}.smart-control-panel{margin-bottom:16px;display:flex;gap:8px}.smart-action-btn{flex-grow:1;padding:12px;background:linear-gradient(135deg,#ec4899,#8b5cf6);border:none;border-radius:12px;color:white;font-weight:700;font-size:14px;cursor:pointer;box-shadow:0 4px 15px rgba(236,72,153,0.3);transition:all 0.3s cubic-bezier(0.175,0.885,0.32,1.275);display:flex;align-items:center;justify-content:center;gap:8px}.smart-action-btn.running{background:linear-gradient(135deg,#f59e0b,#ef4444) !important;box-shadow:0 4px 15px rgba(239,68,68,0.3) !important}.smart-action-btn:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(236,72,153,0.5);filter:brightness(1.1)}.smart-action-btn:active{transform:translateY(1px)}.smart-action-btn:disabled{background:#374151;box-shadow:none;cursor:not-allowed;color:#9ca3af;transform:none !important}.smart-scan-btn{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.1);color:#f3f4f6;width:44px;border-radius:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;transition:all 0.2s}.smart-scan-btn:hover{background:rgba(255,255,255,0.15)}.smart-lesson-list{flex-grow:1;overflow-y:auto;max-height:280px;display:flex;flex-direction:column;gap:10px;padding-right:4px}.smart-empty-message{text-align:center;padding:40px 20px;color:#9ca3af;font-size:13px;line-height:1.6;background:rgba(255,255,255,0.02);border:1px dashed rgba(255,255,255,0.08);border-radius:12px}.smart-lesson-list::-webkit-scrollbar{width:4px}.smart-lesson-list::-webkit-scrollbar-track{background:transparent}.smart-lesson-list::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.15);border-radius:10px}.smart-lesson-item{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.04);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:6px;transition:all 0.2s}.smart-lesson-item:hover{background:rgba(255,255,255,0.06);border-color:rgba(255,255,255,0.08)}.smart-lesson-info{display:flex;justify-content:space-between;align-items:center}.smart-lesson-title{font-size:12.5px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:220px;color:#e5e7eb}.smart-badge{font-size:11px;padding:2px 8px;border-radius:20px;font-weight:600;display:inline-flex;align-items:center;gap:4px}.smart-badge-ready{background:rgba(156,163,175,0.15);color:#9ca3af}.smart-badge-preparing{background:rgba(245,158,11,0.15);color:#fbbf24;animation:smart-pulse 1.5s infinite ease-in-out}.smart-badge-playing{background:rgba(16,185,129,0.15);color:#34d399;animation:smart-pulse 1.5s infinite ease-in-out}.smart-badge-completed{background:rgba(59,130,246,0.2);color:#60a5fa;box-shadow:0 0 8px rgba(59,130,246,0.3)}.smart-badge-error{background:rgba(239,68,68,0.2);color:#f87171}@keyframes smart-pulse{0%{opacity:0.6}50%{opacity:1}100%{opacity:0.6}}.smart-progress-container{width:100%;height:5px;background:rgba(255,255,255,0.08);border-radius:10px;overflow:hidden;position:relative}.smart-progress-bar{height:100%;width:0%;background:linear-gradient(90deg,#ec4899,#8b5cf6);border-radius:10px;transition:width 0.5s cubic-bezier(0.4,0,0.2,1)}.smart-time-info{font-size:10px;color:#6b7280;text-align:right;margin-top:1px}.smart-footer{margin-top:12px;font-size:10.5px;color:#6b7280;text-align:center;line-height:1.4}.smart-main-content.exam-mode{padding:12px 16px !important}.smart-main-content.exam-mode .smart-header{margin-bottom:10px !important;padding-bottom:8px !important}.smart-main-content.exam-mode .smart-control-panel{margin-bottom:10px !important}.smart-main-content.exam-mode .smart-settings-panel{padding:10px !important;margin-bottom:0 !important;gap:6px !important}";
+    document.head.appendChild(styleSheet);
+
+    const COLLAPSED_STYLE = "position: fixed !important; bottom: 24px !important; right: 24px !important; width: 60px !important; height: 60px !important; border-radius: 50% !important; cursor: pointer !important; background: linear-gradient(135deg, #ec4899, #8b5cf6) !important; box-shadow: 0 8px 32px rgba(236, 72, 153, 0.6) !important; display: flex !important; align-items: center !important; justify-content: center !important; z-index: 2147483647 !important; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important; border: 2px solid rgba(255, 255, 255, 0.2) !important;";
+    const EXPANDED_STYLE = "position: fixed !important; bottom: 24px !important; right: 24px !important; width: 380px !important; height: auto !important; max-height: 550px !important; background: rgba(18, 18, 24, 0.95) !important; backdrop-filter: blur(16px) saturate(180%) !important; -webkit-backdrop-filter: blur(16px) saturate(180%) !important; border: 1px solid rgba(255, 255, 255, 0.1) !important; border-radius: 20px !important; box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6), inset 0 1px 1px rgba(255, 255, 255, 0.15) !important; color: #f3f4f6 !important; font-family: 'Outfit', 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif !important; z-index: 2147483647 !important; overflow: hidden !important; display: flex !important; flex-direction: column !important; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;";
+
+    let lessons = [];
+    let isRunning = false;
+    let shouldStop = false;
+    let container = null;
+
+    function toggleExamMode(active) {
+        if (!container) return;
+        const mainContent = container.querySelector(".smart-main-content");
+        if (!mainContent) return;
+        if (active) {
+            mainContent.classList.add("exam-mode");
+        } else {
+            mainContent.classList.remove("exam-mode");
+        }
+    }
+
+    function findLessonsOnPage() {
+        lessons = [];
+        const potentialButtons = Array.from(document.querySelectorAll('a, button, div, span, input[type="button"]')).filter(el => {
+            const text = el.textContent.trim().replace(/\s+/g, '');
+            const isMatch = text === '학습하기' || text === '학습시작' || (el.value && el.value.trim() === '학습하기');
+            if (!isMatch) return false;
+
+            if (el.closest('header, nav, footer, .header, #header, .footer, #footer, .menu, #menu, .navigation, .nav-menu, #nav-menu, .gnb, #gnb, .smart-main-content')) {
+                return false;
+            }
+
+            return el.offsetParent !== null;
+        });
+
+        let validIndex = 0;
+        potentialButtons.forEach((btn) => {
+            let row = btn.closest('tr') || btn.closest('li') || btn.closest('div[class*="row"]') || btn.closest('div[class*="item"]') || btn.parentElement.parentElement;
+            
+            if (!row) return;
+
+            // 해당 행에 퍼센트(%) 표시나 'X차' 텍스트가 있는지 확인하여 실제 강의 행인지 검증
+            const rowText = row.textContent || "";
+            const hasProgress = /\d+\s*%/.test(rowText);
+            const hasCha = /\d+\s*차\b/.test(rowText);
+            
+            if (!hasProgress && !hasCha) {
+                return; // 강의 행이 아님
+            }
+
+            let title = (validIndex + 1) + "차시 강의";
+            let progress = 0;
+            let status = 'ready';
+            
+            const textNodes = Array.from(row.querySelectorAll('span, div, td, p, h3, h4, strong'))
+                .map(el => el.textContent.trim())
+                .filter(txt => txt.length > 2 && !txt.includes('학습하기') && !txt.includes('학습시작') && !txt.includes('%') && !/^\d+차$/.test(txt));
+            
+            if (textNodes.length > 0) {
+                title = textNodes[0];
+            }
+
+            const allTextNodes = Array.from(row.querySelectorAll('*'))
+                .map(el => el.textContent.trim())
+                .filter(txt => /(\d+)\s*%/.test(txt));
+
+            if (allTextNodes.length > 0) {
+                const match = allTextNodes[0].match(/(\d+)\s*%/);
+                if (match) {
+                    progress = parseInt(match[1], 10);
+                    if (progress === 100) {
+                        status = 'completed';
+                    }
+                }
+            }
+
+            let extractedUrl = null;
+            
+            // 1. data-id, data-url, data-href 등 데이터 속성에서 URL 추출
+            const dataAttributes = ['data-id', 'data-url', 'data-href', 'data-link'];
+            for (const attr of dataAttributes) {
+                const val = btn.getAttribute(attr);
+                if (val && (val.includes('http') || val.includes('.php') || val.includes('/mod/'))) {
+                    // 싱글 쿼트나 더블 쿼트가 끝에 붙어 있다면 정제
+                    extractedUrl = val.replace(/['"]+$/, '').trim();
+                    break;
+                }
+            }
+
+            // 2. href가 유효한 주소인 경우에만 사용 (따옴표나 # 등 제외)
+            if (!extractedUrl) {
+                const href = btn.getAttribute('href');
+                if (href && href !== '#' && href !== "'" && href !== '"' && href.length > 5 && !href.startsWith('javascript:')) {
+                    const parser = document.createElement('a');
+                    parser.href = href;
+                    extractedUrl = parser.href;
+                }
+            }
+
+            // 3. onclick 등의 인라인 함수에서 주소 파싱
+            if (!extractedUrl) {
+                const onclickStr = btn.getAttribute('onclick') || '';
+                const phpMatch = onclickStr.match(/['"]([^'"]*play[^'"]*|[^'"]*viewer[^'"]*|[^'"]*view[^'"]*|[^'"]*\.php[^'"]*)['"]/i);
+                if (phpMatch) {
+                    const parser = document.createElement('a');
+                    parser.href = phpMatch[1];
+                    extractedUrl = parser.href;
+                }
+            }
+
+            lessons.push({
+                id: validIndex,
+                title: (validIndex + 1) + "차: " + title,
+                button: btn,
+                status: status,
+                progress: progress,
+                currentTime: progress === 100 ? '완료' : '00:00',
+                duration: progress === 100 ? '완료' : '00:00',
+                iframe: null,
+                url: extractedUrl
+            });
+            validIndex++;
+        });
+    }
+
+    function createDashboard() {
+        if (document.getElementById("smart-helper-container")) return;
+
+        container = document.createElement("div");
+        container.id = "smart-helper-container";
+        container.style.cssText = COLLAPSED_STYLE;
+        
+        const trigger = document.createElement("div");
+        trigger.id = "smart-helper-trigger";
+        trigger.innerHTML = "🎓";
+        trigger.style.cssText = "font-size: 32px !important; user-select: none !important; display: block !important; line-height: 60px !important; text-align: center !important;";
+        container.appendChild(trigger);
+
+        const mainContent = document.createElement("div");
+        mainContent.className = "smart-main-content";
+        mainContent.style.cssText = "display: none;";
+        mainContent.innerHTML = `
+            <div class="smart-header">
+                <div class="smart-title-area">
+                    <span class="smart-title">Baeummadang Smart Helper</span>
+                    <span class="smart-subtitle">초고속 백그라운드 멀티 수강 도우미</span>
+                </div>
+                <button class="smart-close-btn" id="smart-minimize-btn">−</button>
+            </div>
+            <div class="smart-control-panel">
+                <button class="smart-action-btn" id="smart-start-btn">
+                    <span>🚀 스마트 일괄 수강 시작</span>
+                </button>
+                <button class="smart-scan-btn" id="smart-settings-btn" title="AI 시험 자동 풀이">📝</button>
+                <button class="smart-scan-btn" id="smart-scan-btn" title="페이지 재스캔">🔄</button>
+            </div>
+            
+            <div class="smart-settings-panel" id="smart-settings-panel" style="display:none; padding:12px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); border-radius:12px; margin-bottom:12px; flex-direction:column; gap:8px;">
+                <div style="font-size:11px; font-weight:700; color:#a78bfa; text-align:left;">
+                    <span>🤖 Gemini AI 시험 풀이 엔진</span>
+                </div>
+                <button class="smart-action-btn" id="smart-ai-btn" style="padding:8px; font-size:12px; background:linear-gradient(135deg,#8b5cf6,#ec4899); box-shadow:none; width:100%;">
+                    <span>📝 AI 시험 자동 풀이 시작</span>
+                </button>
+                
+                <!-- 📊 AI 진행 상태 바 영역 (콤팩트형) -->
+                <div id="smart-ai-progress-area" style="display:none; margin-top:4px; flex-direction:column; gap:4px;">
+                    <div style="display:flex; justify-content:space-between; font-size:10px; color:#9ca3af;">
+                         <span id="smart-ai-progress-text" style="font-size:10px; font-weight:600; color:#e5e7eb;">대기 중...</span>
+                         <span id="smart-ai-progress-percent" style="font-size:10px; color:#a78bfa;">0%</span>
+                    </div>
+                    <div style="width:100%; height:4px; background:rgba(255,255,255,0.08); border-radius:4px; overflow:hidden;">
+                        <div id="smart-ai-progress-bar" style="width:0%; height:100%; background:linear-gradient(90deg, #ec4899, #8b5cf6); border-radius:4px; transition:width 0.3s;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="smart-lesson-list" id="smart-list-body"></div>
+            <div class="smart-footer">
+                  <strong>Baeummadang Smart Helper v4.4.1</strong><br>
+                백그라운드 가상 창(iFrame)으로 무음 재생을 수행합니다.<br>
+                화면을 끄거나 탭을 닫지 마세요.
+            </div>
+        `;
+        container.appendChild(mainContent);
+        
+        if (document.body) {
+            document.body.appendChild(container);
+        } else {
+            window.addEventListener("DOMContentLoaded", () => {
+                document.body.appendChild(container);
+            });
+        };
+
+        trigger.addEventListener('click', (e) => {
+            e.stopPropagation();
+            container.style.cssText = EXPANDED_STYLE;
+            trigger.style.display = "none";
+            mainContent.style.display = "flex";
+        });
+
+        const minimizeBtn = mainContent.querySelector("#smart-minimize-btn");
+        minimizeBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            container.style.cssText = COLLAPSED_STYLE;
+            trigger.style.display = "block";
+            mainContent.style.display = "none";
+        });
+
+        const startBtn = mainContent.querySelector("#smart-start-btn");
+        startBtn.addEventListener('click', () => {
+            if (isRunning) {
+                stopBatchLearning();
+            } else {
+                startBatchLearning();
+            };
+        });
+
+        const settingsBtn = mainContent.querySelector("#smart-settings-btn");
+        const settingsPanel = mainContent.querySelector("#smart-settings-panel");
+        const aiBtn = mainContent.querySelector("#smart-ai-btn");
+        const listBody = mainContent.querySelector("#smart-list-body");
+        const footer = mainContent.querySelector(".smart-footer");
+
+        settingsBtn.addEventListener('click', () => {
+            if (settingsPanel.style.display === "none") {
+                settingsPanel.style.display = "flex";
+                if (listBody) listBody.style.display = "none";
+                if (footer) footer.style.display = "none";
+                toggleExamMode(true);
+            } else {
+                settingsPanel.style.display = "none";
+                if (listBody) listBody.style.display = "block";
+                if (footer) footer.style.display = "block";
+                const currentlyRunning = sessionStorage.getItem("smart_ai_solver_running") === 'true';
+                toggleExamMode(currentlyRunning);
+            }
+        });
+
+        const progressArea = mainContent.querySelector("#smart-ai-progress-area");
+        const progressText = mainContent.querySelector("#smart-ai-progress-text");
+        const progressBar = mainContent.querySelector("#smart-ai-progress-bar");
+        const progressPercent = mainContent.querySelector("#smart-ai-progress-percent");
+
+        // AI button status handling
+        const isAISolverRunning = sessionStorage.getItem("smart_ai_solver_running") === 'true';
+        toggleExamMode(isAISolverRunning);
+        if (isAISolverRunning) {
+            container.style.cssText = EXPANDED_STYLE;
+            trigger.style.display = "none";
+            mainContent.style.display = "flex";
+            
+            aiBtn.querySelector("span").textContent = "⏸️ AI 시험 풀이 중지";
+            aiBtn.style.background = "linear-gradient(135deg, #f59e0b, #ef4444)";
+            
+            // AI 시험 모드인 경우 하단 리스트와 푸터 감추고 설정창만 표시
+            settingsPanel.style.display = "flex";
+            if (listBody) listBody.style.display = "none";
+            if (footer) footer.style.display = "none";
+
+            // 📊 진행 상태 복원
+            if (progressArea) {
+                progressArea.style.display = "flex";
+                const lastSolved = sessionStorage.getItem("smart_ai_last_solved");
+                if (lastSolved) {
+                    progressText.textContent = lastSolved + "번 문제 풀이 완료";
+                    progressBar.style.width = "100%";
+                    progressPercent.textContent = "100%";
+                } else {
+                    progressText.textContent = "분석 준비 중...";
+                    progressBar.style.width = "0%";
+                    progressPercent.textContent = "0%";
+                }
+            }
+        } else {
+            aiBtn.querySelector("span").textContent = "📝 AI 시험 자동 풀이 시작";
+            aiBtn.style.background = "linear-gradient(135deg, #8b5cf6, #ec4899)";
+            if (progressArea) progressArea.style.display = "none";
+        }
+
+        aiBtn.addEventListener('click', () => {
+            const currentlyRunning = sessionStorage.getItem("smart_ai_solver_running") === 'true';
+            if (currentlyRunning) {
+                sessionStorage.setItem("smart_ai_solver_running", "false");
+                sessionStorage.removeItem("smart_ai_last_solved");
+                aiBtn.querySelector("span").textContent = "📝 AI 시험 자동 풀이 시작";
+                aiBtn.style.background = "linear-gradient(135deg, #8b5cf6, #ec4899)";
+                if (progressArea) progressArea.style.display = "none";
+                toggleExamMode(false);
+                console.log("AI 시험 자동 풀이 중지됨");
+            } else {
+                sessionStorage.setItem("smart_ai_solver_running", "true");
+                aiBtn.querySelector("span").textContent = "⏸️ AI 시험 풀이 중지";
+                aiBtn.style.background = "linear-gradient(135deg, #f59e0b, #ef4444)";
+                toggleExamMode(true);
+                
+                if (progressArea) {
+                    progressArea.style.display = "flex";
+                    progressText.textContent = "분석 준비 중...";
+                    progressBar.style.width = "0%";
+                    progressPercent.textContent = "0%";
+                }
+                
+                // 즉시 구동
+                triggerAISolve();
+            }
+        });
+
+        updateUI();
+    }
+
+    function runScan() {
+        findLessonsOnPage();
+        updateUI();
+    }
+
+    function updateUI() {
+        if (!container) return;
+        const listBody = container.querySelector("#smart-list-body");
+        if (!listBody) return;
+
+        listBody.innerHTML = "";
+
+        if (lessons.length === 0) {
+            listBody.innerHTML = `
+                <div class="smart-empty-message">
+                    현재 강좌 상세 정보가 감지되지 않았습니다.<br>
+                    수강해야 할 <strong>'강좌 상세 화면'</strong>인지 확인해주세요!<br><br>
+                    <span style="font-size:11px;color:#f472b6;">* 페이지가 다 열린 뒤 우측 [🔄] 버튼을 눌러보세요.</span>
+                </div>
+            `;
+            const startBtn = container.querySelector("#smart-start-btn");
+            if (startBtn) startBtn.disabled = true;
+            return;
+        }
+
+        lessons.forEach(lesson => {
+            const item = document.createElement("div");
+            item.className = "smart-lesson-item";
+
+            let badgeClass = "smart-badge-ready";
+            let badgeText = "대기 중";
+
+            if (lesson.status === 'preparing') { badgeClass = "smart-badge-preparing"; badgeText = "준비 중 ⏳"; }
+            else if (lesson.status === 'playing') { badgeClass = "smart-badge-playing"; badgeText = "재생 중 🔊"; }
+            else if (lesson.status === 'completed') { badgeClass = "smart-badge-completed"; badgeText = "완료 ✅"; }
+            else if (lesson.status === 'error') { badgeClass = "smart-badge-error"; badgeText = "에러 ⚠️"; };
+
+            item.innerHTML = `
+                <div class="smart-lesson-info">
+                    <div class="smart-lesson-title" title="${lesson.title}">${lesson.title}</div>
+                    <span class="smart-badge ${badgeClass}">${badgeText}</span>
+                </div>
+                <div class="smart-progress-container">
+                    <div class="smart-progress-bar" style="width: ${lesson.progress}%"></div>
+                </div>
+                <div class="smart-time-info">${lesson.progress}% (${lesson.currentTime} / ${lesson.duration})</div>
+            `;
+            listBody.appendChild(item);
+        });
+
+        const startBtn = container.querySelector("#smart-start-btn");
+        if (startBtn) {
+            startBtn.disabled = false;
+            if (isRunning) {
+                startBtn.className = "smart-action-btn running";
+                startBtn.querySelector("span").textContent = "⏸️ 일괄 수강 중지";
+            } else {
+                startBtn.className = "smart-action-btn";
+                startBtn.querySelector("span").textContent = "🚀 스마트 일괄 수강 시작";
+            };
+        };
+    }
+
+    function capturePopupUrl(btn) {
+        return new Promise((resolve) => {
+            const originalOpen = window.open;
+            let capturedUrl = null;
+
+            window.open = function(url, name, specs) {
+                capturedUrl = url;
+                return {
+                    focus: () => {},
+                    blur: () => {},
+                    close: () => {},
+                    closed: false,
+                    postMessage: () => {}
+                };
+            };
+
+            try {
+                btn.click();
+            } catch (e) {
+                console.error("클릭 에러", e);
+            };
+
+            setTimeout(() => {
+                window.open = originalOpen;
+                resolve(capturedUrl);
+            }, 250);
+        });
+    }
+
+    async function startBatchLearning() {
+        if (isRunning) return;
+        
+        // 이미 모든 강의가 완료되었는지 사전 검사
+        const incompleteLessons = lessons.filter(l => l.status !== 'completed' && l.progress < 100);
+        if (incompleteLessons.length === 0) {
+            alert("🎉 모든 차수의 강의 수강이 이미 완료되었습니다!");
+            isRunning = false;
+            updateUI();
+            return;
+        }
+
+        isRunning = true;
+        shouldStop = false;
+        updateUI();
+
+        const MAX_CONCURRENT = 10; // 사용자 요청에 의한 최대 동시 수강 개수 확대
+
+        for (let i = 0; i < lessons.length; i++) {
+            if (shouldStop) break;
+            
+            let lesson = lessons[i];
+
+            if (lesson.status === 'completed' || lesson.progress === 100) {
+                continue;
+            }
+
+            const activeCount = lessons.filter(l => l.status === 'preparing' || l.status === 'playing').length;
+            if (activeCount >= MAX_CONCURRENT) {
+                await new Promise(r => setTimeout(r, 2000));
+                i--;
+                continue;
+            }
+
+            lesson.status = 'preparing';
+            updateUI();
+
+            let url = lesson.url;
+            if (!url) {
+                url = await capturePopupUrl(lesson.button);
+            }
+
+            if (!url) {
+                lesson.status = 'error';
+                updateUI();
+                continue;
+            }
+
+            if (shouldStop) break;
+
+            lesson.url = url;
+
+            const iframe = document.createElement("iframe");
+            iframe.style.position = 'absolute';
+            iframe.style.width = '1200px';
+            iframe.style.height = '800px';
+            iframe.style.opacity = '0.001';
+            iframe.style.left = '-9999px';
+            iframe.style.top = '-9999px';
+            iframe.style.zIndex = '-9999';
+            iframe.style.pointerEvents = 'none';
+            iframe.src = url;
+            iframe.setAttribute("allow", "autoplay; encrypted-media");
+
+            lesson.iframe = iframe;
+            document.body.appendChild(iframe);
+
+            // Mock window.opener immediately to emulate popup
+            try {
+                if (iframe.contentWindow) {
+                    Object.defineProperty(iframe.contentWindow, 'opener', {
+                        get: function() { return window; },
+                        set: function(val) {},
+                        configurable: true
+                    });
+                    if (iframe.contentWindow.Window) {
+                        Object.defineProperty(iframe.contentWindow.Window.prototype, 'opener', {
+                            get: function() { return window; },
+                            set: function(val) {},
+                            configurable: true
+                        });
+                    }
+                }
+            } catch (e) {
+                console.error("Failed to mock opener on append", e);
+            }
+
+            bindIframeControl(lesson, iframe);
+            
+            await new Promise(r => setTimeout(r, 2000));
+        }
+    }
+
+    function stopBatchLearning() {
+        shouldStop = true;
+        isRunning = false;
+
+        lessons.forEach(lesson => {
+            if (lesson.iframe) {
+                try {
+                    lesson.iframe.remove();
+                } catch (e) {}
+                lesson.iframe = null;
+            }
+            if (lesson.status !== 'completed') {
+                lesson.status = 'ready';
+            }
+        });
+
+        updateUI();
+    }
+
+    function getSlideProgress(targetDoc) {
+        try {
+            const elements = Array.from(targetDoc.querySelectorAll('div, span, p, em, strong, li, td'));
+            for (const el of elements) {
+                if (el.children.length === 0) {
+                    const text = el.textContent.trim();
+                    const match = text.match(/^(\d+)\s*[\/|of]\s*(\d+)$/i);
+                    if (match) {
+                        const current = parseInt(match[1], 10);
+                        const total = parseInt(match[2], 10);
+                        if (total > 1 && current <= total) {
+                            return { current, total, pct: Math.floor((current / total) * 100) };
+                        }
+                    }
+                }
+            }
+        } catch (e) {}
+        return null;
+    }
+
+    function getProgressFromPage(targetDoc) {
+        try {
+            const progressEl = targetDoc.querySelector('#id_progress');
+            if (progressEl) {
+                const text = progressEl.textContent.trim();
+                const match = text.match(/(\d+)/);
+                if (match) {
+                    return parseInt(match[1], 10);
+                }
+            }
+        } catch (e) {}
+        return null;
+    }
+
+    function clickPlayButtons(targetDoc) {
+        const selectors = [
+            '.fp-playbtn', '.fp-play', '.fp-ui', '.fp-player', '.video_area', '.flowplayer', 'video', 
+            '.play', '.btn-play', '.btn_play', '.play-btn', '.play_btn',
+            '.vjs-big-play-button', '.vjs-play-control', '.vc-front-screen-play-btn',
+            '.jw-display-icon-container', '.jw-icon-playback',
+            '.pe-play-btn', '.mejs-play', '.mejs-playpause-button',
+            'button[title*="Play"]', 'button[title*="play"]',
+            'button[aria-label*="Play"]', 'button[aria-label*="play"]',
+            'button[aria-label*="재생"]', '[class*="play"]', '[id*="play"]',
+            '[class*="btn_start"]', '[class*="btn-start"]'
+        ];
+        
+        let clicked = false;
+        for (const selector of selectors) {
+            try {
+                const el = targetDoc.querySelector(selector);
+                if (el && typeof el.click === 'function' && el.offsetParent !== null) {
+                    el.click();
+                    clicked = true;
+                }
+            } catch (e) {}
+        }
+
+        try {
+            const textElements = Array.from(targetDoc.querySelectorAll('button, a, div, span')).filter(el => {
+                const txt = el.textContent.trim().toLowerCase();
+                return (txt === 'play' || txt === '재생' || txt === '시작' || txt === '재생하기') && el.offsetParent !== null;
+            });
+            textElements.forEach(el => {
+                if (typeof el.click === 'function') {
+                    el.click();
+                    clicked = true;
+                }
+            });
+        } catch (e) {}
+        
+        return clicked;
+    }
+
+    function pressRightArrow(targetDoc) {
+        try {
+            const activeEl = targetDoc.activeElement || targetDoc.body || targetDoc.documentElement;
+            const eventOptions = {
+                key: 'ArrowRight',
+                code: 'ArrowRight',
+                keyCode: 39,
+                which: 39,
+                bubbles: true,
+                cancelable: true
+            };
+
+            const keydownEvent = new KeyboardEvent('keydown', eventOptions);
+            const keyupEvent = new KeyboardEvent('keyup', eventOptions);
+
+            const targets = [
+                activeEl,
+                targetDoc.querySelector('.slick-slider'),
+                targetDoc.querySelector('.slick-list'),
+                targetDoc.querySelector('.slick-track'),
+                targetDoc.querySelector('.slick-active'),
+                targetDoc.body,
+                targetDoc
+            ];
+
+            for (const t of targets) {
+                if (t) {
+                    try {
+                        t.dispatchEvent(keydownEvent);
+                        t.dispatchEvent(keyupEvent);
+                    } catch (e) {}
+                }
+            }
+        } catch (e) {
+            console.error("방향키 모사 실패", e);
+        }
+    }
+
+    function bindIframeControl(lesson, iframe) {
+        let isStarted = false;
+        let slideClickCounter = 0; // 슬라이드 진행용 카운터
+        let wakeupAttempts = 0;   // 활성화 클릭 시도 카운터
+        let successfulNextClicks = 0; // 슬라이드 실제 진행 체크용
+        let slickDetected = false; // Slick 슬라이더 감지 여부
+        const startTime = Date.now(); // 오작동 방지용 시간 기록
+        
+        const isHandout = lesson.title.includes("교안") || lesson.title.includes("설문") || lesson.title.includes("과제") || lesson.title.includes("평가") || lesson.title.includes("문서") || lesson.title.includes("PDF");
+
+        const startMonitoring = () => {
+            if (isStarted) return;
+            isStarted = true;
+
+            const monitorInterval = setInterval(() => {
+                if (shouldStop || !iframe.parentElement || lesson.status === 'completed') {
+                    clearInterval(monitorInterval);
+                    return;
+                }
+
+                try {
+                    const doc = iframe.contentDocument || iframe.contentWindow.document;
+                    if (!doc || doc.readyState === 'loading') {
+                        return; // 문서 로딩 대기
+                    }
+
+                    // Recurring safety: ensure opener is always defined on the window
+                    try {
+                        const iframeWin = iframe.contentWindow;
+                        if (iframeWin && iframeWin.opener !== window) {
+                            Object.defineProperty(iframeWin, 'opener', {
+                                get: function() { return window; },
+                                set: function(val) {},
+                                configurable: true
+                            });
+                        }
+                    } catch (e) {}
+
+                    // [v4.2] 글로벌 진도율 상시 검사 (교안, 동영상, 슬라이드 공통)
+                    let globalTargetDoc = doc;
+                    let globalPageProgress = getProgressFromPage(doc);
+                    if (globalPageProgress === null) {
+                        const innerFrames = doc.querySelectorAll("iframe, frame");
+                        for (let innerFrame of innerFrames) {
+                            try {
+                                const innerDoc = innerFrame.contentDocument || innerFrame.contentWindow.document;
+                                const innerProgress = getProgressFromPage(innerDoc);
+                                if (innerProgress !== null) {
+                                    globalTargetDoc = innerDoc;
+                                    globalPageProgress = innerProgress;
+                                    break;
+                                }
+                            } catch (e) {}
+                        }
+                    }
+
+                    if (globalPageProgress !== null) {
+                        lesson.progress = globalPageProgress;
+                        lesson.currentTime = globalPageProgress + "%";
+                        lesson.duration = "100%";
+
+                        // 교안/비디오/슬라이드 공통 진도율 100% 완료 처리 (세션 안전 저장용 최소 8초 경과 가드)
+                        if (globalPageProgress >= 100 && (Date.now() - startTime > 8000)) {
+                            lesson.status = 'completed';
+                            lesson.progress = 100;
+                            clearInterval(monitorInterval);
+                            updateUI();
+                            
+                            setTimeout(() => {
+                                if (iframe.parentElement) iframe.remove();
+                                checkAllCompleted();
+                            }, 5000);
+                            return;
+                        } else if (lesson.status !== 'completed') {
+                            // 교안(정적 문서)인 경우 '재생 중' 상태로 표시하여 큐 진행 차단 해제
+                            lesson.status = 'playing';
+                        }
+                    }
+
+                    // [v4.2] 교안(Handout) 및 정적 페이지 전용 초고속 자동 처리 루틴
+                    if (isHandout) {
+                        lesson.status = 'playing';
+                        if (lesson.progress < 50) lesson.progress = 50;
+                        lesson.currentTime = "읽는 중";
+                        lesson.duration = "교안";
+                        updateUI();
+
+                        // 8초 대기 후 100% 강제 완료 처리 (LMS 서버 저장 유도 및 안전 세션 마운트)
+                        if (Date.now() - startTime > 8000) {
+                            lesson.status = 'completed';
+                            lesson.progress = 100;
+                            lesson.currentTime = "완료";
+                            clearInterval(monitorInterval);
+                            updateUI();
+                            
+                            setTimeout(() => {
+                                if (iframe.parentElement) iframe.remove();
+                                checkAllCompleted();
+                            }, 5000);
+                        }
+                        return;
+                    }
+
+                    // 1. 비디오 엘리먼트 찾기 (iframe 및 frame 태그 모두 지원)
+                    let video = doc.querySelector("video");
+                    let foundInnerVideo = false;
+                    let targetDoc = doc;
+
+                    if (!video) {
+                        const innerFrames = doc.querySelectorAll("iframe, frame");
+                        for (let innerFrame of innerFrames) {
+                            try {
+                                const innerDoc = innerFrame.contentDocument || innerFrame.contentWindow.document;
+                                const innerVideo = innerDoc.querySelector("video");
+                                if (innerVideo) {
+                                    video = innerVideo;
+                                    foundInnerVideo = true;
+                                    targetDoc = innerDoc;
+                                    break;
+                                }
+                            } catch (e) {}
+                        }
+                    }
+
+                    // 1.5. 비디오가 없고 슬라이드 형식인지 판별 및 진행 처리
+                    if (!video) {
+                        let slideInfo = getSlideProgress(doc);
+                        let slickNextBtn = doc.querySelector('.slick-next, .slick-arrow, button[aria-label="Next"]');
+                        let slickContainer = doc.querySelector('.slick-slider, .slick-list, .slick-track');
+                        targetDoc = doc;
+
+                        if (!slideInfo && !slickNextBtn && !slickContainer) {
+                            const innerFrames = doc.querySelectorAll("iframe, frame");
+                            for (let innerFrame of innerFrames) {
+                                try {
+                                    const innerDoc = innerFrame.contentDocument || innerFrame.contentWindow.document;
+                                    const innerSlideInfo = getSlideProgress(innerDoc);
+                                    const innerSlick = innerDoc.querySelector('.slick-next, .slick-arrow, button[aria-label="Next"]');
+                                    const innerSlickContainer = innerDoc.querySelector('.slick-slider, .slick-list, .slick-track');
+                                    if (innerSlideInfo || innerSlick || innerSlickContainer) {
+                                        slideInfo = innerSlideInfo;
+                                        slickNextBtn = innerSlick;
+                                        slickContainer = innerSlickContainer;
+                                        targetDoc = innerDoc;
+                                        break;
+                                    }
+                                } catch (e) {}
+                            }
+                        }
+
+                        // 슬라이드 판별되었거나 다음 버튼이 존재하는 경우
+                        const isSlideMode = slideInfo || slickNextBtn || slickContainer;
+
+                        if (isSlideMode) {
+                            lesson.status = 'playing';
+                            slickDetected = true; // Slick 슬라이더 감지 활성화
+                            
+                            // Emulate opener inside the active slide window
+                            try {
+                                const activeWin = (targetDoc === doc) ? iframe.contentWindow : targetDoc.defaultView;
+                                if (activeWin && activeWin.opener !== window) {
+                                    Object.defineProperty(activeWin, 'opener', {
+                                        get: function() { return window; },
+                                        set: function(val) {},
+                                        configurable: true
+                                    });
+                                }
+                            } catch (e) {}
+
+                            // Extract progress from the native #id_progress element!
+                            const pageProgress = getProgressFromPage(targetDoc);
+                            if (pageProgress !== null) {
+                                lesson.progress = pageProgress;
+                                lesson.currentTime = pageProgress + "%";
+                                lesson.duration = "100%";
+
+                                // 완료 조건 (진도율 100% 도달 - 최소 15초 경과 필수)
+                                if (pageProgress >= 100 && (Date.now() - startTime > 15000)) {
+                                    lesson.status = 'completed';
+                                    lesson.progress = 100;
+                                    clearInterval(monitorInterval);
+                                    updateUI();
+                                    
+                                    setTimeout(() => {
+                                        if (iframe.parentElement) iframe.remove();
+                                        checkAllCompleted();
+                                    }, 10000); // 10초 대기 후 삭제하여 AJAX 저장 완료 보장
+                                    return;
+                                }
+                            } else if (slideInfo) {
+                                lesson.currentTime = slideInfo.current + "장";
+                                lesson.duration = slideInfo.total + "장";
+                                lesson.progress = slideInfo.pct;
+
+                                // 완료 조건 (마지막 슬라이드 도달 - 최소 15초 경과 필수)
+                                if ((slideInfo.current >= slideInfo.total || slideInfo.pct >= 100) && (Date.now() - startTime > 15000)) {
+                                    lesson.status = 'completed';
+                                    lesson.progress = 100;
+                                    clearInterval(monitorInterval);
+                                    updateUI();
+                                    
+                                    setTimeout(() => {
+                                        if (iframe.parentElement) iframe.remove();
+                                        checkAllCompleted();
+                                    }, 10000); // 10초 대기 후 삭제하여 AJAX 저장 완료 보장
+                                    return;
+                                }
+                            } else {
+                                // 현재 진행 상황을 알 수 없지만 다음 버튼이 존재할 때
+                                lesson.currentTime = "진행중";
+                                lesson.duration = "슬라이드";
+                                if (lesson.progress < 5) lesson.progress = 5;
+                            }
+
+                            // 3. 3초마다 다음 방향키 입력 진행 (로딩 속도 배려, 마우스 클릭 완전 차단하여 라이브러리 간섭 차단!)
+                            slideClickCounter++;
+                            if (slideClickCounter >= 3) {
+                                slideClickCounter = 0;
+                                
+                                // 방향키 입력 모사 (사용자 요청: 방향키로 슬라이드 조작 연동)
+                                pressRightArrow(targetDoc);
+                                successfulNextClicks++;
+
+                                // 방향키 입력 후 슬라이드 진행률 즉시 재추출 시도
+                                const pageProgressPost = getProgressFromPage(targetDoc);
+                                if (pageProgressPost !== null) {
+                                    lesson.progress = pageProgressPost;
+                                    lesson.currentTime = pageProgressPost + "%";
+                                    lesson.duration = "100%";
+                                    updateUI();
+                                }
+                            }
+                            updateUI();
+                            return; // 비디오 처리 건너뜀
+                        } else {
+                            // 아직 슬라이더가 감지되지 않은 초기 대기 상태 (이미지 순차적 더블 클릭 유도기)
+                            // 최소 2초 대기 후, 1.5초마다 대상을 순차적으로 적극 클릭하여 Step 2 -> Step 3 -> Step 4 순차 이동 유도
+                            if (Date.now() - startTime > 2000) {
+                                wakeupAttempts++;
+                                if (wakeupAttempts % 2 === 0) {
+                                    const wakeTargets = [
+                                        doc.querySelector('img'),
+                                        doc.querySelector('#play_area'),
+                                        doc.body
+                                    ];
+                                    for (const t of wakeTargets) {
+                                        if (t && typeof t.click === 'function') {
+                                            try {
+                                                t.click();
+                                            } catch (e) {}
+                                        }
+                                    }
+                                    const innerFrames = doc.querySelectorAll("iframe, frame");
+                                    for (let innerFrame of innerFrames) {
+                                        try {
+                                            const innerDoc = innerFrame.contentDocument || innerFrame.contentWindow.document;
+                                            const innerWake = [
+                                                innerDoc.querySelector('img'),
+                                                innerDoc.querySelector('#play_area'),
+                                                innerDoc.body
+                                            ];
+                                            for (const t of innerWake) {
+                                                if (t && typeof t.click === 'function') {
+                                                    try {
+                                                        t.click();
+                                                    } catch (e) {}
+                                                }
+                                            }
+                                        } catch(e) {}
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // 2. 비디오가 일시 정지 상태이거나 아직 로드되지 않은 경우 재생 버튼 적극 클릭 유도
+                    const isVideoPlaying = video && !video.paused && !video.ended;
+                    if (!isVideoPlaying) {
+                        clickPlayButtons(doc);
+                        const innerFrames = doc.querySelectorAll("iframe, frame");
+                        for (let innerFrame of innerFrames) {
+                            try {
+                                const innerDoc = innerFrame.contentDocument || innerFrame.contentWindow.document;
+                                clickPlayButtons(innerDoc);
+                            } catch (e) {}
+                        }
+                    }
+
+                    // 3. 비디오 객체가 확보된 경우 상태 업데이트 및 재생 처리
+                    if (video) {
+                        video.muted = true;
+                        if (video.paused && !video.ended) {
+                            video.play().catch(err => {
+                                // console.log("autoplay fail", err);
+                            });
+                        }
+
+                        const formatTime = (secs) => {
+                            if (isNaN(secs)) return "00:00";
+                            const m = Math.floor(secs / 60).toString().padStart(2, '0');
+                            const s = Math.floor(secs % 60).toString().padStart(2, '0');
+                            return m + ":" + s;
+                        };
+
+                        lesson.currentTime = formatTime(video.currentTime);
+                        lesson.duration = formatTime(video.duration);
+                        const pct = Math.floor((video.currentTime / video.duration) * 100) || 0;
+                        lesson.progress = pct;
+
+                        if (pct >= 98 || video.ended) {
+                            lesson.status = 'completed';
+                            lesson.progress = 100;
+                            clearInterval(monitorInterval);
+                            updateUI();
+                            
+                            setTimeout(() => {
+                                if (iframe.parentElement) iframe.remove();
+                                checkAllCompleted();
+                            }, 10000); // 10초 대기 후 삭제
+                        } else {
+                            lesson.status = 'playing';
+                            updateUI();
+                        }
+                    } else {
+                        // 아직 비디오를 감지하지 못한 상태 (재생 버튼 지속 클릭 중)
+                        if (lesson.status !== 'playing' && lesson.status !== 'completed') {
+                            lesson.status = 'preparing';
+                        }
+                        updateUI();
+                    }
+
+                    // 경고창(컨펌창) 자동 클릭
+                    const alertConfirmBtn = Array.from(doc.querySelectorAll('button, a, input[type="button"]')).find(el => {
+                        const txt = el.textContent.trim() || el.value || "";
+                        return txt.includes("확인") || txt.includes("예") || txt.includes("계속") || txt.includes("다음");
+                    });
+                    if (alertConfirmBtn && alertConfirmBtn.offsetParent !== null) {
+                        alertConfirmBtn.click();
+                    }
+
+                } catch (error) {
+                    // cross-origin 등으로 문서 접근 불가 시 50% 진행상태로 강제 진행
+                    lesson.status = 'playing';
+                    lesson.progress = 50;
+                    updateUI();
+                }
+            }, 1000);
+        };
+
+        // 로드 이벤트와 무관하게 즉시 또는 1초 후에 강제로 모니터링을 구동하여 캐싱으로 인한 onload 미발생 극복
+        iframe.onload = startMonitoring;
+        setTimeout(startMonitoring, 1000);
+    }
+
+    function checkAllCompleted() {
+        const remaining = lessons.filter(l => l.status !== 'completed');
+        if (remaining.length === 0) {
+            isRunning = false;
+            alert("🎉 모든 차수의 동시 학습이 완료되었습니다!");
+            updateUI();
+        };
+    }
+
+    async function triggerAISolve() {
+        if (sessionStorage.getItem("smart_ai_solver_running") !== 'true') return;
+
+        // 0. 제출완료 버튼 선제 감지 및 처리
+        const allButtons = Array.from(document.querySelectorAll('button, input[type="submit"], input[type="button"], a'));
+        const finishBtn = allButtons.find(btn => {
+            const val = (btn.value || btn.textContent || "").trim().replace(/\s+/g, '');
+            return val.includes("제출완료") || val.includes("모두제출하고끝내기") || val.includes("모두제출하고종료") || val.includes("시험제출");
+        });
+
+        if (finishBtn) {
+            console.log("[AI] 제출완료 버튼을 감지하여 최종 제출을 수행합니다.");
+            stopAISolver();
+            alert("문제 풀이가 완료되었습니다.");
+            finishBtn.click();
+            return;
+        }
+
+        // 📊 진행 상태바 관리용 헬퍼 객체 및 함수
+        const pArea = document.getElementById("smart-ai-progress-area");
+        const pText = document.getElementById("smart-ai-progress-text");
+        const pBar = document.getElementById("smart-ai-progress-bar");
+        const pPercent = document.getElementById("smart-ai-progress-percent");
+
+        const updateProgress = (text, percent) => {
+            if (pArea) pArea.style.display = "flex";
+            if (pText) pText.textContent = text;
+            if (pBar) pBar.style.width = percent + "%";
+            if (pPercent) pPercent.textContent = percent + "%";
+        };
+
+        const getQNum = (block, fallbackIdx) => {
+            try {
+                const noEl = block.querySelector('.no, .qno, .info, .questionnumber');
+                if (noEl) {
+                    const text = noEl.textContent.trim();
+                    const match = text.match(/\d+/);
+                    if (match) return match[0];
+                }
+                const infoEl = block.querySelector('.info');
+                if (infoEl) {
+                    const text = infoEl.textContent.trim();
+                    const match = text.match(/\d+/);
+                    if (match) return match[0];
+                }
+            } catch (e) {}
+            return fallbackIdx + "";
+        };
+
+        // 1. 페이지 내의 개별 문항 블록 수집 (.formulation 클래스 적극 지원)
+        let questionBlocks = Array.from(document.querySelectorAll('.que, .question, .question-container, .qn-question, .formulation'));
+        
+        // 표준 클래스가 없을 경우 .qtext 기반 동적 부모 추출
+        if (questionBlocks.length === 0) {
+            const qtexts = document.querySelectorAll('.qtext');
+            qtexts.forEach(qtext => {
+                const parent = qtext.closest('fieldset, div[id*="question"], div[class*="question"], div[class*="block"], td, tr') || qtext.parentElement;
+                if (parent && !questionBlocks.includes(parent)) {
+                    questionBlocks.push(parent);
+                }
+            });
+        }
+
+        if (questionBlocks.length === 0) {
+            console.log("AI 시험 풀이 대상 문항이 없습니다. 자동 풀이를 정지합니다.");
+            stopAISolver();
+            return;
+        }
+
+        console.log(`[AI 시험 도우미] 총 ${questionBlocks.length}개의 문항을 감지했습니다.`);
+
+        // 1. 우선 사용자가 UI 설정을 통해 입력하고 저장한 키가 있는지 확인
+        // 1. 하드코딩된 신규 API 키가 있을 경우 최우선으로 매핑하여 로컬 저장소 캐시 우회
+        let apiKey = "";
+        if (typeof GEMINI_API_KEY !== 'undefined' && GEMINI_API_KEY && GEMINI_API_KEY !== "YOUR_GEMINI_API_KEY_HERE") {
+            apiKey = GEMINI_API_KEY;
+        } else {
+            apiKey = localStorage.getItem("smart_gemini_key") || "";
+            if (apiKey && apiKey.trim().startsWith("AIzaSyC")) {
+                console.warn("[AI] 만료된 기존 키(AIzaSyC...)가 감지되어 제거하고 초기화합니다.");
+                localStorage.removeItem("smart_gemini_key");
+                apiKey = "";
+            }
+        }
+
+        if (!apiKey) {
+            alert("Gemini API Key가 등록되지 않았습니다.");
+            stopAISolver();
+            return;
+        }
+
+        const aiBtn = document.querySelector("#smart-ai-btn");
+        if (aiBtn) {
+            aiBtn.querySelector("span").textContent = "⏸️ AI 시험 풀이 중지 (작동중)";
+            aiBtn.style.background = "linear-gradient(135deg, #f59e0b, #ef4444)";
+        }
+
+        const activeQNums = questionBlocks.map((block, idx) => getQNum(block, idx + 1));
+        updateProgress(`${activeQNums[0]}번 문제 분석 중...`, 0);
+
+        let solvedCount = 0;
+        let skipCount = 0;
+
+        try {
+            // 문항별로 순차적 해결 수행
+            for (let qIdx = 0; qIdx < questionBlocks.length; qIdx++) {
+                // 사용자가 중간에 중지 버튼을 누른 경우 즉각 안전 중단
+                if (sessionStorage.getItem("smart_ai_solver_running") !== 'true') {
+                    console.log("[AI] 사용자에 의해 풀이가 중지되었습니다.");
+                    stopAISolver();
+                    return;
+                }
+
+                const currentQNum = activeQNums[qIdx];
+                updateProgress(`${currentQNum}번 문제 분석 중...`, Math.floor((qIdx / questionBlocks.length) * 100));
+
+                const block = questionBlocks[qIdx];
+                const questionEl = block.querySelector('.qtext');
+                const radioElements = Array.from(block.querySelectorAll('input[type="radio"]'));
+
+                if (!questionEl || radioElements.length === 0) {
+                    console.log(`[AI] ${qIdx + 1}번 블록은 문항 또는 라디오 버튼이 없어 건너뜁니다.`);
+                    continue;
+                }
+
+                // 기선택 문항인지 검사 (이미 체크된 라디오버튼이 있는지 여부)
+                const alreadyChecked = radioElements.some(r => r.checked);
+                if (alreadyChecked) {
+                    console.log(`[AI] ${qIdx + 1}번 문항은 이미 답변이 선택되어 있어 건너뜁니다.`);
+                    sessionStorage.setItem("smart_ai_last_solved", currentQNum);
+                    skipCount++;
+                    updateProgress(`${currentQNum}번 문제 풀이 완료`, Math.floor(((qIdx + 1) / questionBlocks.length) * 100));
+                    continue;
+                }
+
+                const questionText = questionEl.textContent.trim();
+                const radioGroups = radioElements.map((radio, idx) => {
+                    let labelText = "";
+                    if (radio.id) {
+                        const label = block.querySelector(`label[for="${radio.id}"]`);
+                        if (label) labelText = label.textContent.trim();
+                    }
+                    if (!labelText) {
+                        const parent = radio.closest('label, div, li, td, span');
+                        if (parent) labelText = parent.textContent.trim();
+                    }
+                    // 보기 텍스트 정제
+                    return { element: radio, index: idx, text: labelText };
+                });
+
+                let prompt = `다음 객관식 문제를 분석하여 가장 적절한 정답 번호(0, 1, 2, 3 등)를 알려줘.
+
+문제:
+${questionText}
+
+보기:
+`;
+                radioGroups.forEach(g => {
+                    prompt += `${g.index}: ${g.text}\n`;
+                });
+                
+                prompt += `\n반드시 설명이나 설명 텍스트 없이 정답 번호 숫자 한 글자(예: 0 또는 1 또는 2)만 반환해야 해. 다른 텍스트는 절대 포함하지 마.`;
+
+                console.log(`[AI] ${qIdx + 1}번째 문제 분석 요청 중...`);
+                const answerText = await callGeminiAPI(apiKey, prompt);
+                console.log(`[AI] ${qIdx + 1}번째 문제 응답 수신:`, answerText);
+
+                const match = answerText.match(/\d+/);
+                if (match) {
+                    const ansIndex = parseInt(match[0], 10);
+                    const targetGroup = radioGroups.find(g => g.index === ansIndex);
+                    
+                    if (targetGroup) {
+                        targetGroup.element.click();
+                        console.log(`[AI] ${qIdx + 1}번째 문제: ${ansIndex}번 항목 자동 클릭 완료.`);
+                        sessionStorage.setItem("smart_ai_last_solved", currentQNum);
+                        solvedCount++;
+                        updateProgress(`${currentQNum}번 문제 풀이 완료`, Math.floor(((qIdx + 1) / questionBlocks.length) * 100));
+                        // 여러 개를 풀 때는 눈에 띄도록 개별 클릭 후 미세한 딜레이를 줌
+                        await new Promise(r => setTimeout(r, 850));
+                    } else {
+                        throw new Error(`AI가 범위 밖의 인덱스 번호를 반환했습니다: ${ansIndex} (문제: ${qIdx + 1})`);
+                    }
+                } else {
+                    throw new Error(`AI 응답에서 숫자를 파싱하지 못했습니다: ${answerText} (문제: ${qIdx + 1})`);
+                }
+            }
+
+            console.log(`[AI 시험 도우미] 풀이 완료: ${solvedCount}개 해결, ${skipCount}개 건너뜀.`);
+            
+            const lastSolvedNum = activeQNums[activeQNums.length - 1];
+            sessionStorage.setItem("smart_ai_last_solved", lastSolvedNum);
+            updateProgress(`${lastSolvedNum}번 문제 풀이 완료`, 100);
+
+            if (aiBtn) {
+                aiBtn.querySelector("span").textContent = "➡️ 다음 문제 이동 중...";
+            }
+
+            // 모든 작업 완료 후 2초 후 Next page / 시험종료 / 제출완료 버튼 탐색 및 클릭
+            setTimeout(() => {
+                if (sessionStorage.getItem("smart_ai_solver_running") !== 'true') {
+                    console.log("[AI] 사용자에 의해 풀이가 중지되어 페이지 이동을 생략합니다.");
+                    return;
+                }
+                const nextBtnSelectors = [
+                    'input[type="submit"][value*="Next" i]',
+                    'input[type="submit"][value*="다음" i]',
+                    'input[type="submit"][value*="시험종료" i]',
+                    'input[type="submit"][value*="제출완료" i]',
+                    'input[type="button"][value*="Next" i]',
+                    'input[type="button"][value*="다음" i]',
+                    'button[id*="next" i]',
+                    'button[class*="next" i]',
+                    'button[class*="btn-secondary" i]', // 제출완료 스타일 클래스 지원
+                    'a[class*="next" i]',
+                    '#id_next',
+                    '.next-page',
+                    '.nextpage',
+                    '.submit-buttons .btn-primary',
+                    '.mod_quiz-next-nav'
+                ];
+
+                let nextBtn = null;
+                for (const sel of nextBtnSelectors) {
+                    const el = document.querySelector(sel);
+                    if (el && el.offsetParent !== null) {
+                        nextBtn = el;
+                        break;
+                    }
+                }
+
+                if (!nextBtn) {
+                    nextBtn = Array.from(document.querySelectorAll('input[type="submit"], button, input[type="button"], a')).find(btn => {
+                        const val = (btn.value || btn.textContent || "").trim().replace(/\s+/g, '').toLowerCase();
+                        return val.includes("nextpage") || val.includes("다음페이지") || val.includes("다음") || val.includes("next") || val.includes("주차이동") || val.includes("시험종료") || val.includes("제출완료");
+                    });
+                }
+
+                if (nextBtn) {
+                    console.log("[AI] Next page 버튼을 클릭하여 이동합니다.");
+                    updateProgress("다음 페이지로 이동 중...", 100);
+                    nextBtn.click();
+                } else {
+                    console.warn("[AI] Next page 버튼을 찾을 수 없어 수동 이동이 필요합니다.");
+                    if (aiBtn) {
+                        aiBtn.querySelector("span").textContent = "⏸️ AI 시험 풀이 중지";
+                        aiBtn.style.background = "linear-gradient(135deg, #f59e0b, #ef4444)";
+                    }
+                }
+            }, 2000);
+
+        } catch (e) {
+            console.error("AI 풀이 중 오류 발생:", e);
+            alert(`AI 풀이 중 오류가 발생했습니다:\n${e.message}`);
+            stopAISolver();
+        }
+    }
+
+    function stopAISolver() {
+        sessionStorage.setItem("smart_ai_solver_running", "false");
+        sessionStorage.removeItem("smart_ai_last_solved");
+        const aiBtn = document.querySelector("#smart-ai-btn");
+        if (aiBtn) {
+            aiBtn.querySelector("span").textContent = "📝 AI 시험 자동 풀이 시작";
+            aiBtn.style.background = "linear-gradient(135deg, #8b5cf6, #ec4899)";
+        }
+        const pArea = document.getElementById("smart-ai-progress-area");
+        if (pArea) pArea.style.display = "none";
+        toggleExamMode(false);
+    }
+
+    async function callGeminiAPI(apiKey, prompt) {
+        // API Key 정제 (앞뒤 공백 및 따옴표 제거)
+        const sanitizedKey = apiKey.trim().replace(/['"\s]/g, "");
+        
+        // 시도할 모델 및 API 버전 조합 리스트 (2026년 기준 Flash 과부하 대비 Pro 백업군 추가 탑재)
+        const modelNames = ["gemini-2.5-flash", "gemini-1.5-flash", "gemini-1.5-pro"];
+        const apiVersions = ["v1beta", "v1"];
+        
+        let lastError = null;
+        let diagnosticErrors = [];
+
+        for (const model of modelNames) {
+            for (const version of apiVersions) {
+                const url = `https://generativelanguage.googleapis.com/${version}/models/${model}:generateContent?key=${sanitizedKey}`;
+                
+                // 일시적인 과부하(503/429) 대비 최대 2회 자동 재시도 루프
+                for (let attempt = 0; attempt < 2; attempt++) {
+                    try {
+                        console.log(`[AI] 호출 시도 (시도 ${attempt + 1}): ${version} / ${model}...`);
+                        const response = await fetch(url, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                contents: [{
+                                    parts: [{
+                                        text: prompt
+                                    }]
+                                }]
+                            })
+                        });
+
+                        if (!response.ok) {
+                            let errorMsg = `상태코드: ${response.status}`;
+                            
+                            // 상세 에러 바디 파싱 시도
+                            try {
+                                const errorText = await response.text();
+                                try {
+                                    const errorJson = JSON.parse(errorText);
+                                    if (errorJson && errorJson.error && errorJson.error.message) {
+                                        errorMsg += ` - ${errorJson.error.message}`;
+                                    } else {
+                                        errorMsg += ` - ${JSON.stringify(errorJson)}`;
+                                    }
+                                } catch (jsonErr) {
+                                    if (errorText) {
+                                        const strippedText = errorText.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+                                        errorMsg += ` - ${strippedText.substring(0, 150)}`;
+                                    }
+                                }
+                            } catch (e2) {}
+                            
+                            // 503(일시적 과부하) 또는 429(속도제한)인 경우 1.5초 대기 후 즉각 재시도
+                            if ((response.status === 503 || response.status === 429) && attempt < 1) {
+                                console.warn(`[AI] 임시 오류(${response.status}) 감지. 1.5초 후 자동으로 재시도합니다.`);
+                                await new Promise(r => setTimeout(r, 1500));
+                                continue; // 재시도 루프 실행
+                            }
+                            
+                            throw new Error(errorMsg);
+                        }
+
+                        const data = await response.json();
+                        if (data && data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0]) {
+                            console.log(`[AI] 호출 성공: ${version} / ${model}`);
+                            return data.candidates[0].content.parts[0].text;
+                        } else {
+                            throw new Error(`응답 형식 비정상`);
+                        }
+                    } catch (err) {
+                        const cleanErrMsg = err.message.replace(/\n/g, ' ').trim();
+                        // 마지막 재시도 차례도 실패했거나 503/429 외의 일반 에러인 경우에만 누적하고 다음 조합으로 패스
+                        if (attempt === 1 || !(cleanErrMsg.includes("503") || cleanErrMsg.includes("429"))) {
+                            console.warn(`[AI] 최종 실패 (${version} / ${model}):`, cleanErrMsg);
+                            diagnosticErrors.push(`* [${model} / ${version}] -> ${cleanErrMsg}`);
+                            lastError = err;
+                            break; // 재시도 루프 탈출 -> 다음 모델/버전으로 진행
+                        } else {
+                            console.warn(`[AI] 재시도 대기중... 일시적 오류:`, cleanErrMsg);
+                        }
+                    }
+                }
+            }
+        }
+
+        // 모든 조합 시도 실패 시 누적된 상세 원인들과 함께 에러 throw
+        const maskedKey = apiKey.length > 10 ? (apiKey.substring(0, 7) + "..." + apiKey.substring(apiKey.length - 4)) : "없음";
+        const finalDiagnosticReport = `Gemini API 호출에 모두 실패했습니다. (현재 진단에 사용 중인 API Key: ${maskedKey})\n\n[각 모델/버전별 상세 원인]\n` + diagnosticErrors.join("\n") + "\n\n(참고: 만약 사용 중인 API Key가 새로 발급한 키가 아닌 옛날 키로 표시된다면, 기존 즐겨찾기(북마크)를 완전히 삭제하고 새로고침하여 새로 드래그해 재설치해 주시기 바랍니다.)";
+        throw new Error(finalDiagnosticReport);
+    }
+
+    function initAJAXInterceptors() {
+        // Intercept form submissions
+        document.addEventListener('submit', async (e) => {
+            if (sessionStorage.getItem("smart_ai_solver_running") !== 'true') return;
+            const form = e.target;
+            if (form.closest('#smart-helper-container')) return;
+            
+            e.preventDefault();
+            console.log("[AJAX] Form submission intercepted:", form);
+            
+            const submitter = e.submitter;
+            await performAJAXTransition(form, submitter, null);
+        }, true);
+
+        // Intercept clicks on quiz navigation links
+        document.addEventListener('click', async (e) => {
+            if (sessionStorage.getItem("smart_ai_solver_running") !== 'true') return;
+            const target = e.target.closest('a');
+            if (!target) return;
+            if (target.closest('#smart-helper-container')) return;
+            
+            const href = target.getAttribute('href');
+            if (!href || href === '#' || href.startsWith('javascript:')) return;
+            
+            const text = target.textContent.trim().toLowerCase();
+            const isNext = text.includes('next') || text.includes('다음') || text.includes('page') || target.className.includes('next');
+            
+            if (isNext) {
+                e.preventDefault();
+                console.log("[AJAX] Link click intercepted:", target);
+                await performAJAXTransition(null, null, href);
+            }
+        }, true);
+    }
+
+    async function performAJAXTransition(form, submitter, href) {
+        const helperContainer = document.getElementById("smart-helper-container");
+        if (helperContainer) {
+            helperContainer.remove(); // Detach to preserve memory state and listeners
+        }
+
+        try {
+            let response;
+            if (form) {
+                const formData = new FormData(form);
+                if (submitter && submitter.name) {
+                    formData.append(submitter.name, submitter.value);
+                }
+                response = await fetch(form.action || window.location.href, {
+                    method: 'POST',
+                    body: formData
+                });
+            } else if (href) {
+                response = await fetch(href);
+            }
+
+            if (!response || !response.ok) {
+                throw new Error("Network response was not ok");
+            }
+
+            const nextHtmlText = await response.text();
+            const parser = new DOMParser();
+            const nextDoc = parser.parseFromString(nextHtmlText, 'text/html');
+
+            document.title = nextDoc.title;
+            document.body.innerHTML = nextDoc.body.innerHTML;
+
+            if (helperContainer) {
+                document.body.appendChild(helperContainer);
+            }
+
+            const finalUrl = response.url || href || (form ? form.action : window.location.href);
+            window.history.pushState({}, '', finalUrl);
+
+            console.log("[AJAX] PJAX transition complete.");
+            
+            setTimeout(() => {
+                if (sessionStorage.getItem("smart_ai_solver_running") === 'true') {
+                    const mainContent = helperContainer.querySelector(".smart-main-content");
+                    const trigger = helperContainer.querySelector("#smart-helper-trigger");
+                    if (mainContent && trigger) {
+                        mainContent.style.display = "flex";
+                        trigger.style.display = "none";
+                    }
+                    runScan();
+                    triggerAISolve();
+                }
+            }, 1000);
+
+        } catch (err) {
+            console.error("[AJAX] PJAX transition failed, reloading natively...", err);
+            if (helperContainer) {
+                document.body.appendChild(helperContainer);
+            }
+            if (form) {
+                form.submit();
+            } else if (href) {
+                window.location.href = href;
+            }
+        }
+    }
+
+    function init() {
+        createDashboard();
+        initAJAXInterceptors();
+        
+        setInterval(() => {
+            if (container && !document.getElementById("smart-helper-container")) {
+                if (document.body) {
+                    document.body.appendChild(container);
+                }
+            }
+        }, 1000);
+        
+        let attempts = 0;
+        const autoScanInterval = setInterval(() => {
+            findLessonsOnPage();
+            updateUI();
+            attempts++;
+
+            if (lessons.length > 0 || attempts >= 10) {
+                clearInterval(autoScanInterval);
+            };
+        }, 1000);
+
+        // [v4.2] AI 지속적 자동 풀이 감지 및 트리거
+        const isAIPersistentRunning = sessionStorage.getItem("smart_ai_solver_running") === 'true';
+        if (isAIPersistentRunning) {
+            setTimeout(triggerAISolve, 2500); // 2.5초 대기 후 자동 구동
+        }
+    }
+
+    if (document.readyState === "complete" || document.readyState === "interactive") {
+        init();
+    } else {
+        window.addEventListener("DOMContentLoaded", init);
+    };
+})();
+    </script>
+
+    <script>
+        // plain-text 스크립트 노드에서 원본 소스 코드를 읽어와 무결성 인코딩 처리
+        const rawCode = document.getElementById("bookmarklet-source").textContent;
+        
+        // 1. 블록 주석 (/* ... */) 제거
+        let clean = rawCode.replace(/\/\*[\s\S]*?\*\//g, '');
+        
+        // 2. 싱글 라인 주석 (// ...) 제거 (http://, https:// 프로토콜 보호 가드 내장)
+        clean = clean.split('\n').map(line => {
+            const commentIdx = line.indexOf('//');
+            if (commentIdx !== -1) {
+                const prefix = line.substring(0, commentIdx);
+                if (!prefix.match(/https?:$/i)) {
+                    line = prefix;
+                }
+            }
+            return line;
+        }).join('\n');
+        
+        // 3. 줄바꿈 정규화 (CRLF -> LF 및 무의미한 양 끝 공백 정돈)
+        const normalizedCode = clean.replace(/\r\n/g, '\n').replace(/\r/g, '\n').trim();
+        
+        // 4. 최종 브라우저 호환성 극대화 UTF-8 Safe Base64 북마크클릿 URL 생성 (무결성 소스보존형 인코딩)
+        const base64Code = btoa(unescape(encodeURIComponent(normalizedCode)));
+        const encodedUrl = "javascript:eval(decodeURIComponent(escape(atob('" + base64Code + "'))))";
+ 
+        // 북마크 링크 및 복사 창 바인딩
+        document.getElementById("bookmarklet-btn").href = encodedUrl;
+        document.getElementById("code-box").value = encodedUrl;
+
+        // 5. 유저스크립트 소스코드 동적 생성 및 바인딩
+        const userscriptHeader = `// ==UserScript==
+// @name         배움마당 Smart Helper
+// @namespace    http://tampermonkey.net/
+// @version      4.4.1
+// @description  초고속 백그라운드 멀티 수강 도우미
+// @match        *://*.baeummadang.*/*
+// @grant        none
+// ==UserScript==
+
+`;
+        const fullUserscriptCode = userscriptHeader + rawCode;
+        document.getElementById("userscript-box").value = fullUserscriptCode;
+ 
+        function copyCode() {
+            const codeBox = document.getElementById("code-box");
+            codeBox.select();
+            codeBox.setSelectionRange(0, 99999);
+            navigator.clipboard.writeText(codeBox.value);
+ 
+            const toast = document.getElementById("toast");
+            toast.textContent = "북마크 코드가 복사되었습니다! 북마크 주소창에 붙여넣어주세요.";
+            toast.className = "toast show";
+            setTimeout(() => {
+                toast.className = "toast";
+            }, 3000);
+        }
+
+        function copyUserscript() {
+            const userscriptBox = document.getElementById("userscript-box");
+            userscriptBox.select();
+            userscriptBox.setSelectionRange(0, 99999);
+            navigator.clipboard.writeText(userscriptBox.value);
+ 
+            const toast = document.getElementById("toast");
+            toast.textContent = "유저스크립트 코드가 복사되었습니다! Tampermonkey에 붙여넣어주세요.";
+            toast.className = "toast show";
+            setTimeout(() => {
+                toast.className = "toast";
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
