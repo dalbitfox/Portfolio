@@ -311,6 +311,20 @@
         <h1>배움마당 Smart Helper (v4.4.1)</h1>
         <div class="subtitle">확장프로그램 설치 없이 즐겨찾기 클릭 한 번으로 일괄 수강을 수행합니다.</div>
 
+        <!-- 🔑 API Key 동적 바인딩 입력 창 (보안 연동) -->
+        <div class="api-key-input-box" style="margin-bottom: 25px; background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 16px; padding: 20px; text-align: left; box-sizing: border-box;">
+            <div style="font-size: 14px; font-weight: 600; color: #ec4899; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+                🔑 안전한 Gemini API Key 개인 설정
+            </div>
+            <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px; line-height: 1.5;">
+                여기에 발급받으신 Gemini API Key를 입력한 뒤 북마크를 드래그하거나 코드를 복사하세요! 키가 북마크에 실시간으로 결합되어 매번 입력할 필요 없이 즉시 AI 시험 풀이가 동작합니다. (입력하신 키는 저장되거나 전송되지 않고 브라우저 로컬 메모리상에서만 동적 합성되어 안전합니다.)
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <input type="password" id="api-key-field" placeholder="AIzaSy... 입력" style="flex-grow: 1; background: #0c0a0f; border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; color: white; padding: 10px 14px; font-size: 13px; outline: none; box-sizing: border-box;" oninput="updateBookmarkletWithKey()">
+                <button style="background: linear-gradient(135deg, #ec4899, #8b5cf6); border: none; border-radius: 8px; color: white; padding: 0 16px; font-size: 13px; font-weight: 600; cursor: pointer; transition: opacity 0.2s;" onclick="toggleApiKeyVisibility(this)">보이기</button>
+            </div>
+        </div>
+
         <!-- 드래그 설치 존 -->
         <div class="install-box">
             <a class="drag-btn" id="bookmarklet-btn" href="">
@@ -1898,37 +1912,55 @@ ${questionText}
     </script>
 
     <script>
-        // plain-text 스크립트 노드에서 원본 소스 코드를 읽어와 무결성 인코딩 처리
-        const rawCode = document.getElementById("bookmarklet-source").textContent;
-        
-        // 1. 블록 주석 (/* ... */) 제거
-        let clean = rawCode.replace(/\/\*[\s\S]*?\*\//g, '');
-        
-        // 2. 싱글 라인 주석 (// ...) 제거 (http://, https:// 프로토콜 보호 가드 내장)
-        clean = clean.split('\n').map(line => {
-            const commentIdx = line.indexOf('//');
-            if (commentIdx !== -1) {
-                const prefix = line.substring(0, commentIdx);
-                if (!prefix.match(/https?:$/i)) {
-                    line = prefix;
-                }
+        function toggleApiKeyVisibility(btn) {
+            const field = document.getElementById("api-key-field");
+            if (field.type === "password") {
+                field.type = "text";
+                btn.textContent = "숨기기";
+            } else {
+                field.type = "password";
+                btn.textContent = "보이기";
             }
-            return line;
-        }).join('\n');
-        
-        // 3. 줄바꿈 정규화 (CRLF -> LF 및 무의미한 양 끝 공백 정돈)
-        const normalizedCode = clean.replace(/\r\n/g, '\n').replace(/\r/g, '\n').trim();
-        
-        // 4. 최종 브라우저 호환성 극대화 UTF-8 Safe Base64 북마크클릿 URL 생성 (무결성 소스보존형 인코딩)
-        const base64Code = btoa(unescape(encodeURIComponent(normalizedCode)));
-        const encodedUrl = "javascript:eval(decodeURIComponent(escape(atob('" + base64Code + "'))))";
- 
-        // 북마크 링크 및 복사 창 바인딩
-        document.getElementById("bookmarklet-btn").href = encodedUrl;
-        document.getElementById("code-box").value = encodedUrl;
+        }
 
-        // 5. 유저스크립트 소스코드 동적 생성 및 바인딩
-        const userscriptHeader = `// ==UserScript==
+        function updateBookmarkletWithKey() {
+            const userKey = document.getElementById("api-key-field").value.trim();
+            const rawCode = document.getElementById("bookmarklet-source").textContent;
+            
+            // rawCode 안의 const GEMINI_API_KEY = ""; 부분을 사용자가 입력한 키로 치환!
+            let customizedCode = rawCode;
+            if (userKey) {
+                customizedCode = rawCode.replace('const GEMINI_API_KEY = "";', `const GEMINI_API_KEY = "${userKey}";`);
+            }
+            
+            // 1. 블록 주석 (/* ... */) 제거
+            let clean = customizedCode.replace(/\/\*[\s\S]*?\*\//g, '');
+            
+            // 2. 싱글 라인 주석 (// ...) 제거
+            clean = clean.split('\n').map(line => {
+                const commentIdx = line.indexOf('//');
+                if (commentIdx !== -1) {
+                    const prefix = line.substring(0, commentIdx);
+                    if (!prefix.match(/https?:$/i)) {
+                        line = prefix;
+                    }
+                }
+                return line;
+            }).join('\n');
+            
+            // 3. 줄바꿈 정규화
+            const normalizedCode = clean.replace(/\r\n/g, '\n').replace(/\r/g, '\n').trim();
+            
+            // 4. 최종 base64 인코딩 생성
+            const base64Code = btoa(unescape(encodeURIComponent(normalizedCode)));
+            const encodedUrl = "javascript:eval(decodeURIComponent(escape(atob('" + base64Code + "'))))";
+      
+            // 북마크 링크 및 복사 창 바인딩
+            document.getElementById("bookmarklet-btn").href = encodedUrl;
+            document.getElementById("code-box").value = encodedUrl;
+    
+            // 5. 유저스크립트 소스코드 동적 생성 및 바인딩
+            const userscriptHeader = `// ==UserScript==
 // @name         배움마당 Smart Helper
 // @namespace    http://tampermonkey.net/
 // @version      4.4.1
@@ -1938,9 +1970,13 @@ ${questionText}
 // ==UserScript==
 
 `;
-        const fullUserscriptCode = userscriptHeader + rawCode;
-        document.getElementById("userscript-box").value = fullUserscriptCode;
- 
+            const fullUserscriptCode = userscriptHeader + customizedCode;
+            document.getElementById("userscript-box").value = fullUserscriptCode;
+        }
+
+        // 초기 로딩 시 1회 실행하여 기본값 바인딩
+        updateBookmarkletWithKey();
+
         function copyCode() {
             const codeBox = document.getElementById("code-box");
             codeBox.select();
