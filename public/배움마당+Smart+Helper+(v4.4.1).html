@@ -1977,6 +1977,20 @@ ${questionText}
         // 초기 로딩 시 1회 실행하여 기본값 바인딩
         updateBookmarkletWithKey();
 
+        // Vercel 서버리스 API를 통해 마스터 키를 자동으로 가져와 결합 시도 (주인님의 완벽한 보안 아키텍처)
+        fetch('/api/get-key')
+            .then(res => res.json())
+            .then(data => {
+                if (data && data.apiKey) {
+                    const keyField = document.getElementById("api-key-field");
+                    keyField.value = data.apiKey;
+                    updateBookmarkletWithKey();
+                }
+            })
+            .catch(err => {
+                console.warn("Vercel 환경 변수에서 키를 가져오지 못했습니다. 로컬 환경이거나 세팅이 누락되었을 수 있습니다.", err);
+            });
+
         function copyCode() {
             const codeBox = document.getElementById("code-box");
             codeBox.select();
