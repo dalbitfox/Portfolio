@@ -258,7 +258,7 @@ export const HelperShowcase: React.FC = () => {
             </div>
             <div>
               <button
-                onClick={() => window.open('/배움마당+Smart+Helper+(v4.4.1).html', '_blank')}
+                onClick={() => window.open('/배움마당%2BSmart%2BHelper%2B(v4.4.1).html', '_blank')}
                 style={{
                   padding: '0.6rem 1.2rem',
                   borderRadius: '6px',
@@ -337,7 +337,7 @@ export const HelperShowcase: React.FC = () => {
 
             {/* Embedded Iframe */}
             <iframe
-              src="/배움마당+Smart+Helper+(v4.4.1).html"
+              src="/배움마당%2BSmart%2BHelper%2B(v4.4.1).html"
               title="배움마당 스마트 헬퍼"
               onLoad={() => setIframeLoading(false)}
               style={{
