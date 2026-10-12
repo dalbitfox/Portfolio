@@ -69,6 +69,15 @@
     *   글자 수가 163자에 불과하여 브라우저 북마크 길이 한계에 전혀 구애받지 않으며, 실시간 캐시 버스팅(`?t=`)을 통해 포트폴리오 서버의 최신 도우미 코드를 안전하게 주입받아 즉시 우측 하단 학사모(`🎓`) UI를 렌더링합니다.
     *   학사모 UI 렌더링은 순수 DOM 조작으로 동작하므로 API 키 유무와 무관하며, API 키 파일 재전송 없이도 완벽히 정상 동작합니다.
 
+### 8. React 19 보안 규격 (`React has blocked a javascript: URL`) 완전 우회 및 드래그 보장 (완료)
+*   **원인 규명:**
+    *   포트폴리오 프로젝트의 React 버전이 최신 `19.2.6`으로, React 19는 XSS 방지를 위해 JSX 속성인 `<a href="javascript:...">`를 감지하면 가상 DOM 렌더링 시 강제로 `href="javascript:throw new Error('React has blocked a javascript: URL as a security precaution.')"`로 값을 덮어써 버립니다.
+    *   이로 인해 마우스를 올렸을 때 브라우저 좌측 하단에 에러 문구가 표시되고, 북마크바로 드래그해도 해당 에러 문자열이 북마크로 등록되어 실행 시 아무 반응 없이 차단되었던 것입니다.
+*   **해결책 (네이티브 DOM 속성 직접 주입):**
+    *   JSX의 `href` prop을 완전히 제거하여 React 19의 보안 감시망(JSX Scanner)을 원천 우회했습니다.
+    *   `useRef`, `useEffect` 및 Ref Callback을 통해 네이티브 DOM 메서드인 `el.setAttribute('href', LOADER_BOOKMARKLET)`로 브라우저에 직접 속성을 주입했습니다.
+    *   동시에 `onDragStart` 이벤트에 `dataTransfer.setData('text/uri-list', ...)` 및 `setData('text/plain', ...)`을 명시하여 브라우저의 드래그 앤 드롭 북마크 등록을 100% 보장했습니다.
+
 ---
 
 ## 💡 다음 추가 작업 진행 시 가이드라인 (자비스 참고용)

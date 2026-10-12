@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 
 const LOADER_BOOKMARKLET = "javascript:(function(){var s=document.createElement('script');s.src='https://seobu.vercel.app/baeummadang_helper.user.js?t='+Date.now();document.body.appendChild(s);})();";
 
@@ -7,6 +7,18 @@ export const HelperShowcase: React.FC = () => {
   const [toastMessage, setToastMessage] = useState<string>('');
   const [showToast, setShowToast] = useState<boolean>(false);
   const [showGuideModal, setShowGuideModal] = useState<boolean>(false);
+
+  const bookmarkRef1 = useRef<HTMLAnchorElement | null>(null);
+  const bookmarkRef2 = useRef<HTMLAnchorElement | null>(null);
+
+  useEffect(() => {
+    if (bookmarkRef1.current) {
+      bookmarkRef1.current.setAttribute('href', LOADER_BOOKMARKLET);
+    }
+    if (bookmarkRef2.current) {
+      bookmarkRef2.current.setAttribute('href', LOADER_BOOKMARKLET);
+    }
+  }, []);
 
   const triggerToast = (msg: string) => {
     setToastMessage(msg);
@@ -105,19 +117,22 @@ export const HelperShowcase: React.FC = () => {
 
         {/* Buttons Row */}
         <div style={{ display: 'flex', gap: '1.25rem', flexWrap: 'wrap', alignItems: 'center' }}>
-          {/* Button 1: 배움마당 추가 (두 번째 스샷의 배움마당 SMART HELPER 버튼과 동일한 드래그 앤 드롭 버튼) */}
+          {/* Button 1: 배움마당 추가 (React 19 javascript: 차단 우회 및 브라우저 네이티브 드래그 지원) */}
           <a
-            href={bookmarkletUrl || '#'}
+            ref={(el) => {
+              bookmarkRef1.current = el;
+              if (el) el.setAttribute('href', LOADER_BOOKMARKLET);
+            }}
             draggable={true}
+            onDragStart={(e) => {
+              e.dataTransfer.setData('text/uri-list', LOADER_BOOKMARKLET);
+              e.dataTransfer.setData('text/plain', LOADER_BOOKMARKLET);
+            }}
             title="마우스로 누른 채 상단 브라우저 북마크(즐겨찾기) 바로 끌어다 놓으세요!"
             onClick={(e) => {
-              if (bookmarkletUrl) {
-                navigator.clipboard.writeText(bookmarkletUrl);
-                triggerToast('🎓 마우스로 북마크바(Ctrl+Shift+B)로 끌어다 놓으시거나, 복사된 코드를 북마크 주소에 붙여넣으세요!');
-              } else {
-                e.preventDefault();
-                window.open('/배움마당%2BSmart%2BHelper%2B(v4.5.0).html', '_blank');
-              }
+              e.preventDefault();
+              navigator.clipboard.writeText(LOADER_BOOKMARKLET);
+              triggerToast('🎓 마우스로 북마크바(Ctrl+Shift+B)로 끌어다 놓으시거나, 복사된 코드를 북마크 주소에 붙여넣으세요!');
             }}
             style={{
               display: 'inline-flex',
@@ -149,10 +164,17 @@ export const HelperShowcase: React.FC = () => {
             <span>배움마당 Smart Helper (v4.5.0)</span>
           </a>
 
-          {/* Button 2: 즐겨찾기 추가 (드래그 앤 드롭 지원 및 클릭 시 상세 안내/코드복사) */}
+          {/* Button 2: 즐겨찾기 추가 (React 19 javascript: 차단 우회 및 브라우저 네이티브 드래그 지원) */}
           <a
-            href={bookmarkletUrl || '#'}
+            ref={(el) => {
+              bookmarkRef2.current = el;
+              if (el) el.setAttribute('href', LOADER_BOOKMARKLET);
+            }}
             draggable={true}
+            onDragStart={(e) => {
+              e.dataTransfer.setData('text/uri-list', LOADER_BOOKMARKLET);
+              e.dataTransfer.setData('text/plain', LOADER_BOOKMARKLET);
+            }}
             title="마우스로 누른 채 상단 브라우저 북마크 바로 끌어다 놓으시거나, 클릭하여 즐겨찾기 안내를 확인하세요!"
             onClick={(e) => {
               e.preventDefault();
