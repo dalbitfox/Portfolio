@@ -8,8 +8,8 @@
 // ==UserScript==
 
 (function() {
-    /* [v4.5.0] Gemini AI API Key 설정 (보안 인코딩 적용) */
-    const GEMINI_API_KEY = atob("QVEuQWI4Uk42SjBSZFpaWlVVQktEdXVVUjhWeGJjb3RqWEtuMDZoa1hhaDRMM3kyeVJoZnc="); // 발급받은 API 키 적용 완료
+    /* [v4.5.0] Gemini AI API Key 설정 (비워두면 SeobuTech 보안 서버에서 자동 연동) */
+    const GEMINI_API_KEY = ""; // 비워두면 SeobuTech 보안 엔드포인트(https://seobu.vercel.app/api/get-key)를 통해 안전하게 자동 공급됩니다.
 
     /* 백그라운드 재생 방지 및 타이머 스로틀링 회피 헬퍼 */
     let bgTimerWorker = null;
@@ -1248,8 +1248,7 @@
 
         console.log(`[AI 시험 도우미] 총 ${questionBlocks.length}개의 문항을 감지했습니다.`);
 
-        // 1. 우선 사용자가 UI 설정을 통해 입력하고 저장한 키가 있는지 확인
-        // 1. 하드코딩된 신규 API 키가 있을 경우 최우선으로 매핑하여 로컬 저장소 캐시 우회
+        // 1. 하드코딩된 키가 있을 경우 최우선으로 매핑
         let apiKey = "";
         if (typeof GEMINI_API_KEY !== 'undefined' && GEMINI_API_KEY && GEMINI_API_KEY !== "YOUR_GEMINI_API_KEY_HERE") {
             apiKey = GEMINI_API_KEY;
@@ -1259,6 +1258,23 @@
                 console.warn("[AI] 만료된 기존 키(AIzaSyC...)가 감지되어 제거하고 초기화합니다.");
                 localStorage.removeItem("smart_gemini_key");
                 apiKey = "";
+            }
+        }
+
+        // 2. 파일에 키가 없는 경우 SeobuTech 보안 엔드포인트에서 안전하게 동적 자동 로드 (키 노출 원천 차단)
+        if (!apiKey) {
+            try {
+                console.log("[AI] SeobuTech 보안 서버에서 최신 Gemini API 키를 동적 획득하는 중...");
+                const keyRes = await fetch("https://seobu.vercel.app/api/get-key");
+                if (keyRes.ok) {
+                    const keyData = await keyRes.json();
+                    if (keyData && keyData.apiKey) {
+                        apiKey = keyData.apiKey;
+                        console.log("[AI] SeobuTech 보안 서버로부터 API 키 동적 로드 성공.");
+                    }
+                }
+            } catch (netErr) {
+                console.warn("[AI] 보안 서버 키 조회 실패:", netErr);
             }
         }
 
