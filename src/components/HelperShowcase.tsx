@@ -1,52 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+
+const LOADER_BOOKMARKLET = "javascript:(function(){var s=document.createElement('script');s.src='https://seobu.vercel.app/baeummadang_helper.user.js?t='+Date.now();document.body.appendChild(s);})();";
 
 export const HelperShowcase: React.FC = () => {
-  const [bookmarkletUrl, setBookmarkletUrl] = useState<string>('');
+  const [bookmarkletUrl] = useState<string>(LOADER_BOOKMARKLET);
   const [toastMessage, setToastMessage] = useState<string>('');
   const [showToast, setShowToast] = useState<boolean>(false);
   const [showGuideModal, setShowGuideModal] = useState<boolean>(false);
-
-  // v4.5.0 HTML 파일에서 북마크클릿 URL 동적 추출
-  useEffect(() => {
-    fetch('/배움마당%2BSmart%2BHelper%2B(v4.5.0).html')
-      .then((res) => res.text())
-      .then((html) => {
-        const startTag = '<script type="text/plain" id="bookmarklet-source">';
-        const endTag = '</script>';
-        const startIdx = html.indexOf(startTag);
-        if (startIdx !== -1) {
-          const endIdx = html.indexOf(endTag, startIdx);
-          if (endIdx !== -1) {
-            const raw = html.substring(startIdx + startTag.length, endIdx);
-            // 1. 블록 주석 제거
-            const noBlock = raw.replace(/\/\*[\s\S]*?\*\//g, '');
-            // 2. 한 줄 주석 제거
-            const clean = noBlock
-              .split('\n')
-              .map((line) => {
-                const commentIdx = line.indexOf('//');
-                if (commentIdx !== -1) {
-                  const prefix = line.substring(0, commentIdx);
-                  if (!prefix.match(/https?:$/i)) {
-                    return prefix;
-                  }
-                }
-                return line;
-              })
-              .join('\n');
-            const normalized = clean.replace(/\r\n/g, '\n').replace(/\r/g, '\n').trim();
-
-            // 3. UTF-8 안전 인코딩 (이모지 🎓 URIError 방지)
-            const utf8Bytes = new TextEncoder().encode(normalized);
-            const binString = Array.from(utf8Bytes, (b) => String.fromCharCode(b)).join('');
-            const base64Code = btoa(binString);
-            const url = "javascript:(function(){try{eval(new TextDecoder().decode(Uint8Array.from(atob('" + base64Code + "'),function(c){return c.charCodeAt(0)})))}catch(e){var s=document.createElement('script');s.src='https://seobu.vercel.app/baeummadang_helper.user.js?t='+Date.now();document.body.appendChild(s);}})();";
-            setBookmarkletUrl(url);
-          }
-        }
-      })
-      .catch((err) => console.error('Failed to load bookmarklet source:', err));
-  }, []);
 
   const triggerToast = (msg: string) => {
     setToastMessage(msg);
