@@ -78,6 +78,15 @@
     *   `useRef`, `useEffect` 및 Ref Callback을 통해 네이티브 DOM 메서드인 `el.setAttribute('href', LOADER_BOOKMARKLET)`로 브라우저에 직접 속성을 주입했습니다.
     *   동시에 `onDragStart` 이벤트에 `dataTransfer.setData('text/uri-list', ...)` 및 `setData('text/plain', ...)`을 명시하여 브라우저의 드래그 앤 드롭 북마크 등록을 100% 보장했습니다.
 
+### 9. 북마크 이름/아이콘 자동 주입 및 만료 로컬 키 퍼지 체계 완비 (완료)
+*   **원인 1 (북마크 이름 누락):**
+    *   HTML5 Drag & Drop 시 `text/plain`에 URL만 전달하고 북마크 표준 메타데이터(`text/x-moz-url`, `text/html`)를 설정하지 않아, 브라우저가 북마크 제목을 공란으로 생성했습니다.
+    *   `dataTransfer`에 `text/x-moz-url`(`${url}\n🎓 배움마당 Smart Helper`) 및 `text/html`을 표준 규격대로 주입하여, 드래그 시 자동으로 `🎓 배움마당 Smart Helper` 이름과 함께 학사모 이모지 아이콘이 북마크바에 등록되도록 보완했습니다.
+*   **원인 2 (AI 풀이 400 - API key not valid 오류):**
+    *   주인님의 브라우저 `localStorage`에 과거 테스트 시절 저장된 만료된 구버전 키(`AIzaSyA...Z12U`)가 남아 있었습니다.
+    *   도우미 코드가 로컬스토리지를 SeobuTech 보안 서버보다 우선 참조하도록 되어 있어, Vercel의 정상 키를 가져오지 못하고 만료된 키로 호출하여 400 에러가 발생한 것이었습니다.
+    *   **해결:** 스크립트 실행 시 구버전 로컬 키(`smart_gemini_key`)를 강제 삭제(Purge)하고, 항상 `https://seobu.vercel.app/api/get-key`로부터 최신 키를 실시간 동적 주입받도록 우선순위를 전면 개편했습니다. 또한 모델 목록을 200 정상 응답이 검증된 `gemini-2.5-flash`, `gemini-3.5-flash-lite`, `gemini-3.5-flash` 순으로 최적화했습니다.
+
 ---
 
 ## 💡 다음 추가 작업 진행 시 가이드라인 (자비스 참고용)

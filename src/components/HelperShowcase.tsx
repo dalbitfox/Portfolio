@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 
 const LOADER_BOOKMARKLET = "javascript:(function(){var s=document.createElement('script');s.src='https://seobu.vercel.app/baeummadang_helper.user.js?t='+Date.now();document.body.appendChild(s);})();";
+const BOOKMARKLET_TITLE = "🎓 배움마당 Smart Helper";
 
 export const HelperShowcase: React.FC = () => {
   const [bookmarkletUrl] = useState<string>(LOADER_BOOKMARKLET);
@@ -125,10 +126,12 @@ export const HelperShowcase: React.FC = () => {
             }}
             draggable={true}
             onDragStart={(e) => {
+              e.dataTransfer.setData('text/x-moz-url', `${LOADER_BOOKMARKLET}\n${BOOKMARKLET_TITLE}`);
+              e.dataTransfer.setData('text/html', `<a href="${LOADER_BOOKMARKLET}">${BOOKMARKLET_TITLE}</a>`);
               e.dataTransfer.setData('text/uri-list', LOADER_BOOKMARKLET);
-              e.dataTransfer.setData('text/plain', LOADER_BOOKMARKLET);
+              e.dataTransfer.setData('text/plain', BOOKMARKLET_TITLE);
             }}
-            title="마우스로 누른 채 상단 브라우저 북마크(즐겨찾기) 바로 끌어다 놓으세요!"
+            title={BOOKMARKLET_TITLE}
             onClick={(e) => {
               e.preventDefault();
               navigator.clipboard.writeText(LOADER_BOOKMARKLET);
@@ -172,10 +175,12 @@ export const HelperShowcase: React.FC = () => {
             }}
             draggable={true}
             onDragStart={(e) => {
+              e.dataTransfer.setData('text/x-moz-url', `${LOADER_BOOKMARKLET}\n${BOOKMARKLET_TITLE}`);
+              e.dataTransfer.setData('text/html', `<a href="${LOADER_BOOKMARKLET}">${BOOKMARKLET_TITLE}</a>`);
               e.dataTransfer.setData('text/uri-list', LOADER_BOOKMARKLET);
-              e.dataTransfer.setData('text/plain', LOADER_BOOKMARKLET);
+              e.dataTransfer.setData('text/plain', BOOKMARKLET_TITLE);
             }}
-            title="마우스로 누른 채 상단 브라우저 북마크 바로 끌어다 놓으시거나, 클릭하여 즐겨찾기 안내를 확인하세요!"
+            title={BOOKMARKLET_TITLE}
             onClick={(e) => {
               e.preventDefault();
               handleAddToFavorites();

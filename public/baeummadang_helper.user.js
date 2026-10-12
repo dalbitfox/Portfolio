@@ -1255,20 +1255,13 @@
 
         console.log(`[AI 시험 도우미] 총 ${questionBlocks.length}개의 문항을 감지했습니다.`);
 
-        // 1. 하드코딩된 키가 있을 경우 최우선으로 매핑
+        // 1. 하드코딩된 키가 있을 경우 사용
         let apiKey = "";
         if (typeof GEMINI_API_KEY !== 'undefined' && GEMINI_API_KEY && GEMINI_API_KEY !== "YOUR_GEMINI_API_KEY_HERE") {
             apiKey = GEMINI_API_KEY;
-        } else {
-            apiKey = localStorage.getItem("smart_gemini_key") || "";
-            if (apiKey && apiKey.trim().startsWith("AIzaSyC")) {
-                console.warn("[AI] 만료된 기존 키(AIzaSyC...)가 감지되어 제거하고 초기화합니다.");
-                localStorage.removeItem("smart_gemini_key");
-                apiKey = "";
-            }
         }
 
-        // 2. 파일에 키가 없는 경우 SeobuTech 보안 엔드포인트에서 안전하게 동적 자동 로드 (키 노출 원천 차단)
+        // 2. SeobuTech 보안 서버에서 최신 정품 Gemini API 키 실시간 동적 로드 (로컬 캐시보다 항상 최우선)
         if (!apiKey) {
             try {
                 console.log("[AI] SeobuTech 보안 서버에서 최신 Gemini API 키를 동적 획득하는 중...");
@@ -1276,13 +1269,20 @@
                 if (keyRes.ok) {
                     const keyData = await keyRes.json();
                     if (keyData && keyData.apiKey) {
-                        apiKey = keyData.apiKey;
-                        console.log("[AI] SeobuTech 보안 서버로부터 API 키 동적 로드 성공.");
+                        apiKey = keyData.apiKey.trim();
+                        console.log("[AI] SeobuTech 보안 서버로부터 최신 정품 API 키 동적 로드 성공.");
+                        // 만료된 과거 로컬 키 영구 정리
+                        try { localStorage.removeItem("smart_gemini_key"); } catch(e) {}
                     }
                 }
             } catch (netErr) {
                 console.warn("[AI] 보안 서버 키 조회 실패:", netErr);
             }
+        }
+
+        // 3. 서버 통신 불가 시에만 최후의 백업으로 로컬 확인
+        if (!apiKey) {
+            apiKey = localStorage.getItem("smart_gemini_key") || "";
         }
 
         if (!apiKey) {
@@ -1475,8 +1475,8 @@ ${questionText}
         // API Key 정제 (앞뒤 공백 및 따옴표 제거)
         const sanitizedKey = apiKey.trim().replace(/['"\s]/g, "");
         
-        // 시도할 모델 및 API 버전 조합 리스트 (2026년 기준 Flash 과부하 대비 Pro 백업군 추가 탑재)
-        const modelNames = ["gemini-3.5-flash-lite", "gemini-2.5-flash", "gemini-2.5-flash-lite"];
+        // 시도할 모델 및 API 버전 조합 리스트 (2026년 기준 실제 응답 200 검증 완료 모델 우선순위)
+        const modelNames = ["gemini-2.5-flash", "gemini-3.5-flash-lite", "gemini-3.5-flash"];
         const apiVersions = ["v1beta", "v1"];
         
         let lastError = null;
@@ -1667,6 +1667,7 @@ ${questionText}
     }
 
     function init() {
+        try { localStorage.removeItem("smart_gemini_key"); } catch(e) {}
         applyBackgroundProtections(window);
         createDashboard();
         initAJAXInterceptors();
