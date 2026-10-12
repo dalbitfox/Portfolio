@@ -4,6 +4,7 @@ export const HelperShowcase: React.FC = () => {
   const [bookmarkletUrl, setBookmarkletUrl] = useState<string>('');
   const [toastMessage, setToastMessage] = useState<string>('');
   const [showToast, setShowToast] = useState<boolean>(false);
+  const [showGuideModal, setShowGuideModal] = useState<boolean>(false);
 
   // v4.5.0 HTML 파일에서 북마크클릿 URL 동적 추출
   useEffect(() => {
@@ -49,24 +50,11 @@ export const HelperShowcase: React.FC = () => {
   };
 
   const handleAddToFavorites = () => {
-    // 1. Legacy IE/Edge
-    try {
-      if ((window as any).external && 'AddFavorite' in (window as any).external) {
-        (window as any).external.AddFavorite(window.location.href, document.title);
-        triggerToast('⭐ 즐겨찾기에 추가되었습니다!');
-        return;
-      }
-    } catch {
-      // modern browser continues
-    }
-
-    // 2. Modern Browsers (Chrome, Edge, Whale)
     if (bookmarkletUrl) {
       navigator.clipboard.writeText(bookmarkletUrl);
-      triggerToast('⭐ [Ctrl + D]를 누르면 즐겨찾기에 즉시 추가됩니다! (북마크 코드도 함께 복사되었습니다)');
-    } else {
-      triggerToast('⭐ [Ctrl + D]를 누르면 현재 페이지가 즐겨찾기에 즉시 추가됩니다!');
+      triggerToast('📋 도우미 코드가 클립보드에 복사되었습니다!');
     }
+    setShowGuideModal(true);
   };
 
   return (
@@ -194,9 +182,15 @@ export const HelperShowcase: React.FC = () => {
             <span>배움마당 Smart Helper (v4.5.0)</span>
           </a>
 
-          {/* Button 2: 즐겨찾기 추가 (누르면 즐겨찾기에 바로 추가) */}
-          <button
-            onClick={handleAddToFavorites}
+          {/* Button 2: 즐겨찾기 추가 (드래그 앤 드롭 지원 및 클릭 시 상세 안내/코드복사) */}
+          <a
+            href={bookmarkletUrl || '#'}
+            draggable={true}
+            title="마우스로 누른 채 상단 브라우저 북마크 바로 끌어다 놓으시거나, 클릭하여 즐겨찾기 안내를 확인하세요!"
+            onClick={(e) => {
+              e.preventDefault();
+              handleAddToFavorites();
+            }}
             style={{
               display: 'inline-flex',
               alignItems: 'center',
@@ -207,15 +201,17 @@ export const HelperShowcase: React.FC = () => {
               color: '#ffffff',
               background: 'linear-gradient(135deg, #f97316, #ea580c)',
               borderRadius: '50px',
-              border: 'none',
+              border: '2px solid rgba(255, 255, 255, 0.15)',
               fontFamily: 'var(--font-headings)',
-              cursor: 'pointer',
+              cursor: 'grab',
+              userSelect: 'none',
+              textDecoration: 'none',
               boxShadow: '0 8px 30px rgba(249, 115, 22, 0.4)',
-              transition: 'var(--transition-smooth)'
+              transition: 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.boxShadow = '0 12px 40px rgba(249, 115, 22, 0.6)';
-              e.currentTarget.style.transform = 'translateY(-2px)';
+              e.currentTarget.style.transform = 'translateY(-3px)';
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.boxShadow = '0 8px 30px rgba(249, 115, 22, 0.4)';
@@ -224,10 +220,10 @@ export const HelperShowcase: React.FC = () => {
           >
             <span>⭐</span>
             <span>즐겨찾기 추가</span>
-          </button>
+          </a>
         </div>
 
-        {/* Action Guide Tip (두번째 스샷 안내 문구 일치) */}
+        {/* Action Guide Tip */}
         <div
           style={{
             marginTop: '1.5rem',
@@ -240,9 +236,9 @@ export const HelperShowcase: React.FC = () => {
             lineHeight: '1.6'
           }}
         >
-          위 보라색 버튼을 마우스로 누른 채, <strong style={{ color: '#fb7185' }}>브라우저 북마크(즐겨찾기) 바</strong>로 끌어다 놓으세요!<br />
+          위 버튼(보라색 또는 주황색)을 마우스로 누른 채, <strong style={{ color: '#fb7185' }}>브라우저 북마크(즐겨찾기) 바</strong>로 끌어다 놓으세요!<br />
           <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>
-            * 북마크 바가 안 보인다면 키보드의 <strong>Ctrl + Shift + B</strong>를 누르세요.
+            * 북마크 바가 안 보인다면 키보드의 <strong>Ctrl + Shift + B</strong>를 누르세요. (버튼 클릭 시 설치 가이드 및 코드 자동 복사)
           </span>
         </div>
       </div>
@@ -486,6 +482,195 @@ export const HelperShowcase: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* 4. Guide Modal for Bookmarking */}
+      {showGuideModal && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.75)',
+            backdropFilter: 'blur(8px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 2000,
+            padding: '1.25rem',
+            animation: 'fadeIn 0.2s ease-out'
+          }}
+          onClick={() => setShowGuideModal(false)}
+        >
+          <div
+            style={{
+              backgroundColor: '#161622',
+              border: '1px solid rgba(249, 115, 22, 0.45)',
+              borderRadius: '20px',
+              padding: '2rem',
+              maxWidth: '560px',
+              width: '100%',
+              boxShadow: '0 20px 60px rgba(0, 0, 0, 0.8), 0 0 35px rgba(249, 115, 22, 0.15)',
+              position: 'relative'
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                <div
+                  style={{
+                    width: '44px',
+                    height: '44px',
+                    borderRadius: '12px',
+                    backgroundColor: 'rgba(249, 115, 22, 0.15)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '1.4rem'
+                  }}
+                >
+                  ⭐
+                </div>
+                <div>
+                  <h3 style={{ fontSize: '1.3rem', fontWeight: 800, color: '#ffffff', fontFamily: 'var(--font-headings)' }}>
+                    즐겨찾기(북마크) 등록 안내
+                  </h3>
+                  <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', marginTop: '0.15rem' }}>
+                    크롬/엣지 보안 정책 안내 및 3초 간편 설치법
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowGuideModal(false)}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: 'var(--text-muted)',
+                  fontSize: '1.5rem',
+                  cursor: 'pointer',
+                  padding: '0.2rem 0.5rem',
+                  lineHeight: 1
+                }}
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Browser Policy Notice */}
+            <div
+              style={{
+                backgroundColor: 'rgba(239, 68, 68, 0.08)',
+                border: '1px solid rgba(239, 68, 68, 0.25)',
+                borderRadius: '12px',
+                padding: '0.85rem 1rem',
+                fontSize: '0.85rem',
+                color: '#fca5a5',
+                lineHeight: '1.5',
+                marginBottom: '1.25rem'
+              }}
+            >
+              🔒 <strong>브라우저 보안 안내:</strong> 크롬, 엣지, 웨일 등 최신 브라우저는 악성 스크립트의 무단 주입을 방지하기 위해 웹페이지 버튼 클릭만으로 브라우저 즐겨찾기에 코드를 자동 등록하는 기능을 엄격히 차단하고 있습니다.
+            </div>
+
+            {/* Methods */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '1.5rem' }}>
+              {/* Method 1 */}
+              <div
+                style={{
+                  backgroundColor: 'rgba(255, 255, 255, 0.03)',
+                  border: '1px solid rgba(249, 115, 22, 0.35)',
+                  borderRadius: '14px',
+                  padding: '1rem 1.25rem'
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.4rem' }}>
+                  <span style={{ fontSize: '0.75rem', fontWeight: 700, backgroundColor: '#f97316', color: '#fff', padding: '0.15rem 0.5rem', borderRadius: '4px' }}>
+                    추천 1순위
+                  </span>
+                  <h4 style={{ fontSize: '0.95rem', fontWeight: 700, color: '#ffffff' }}>
+                    마우스로 드래그 앤 드롭 (가장 간편!)
+                  </h4>
+                </div>
+                <p style={{ fontSize: '0.85rem', color: '#cbd5e1', lineHeight: '1.5' }}>
+                  화면 상단의 <strong>[⭐ 즐겨찾기 추가]</strong> 또는 <strong>[🎓 스마트 도우미]</strong> 버튼을 마우스로 누른 채 브라우저 상단 <strong>북마크 바</strong>로 끌어다 놓으시면 즉시 설치됩니다.
+                  <br />
+                  <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>* 북마크 바가 안 보이면 키보드의 <strong>Ctrl + Shift + B</strong>를 누르세요.</span>
+                </p>
+              </div>
+
+              {/* Method 2 */}
+              <div
+                style={{
+                  backgroundColor: 'rgba(255, 255, 255, 0.03)',
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  borderRadius: '14px',
+                  padding: '1rem 1.25rem'
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.4rem' }}>
+                  <span style={{ fontSize: '0.75rem', fontWeight: 700, backgroundColor: 'rgba(255, 255, 255, 0.15)', color: '#fff', padding: '0.15rem 0.5rem', borderRadius: '4px' }}>
+                    수동 등록
+                  </span>
+                  <h4 style={{ fontSize: '0.95rem', fontWeight: 700, color: '#ffffff' }}>
+                    북마크 바 우클릭 후 붙여넣기
+                  </h4>
+                </div>
+                <p style={{ fontSize: '0.85rem', color: '#cbd5e1', lineHeight: '1.5' }}>
+                  이미 스마트 도우미 실행 코드가 <strong>클립보드에 자동 복사</strong>되었습니다!
+                  <br />
+                  1. 브라우저 북마크 바 빈 공간 마우스 우클릭 ➔ <strong>[페이지 추가]</strong> 선택
+                  <br />
+                  2. 이름: <code style={{ color: '#fb923c' }}>배움마당 도우미</code> 입력
+                  <br />
+                  3. URL(주소) 칸에 <strong>Ctrl + V</strong> (붙여넣기) 후 저장 완료
+                </p>
+              </div>
+            </div>
+
+            {/* Bottom Actions */}
+            <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end' }}>
+              <button
+                onClick={() => {
+                  if (bookmarkletUrl) {
+                    navigator.clipboard.writeText(bookmarkletUrl);
+                    triggerToast('📋 도우미 코드가 클립보드에 복사되었습니다!');
+                  }
+                }}
+                style={{
+                  padding: '0.65rem 1.2rem',
+                  borderRadius: '10px',
+                  backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                  color: '#ffffff',
+                  border: '1px solid rgba(255, 255, 255, 0.15)',
+                  fontSize: '0.85rem',
+                  fontWeight: 600,
+                  cursor: 'pointer'
+                }}
+              >
+                📋 코드 다시 복사
+              </button>
+              <button
+                onClick={() => setShowGuideModal(false)}
+                style={{
+                  padding: '0.65rem 1.5rem',
+                  borderRadius: '10px',
+                  background: 'linear-gradient(135deg, #f97316, #ea580c)',
+                  color: '#ffffff',
+                  border: 'none',
+                  fontSize: '0.85rem',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  boxShadow: '0 4px 15px rgba(249, 115, 22, 0.4)'
+                }}
+              >
+                확인 완료
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Floating Toast Notification */}
       <div
