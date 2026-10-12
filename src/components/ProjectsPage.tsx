@@ -166,18 +166,18 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ setActiveTab }) => {
         >
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-              <span className="tag tag-orange" style={{ fontSize: '0.65rem' }}>Node.js & Bot</span>
+              <span className="tag tag-orange" style={{ fontSize: '0.65rem' }}>v4.5.0 • AI & Automation</span>
               <span style={{ fontSize: '1.25rem' }}>🤖</span>
             </div>
             <h4 style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: '0.5rem', fontFamily: 'var(--font-headings)' }}>
               배움마당 스마트 도우미
             </h4>
             <p style={{ color: 'var(--text-secondary)', fontSize: '0.82rem', lineHeight: '1.5', fontWeight: 300 }}>
-              일정 스캔 알림뿐 아니라 인간 개입 없이 동영상 강의 백그라운드 학습 및 100% 자동 시험 대행을 완수해주는 스마트 헬러 엔진입니다.
+              일정 스캔 알림뿐 아니라 인간 개입 없이 동영상 강의 백그라운드 학습 및 Gemini AI 100% 자동 시험 대행을 완수해주는 스마트 헬퍼 엔진입니다.
             </p>
           </div>
           <span style={{ fontSize: '0.78rem', color: '#f97316', fontWeight: 600, marginTop: '1rem' }}>
-            🎮 즉시 플레이 / 상세 보기 →
+            ⚡ v4.5.0 원페이지 상세 & 바로 추가 →
           </span>
         </div>
 

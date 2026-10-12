@@ -1,418 +1,164 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>배움마당 스마트 도우미 설치 포털 (v4.4.1)</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Pretendard:wght@400;600;800&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg-color: #0b0b0f;
-            --card-bg: rgba(20, 20, 28, 0.6);
-            --primary: #ec4899;
-            --secondary: #8b5cf6;
-            --accent: #10b981;
-            --text-color: #f3f4f6;
-            --text-muted: #9ca3af;
-        }
+// ==UserScript==
+// @name         배움마당 Smart Helper
+// @namespace    http://tampermonkey.net/
+// @version      4.5.0
+// @description  초고속 백그라운드 멀티 수강 도우미
+// @match        *://*.baeummadang.*/*
+// @grant        none
+// ==UserScript==
 
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            font-family: 'Outfit', 'Pretendard', sans-serif;
-            margin: 0;
-            padding: 40px 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            box-sizing: border-box;
-            overflow-x: hidden;
-        }
-
-        .glow-bg {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 600px;
-            height: 600px;
-            background: radial-gradient(circle, rgba(236, 72, 153, 0.08) 0%, rgba(139, 92, 246, 0.05) 50%, rgba(0,0,0,0) 100%);
-            z-index: -1;
-            filter: blur(80px);
-            pointer-events: none;
-        }
-
-        .container {
-            max-width: 680px;
-            width: 100%;
-            background: var(--card-bg);
-            backdrop-filter: blur(20px) saturate(180%);
-            -webkit-backdrop-filter: blur(20px) saturate(180%);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 28px;
-            padding: 40px;
-            box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6);
-            text-align: center;
-            box-sizing: border-box;
-        }
-
-        h1 {
-            font-size: 32px;
-            font-weight: 800;
-            margin-bottom: 8px;
-            background: linear-gradient(90deg, #ec4899, #a78bfa);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            letter-spacing: -1px;
-        }
-
-        .subtitle {
-            font-size: 16px;
-            color: var(--text-muted);
-            margin-bottom: 35px;
-            line-height: 1.5;
-        }
-
-        .install-box {
-            background: rgba(255, 255, 255, 0.02);
-            border: 2px dashed rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            padding: 35px 20px;
-            margin-bottom: 35px;
-            position: relative;
-            transition: all 0.3s;
-        }
-
-        .install-box:hover {
-            border-color: var(--primary);
-            background: rgba(236, 72, 153, 0.02);
-        }
-
-        .drag-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            padding: 16px 36px;
-            font-size: 18px;
-            font-weight: 800;
-            color: white;
-            background: linear-gradient(135deg, #ec4899, #8b5cf6);
-            border-radius: 50px;
-            text-decoration: none;
-            box-shadow: 0 8px 30px rgba(236, 72, 153, 0.4);
-            cursor: grab;
-            user-select: none;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            border: 2px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .drag-btn:active {
-            cursor: grabbing;
-            transform: scale(0.98);
-        }
-
-        .drag-btn:hover {
-            box-shadow: 0 12px 40px rgba(236, 72, 153, 0.6);
-            transform: translateY(-3px);
-        }
-
-        .drag-instruction {
-            font-size: 14px;
-            color: var(--text-muted);
-            margin-top: 18px;
-            line-height: 1.5;
-        }
-
-        .highlight {
-            color: #fb7185;
-            font-weight: 600;
-        }
-
-        .steps {
-            text-align: left;
-            margin-bottom: 35px;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .step-item {
-            display: flex;
-            align-items: flex-start;
-            gap: 15px;
-            background: rgba(255, 255, 255, 0.02);
-            padding: 16px 20px;
-            border-radius: 14px;
-            border: 1px solid rgba(255, 255, 255, 0.04);
-        }
-
-        .step-num {
-            background: linear-gradient(135deg, #ec4899, #8b5cf6);
-            color: white;
-            font-weight: 800;
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-            font-size: 14px;
-        }
-
-        .step-text {
-            font-size: 14.5px;
-            color: #d1d5db;
-            line-height: 1.6;
-        }
-
-        .manual-box {
-            text-align: left;
-            margin-top: 30px;
-            border-top: 1px solid rgba(255, 255, 255, 0.06);
-            padding-top: 30px;
-        }
-
-        .manual-title {
-            font-size: 15px;
-            font-weight: 600;
-            color: var(--text-color);
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .textarea-container {
-            display: flex;
-            gap: 10px;
-        }
-
-        .code-input {
-            flex-grow: 1;
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            color: #a78bfa;
-            padding: 10px;
-            font-family: monospace;
-            font-size: 12px;
-            resize: none;
-            height: 38px;
-            outline: none;
-            overflow: hidden;
-            white-space: nowrap;
-            text-overflow: ellipsis;
-        }
-
-        .copy-btn {
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: white;
-            border-radius: 10px;
-            padding: 0 18px;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .copy-btn:hover {
-            background: white;
-            color: black;
-        }
-
-        .toast {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%) translateY(100px);
-            background: var(--accent);
-            color: white;
-            padding: 12px 24px;
-            border-radius: 50px;
-            font-size: 14px;
-            font-weight: 600;
-            box-shadow: 0 8px 30px rgba(16, 185, 129, 0.4);
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            z-index: 1000;
-            opacity: 0;
-        }
-
-        .toast.show {
-            transform: translateX(-50%) translateY(0);
-            opacity: 1;
-        }
-
-        /* Tampermonkey 영속성 안내 섹션 스타일 */
-        .persistent-box {
-            text-align: left;
-            margin-top: 35px;
-            background: rgba(139, 92, 246, 0.03);
-            border: 1px solid rgba(139, 92, 246, 0.15);
-            border-radius: 20px;
-            padding: 28px;
-            box-sizing: border-box;
-        }
-
-        .persistent-title {
-            font-size: 16px;
-            font-weight: 700;
-            color: #c084fc;
-            margin-bottom: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 8px;
-        }
-
-        .persistent-desc {
-            font-size: 13.5px;
-            color: #d1d5db;
-            line-height: 1.6;
-            margin-bottom: 20px;
-        }
-
-        .persistent-steps {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            margin-bottom: 22px;
-        }
-
-        .persistent-step {
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-            font-size: 13.5px;
-            color: #9ca3af;
-            line-height: 1.5;
-        }
-
-        .persistent-step strong {
-            color: #f3f4f6;
-        }
-
-        .persistent-badge {
-            background: rgba(139, 92, 246, 0.2);
-            color: #c084fc;
-            font-size: 11px;
-            padding: 2px 8px;
-            border-radius: 6px;
-            font-weight: 600;
-            letter-spacing: -0.2px;
-        }
-    </style>
-</head>
-<body>
-    <div class="glow-bg"></div>
-    <div class="container">
-        <h1>배움마당 Smart Helper (v4.4.1)</h1>
-        <div class="subtitle">확장프로그램 설치 없이 즐겨찾기 클릭 한 번으로 일괄 수강을 수행합니다.</div>
-
-        <!-- 🔑 API Key 동적 바인딩 입력 창 (보안 연동) -->
-        <div id="api-key-container" class="api-key-input-box" style="display: none; margin-bottom: 25px; background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 16px; padding: 20px; text-align: left; box-sizing: border-box;">
-            <div style="font-size: 14px; font-weight: 600; color: #ec4899; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
-                🔑 안전한 Gemini API Key 개인 설정
-            </div>
-            <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px; line-height: 1.5;">
-                여기에 발급받으신 Gemini API Key를 입력한 뒤 북마크를 드래그하거나 코드를 복사하세요! 키가 북마크에 실시간으로 결합되어 매번 입력할 필요 없이 즉시 AI 시험 풀이가 동작합니다. (입력하신 키는 저장되거나 전송되지 않고 브라우저 로컬 메모리상에서만 동적 합성되어 안전합니다.)
-            </div>
-            <div style="display: flex; gap: 10px;">
-                <input type="password" id="api-key-field" placeholder="AIzaSy... 입력" style="flex-grow: 1; background: #0c0a0f; border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; color: white; padding: 10px 14px; font-size: 13px; outline: none; box-sizing: border-box;" oninput="updateBookmarkletWithKey()">
-                <button style="background: linear-gradient(135deg, #ec4899, #8b5cf6); border: none; border-radius: 8px; color: white; padding: 0 16px; font-size: 13px; font-weight: 600; cursor: pointer; transition: opacity 0.2s;" onclick="toggleApiKeyVisibility(this)">보이기</button>
-            </div>
-        </div>
-
-        <!-- 드래그 설치 존 -->
-        <div class="install-box">
-            <a class="drag-btn" id="bookmarklet-btn" href="">
-                <span>🎓 배움마당 Smart Helper (v4.4.1)</span>
-            </a>
-            <div class="drag-instruction">
-                위 보라색 버튼을 마우스로 누른 채, <span class="highlight">브라우저 북마크(즐겨찾기) 바</span>로 끌어다 놓으세요!<br>
-                <span style="font-size:12px;color:var(--text-muted);">* 북마크 바가 안 보인다면 키보드의 <strong>Ctrl + Shift + B</strong>를 누르세요.</span>
-            </div>
-        </div>
-
-        <div class="steps">
-            <div class="step-item">
-                <div class="step-num">1</div>
-                <div class="step-text">
-                    LGU+ 배움마당 사이트에 로그인한 뒤 <strong>수강 대상 과목 상세 화면</strong>(차수별 학습하기가 나열된 곳)으로 이동합니다.
-                </div>
-            </div>
-            <div class="step-item">
-                <div class="step-num">2</div>
-                <div class="step-text">
-                    등록해 둔 즐겨찾기 바의 <strong>[🎓 배움마당 도우미]</strong> 북마크를 마우스로 가볍게 클릭합니다.
-                </div>
-            </div>
-            <div class="step-item">
-                <div class="step-num">3</div>
-                <div class="step-text">
-                    화면에 즉시 스마트 대시보드가 로드되며, 수강율 100% 미만인 강의들을 대상으로 <strong>백그라운드 동시 수강</strong>을 진행합니다!
-                </div>
-            </div>
-        </div>
-
-        <div class="manual-box">
-            <div class="manual-title">💡 드래그가 잘 되지 않거나 동료에게 메신저로 전달할 때:</div>
-            <div class="textarea-container">
-                <input class="code-input" id="code-box" readonly value="">
-                <button class="copy-btn" onclick="copyCode()">코드 복사</button>
-            </div>
-            <div class="drag-instruction" style="text-align:left; margin-top:10px;">
-                복사 후, 북마크 관리자나 아무 사이트나 북마크를 만드신 뒤 <strong>[주소(URL)] 입력칸에 복사한 코드를 그대로 붙여넣고 저장</strong>해 쓰시면 됩니다.
-            </div>
-        </div>
-
-        <!-- 🔄 Tampermonkey 자동 지속 솔루션 안내 -->
-        <div class="persistent-box">
-            <div class="persistent-title">
-                <span>🔄 [시험 자동 풀이 무한 지속] 100% 전자동 연속 풀이 가이드 (권장)</span>
-                <span class="persistent-badge">영속화 솔루션</span>
-            </div>
-            <div class="persistent-desc">
-                일반 즐겨찾기(북마크클릿) 방식은 브라우저 보안 규격상 <strong>페이지가 새로고침되거나 이동할 때 도우미 작동이 초기화</strong>됩니다.<br>
-                아래 <strong>Tampermonkey(템퍼몽키)</strong> 방식을 이용하시면, 시험 페이지가 넘어가도 <strong>어떠한 조작이나 재클릭 없이 AI가 다음 문제를 연속해서 완전 자동으로 풀이</strong>합니다.
-            </div>
-            <div class="persistent-steps">
-                <div class="persistent-step">
-                    <span class="step-num" style="width:18px; height:18px; font-size:11px; line-height:18px;">1</span>
-                    <div>
-                        브라우저에 맞는 마켓에서 <strong><a href="https://chromewebstore.google.com/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo" target="_blank" style="color:#a78bfa; text-decoration:underline; font-weight: 600;">Tampermonkey 확장프로그램 (클릭하여 설치)</a></strong>을 설치합니다.
-                    </div>
-                </div>
-                <div class="persistent-step">
-                    <span class="step-num" style="width:18px; height:18px; font-size:11px; line-height:18px;">2</span>
-                    <div>
-                        아래 <strong>[유저스크립트 코드 복사]</strong> 버튼을 클릭합니다.
-                    </div>
-                </div>
-                <div class="persistent-step">
-                    <span class="step-num" style="width:18px; height:18px; font-size:11px; line-height:18px;">3</span>
-                    <div>
-                        브라우저 우측 상단의 Tampermonkey 아이콘 클릭 ➔ <strong>"새 스크립트 만들기..."</strong>를 선택합니다.<br>
-                        기존에 적힌 템플릿 텍스트를 전부 지운 뒤, <strong>복사한 코드를 그대로 붙여넣고 저장(Ctrl + S)</strong>하면 즉시 영구 적용 완료!
-                    </div>
-                </div>
-            </div>
-            <div class="textarea-container">
-                <input class="code-input" id="userscript-box" readonly value="유저스크립트 소스코드 생성 중...">
-                <button class="copy-btn" onclick="copyUserscript()">유저스크립트 복사</button>
-            </div>
-        </div>
-    </div>
-
-    <div class="toast" id="toast">코드가 복사되었습니다! 북마크 주소창에 붙여넣어주세요.</div>
-
-    <!-- 💡 격리형 텍스트 소스코드 영역 (세미콜론 누락 전수 보완 및 Newline 유지형) -->
-    <script type="text/plain" id="bookmarklet-source">
 (function() {
-    /* [v4.4.1] Gemini AI API Key 설정 (파일에 직접 저장하여 영구 사용 가능) */
+    /* [v4.5.0] Gemini AI API Key 설정 (파일에 직접 저장하여 영구 사용 가능) */
     const GEMINI_API_KEY = ""; // 여기에 발급받은 API 키를 입력하면 매번 설정 창을 열 필요가 없습니다.
+
+    /* 백그라운드 재생 방지 및 타이머 스로틀링 회피 헬퍼 */
+    let bgTimerWorker = null;
+    let bgTimerCallbacks = new Set();
+    let keepAliveAudioCtx = null;
+
+    function initBackgroundTimerWorker() {
+        if (bgTimerWorker) return;
+        try {
+            const workerCode = `
+                let timer = null;
+                self.onmessage = function(e) {
+                    if (e.data === 'start') {
+                        if (!timer) {
+                            timer = setInterval(function() {
+                                self.postMessage('tick');
+                            }, 1000);
+                        }
+                    } else if (e.data === 'stop') {
+                        if (timer) {
+                            clearInterval(timer);
+                            timer = null;
+                        }
+                    }
+                };
+            `;
+            const blob = new Blob([workerCode], { type: 'application/javascript' });
+            bgTimerWorker = new Worker(URL.createObjectURL(blob));
+            bgTimerWorker.onmessage = function(e) {
+                if (e.data === 'tick') {
+                    bgTimerCallbacks.forEach(cb => {
+                        try { cb(); } catch (err) {}
+                    });
+                }
+            };
+            bgTimerWorker.postMessage('start');
+        } catch (e) {
+            console.warn("[SmartHelper] Web Worker 타이머 생성 실패 (setInterval 백업 사용):", e);
+        }
+    }
+
+    function addUnthrottledInterval(callback) {
+        initBackgroundTimerWorker();
+        if (bgTimerWorker) {
+            bgTimerCallbacks.add(callback);
+            return function stop() {
+                bgTimerCallbacks.delete(callback);
+            };
+        } else {
+            const id = setInterval(callback, 1000);
+            return function stop() {
+                clearInterval(id);
+            };
+        }
+    }
+
+    function startAudioKeepAlive() {
+        if (keepAliveAudioCtx) return;
+        try {
+            const AudioCtx = window.AudioContext || window.webkitAudioContext;
+            if (AudioCtx) {
+                keepAliveAudioCtx = new AudioCtx();
+                const osc = keepAliveAudioCtx.createOscillator();
+                const gain = keepAliveAudioCtx.createGain();
+                gain.gain.value = 0.001;
+                osc.connect(gain);
+                gain.connect(keepAliveAudioCtx.destination);
+                osc.start();
+            }
+        } catch (e) {}
+    }
+
+    function stopAudioKeepAlive() {
+        if (keepAliveAudioCtx) {
+            try {
+                keepAliveAudioCtx.close();
+            } catch (e) {}
+            keepAliveAudioCtx = null;
+        }
+    }
+
+    function applyBackgroundProtections(win) {
+        if (!win) return;
+        try {
+            const doc = win.document;
+            if (!doc) return;
+
+            try {
+                Object.defineProperty(doc, 'hidden', {
+                    get: function() { return false; },
+                    configurable: true
+                });
+                Object.defineProperty(doc, 'visibilityState', {
+                    get: function() { return 'visible'; },
+                    configurable: true
+                });
+                Object.defineProperty(doc, 'hasFocus', {
+                    value: function() { return true; },
+                    writable: true,
+                    configurable: true
+                });
+            } catch (e) {}
+
+            const blockedEvents = ['visibilitychange', 'webkitvisibilitychange', 'blur', 'pagehide', 'focusout'];
+            try {
+                if (win.EventTarget && win.EventTarget.prototype && !win.EventTarget.prototype._smartHooked) {
+                    const origAddEventListener = win.EventTarget.prototype.addEventListener;
+                    win.EventTarget.prototype.addEventListener = function(type, listener, options) {
+                        if (typeof type === 'string' && blockedEvents.includes(type.toLowerCase())) {
+                            return;
+                        }
+                        return origAddEventListener.apply(this, arguments);
+                    };
+                    win.EventTarget.prototype._smartHooked = true;
+                }
+            } catch (e) {}
+
+            ['onblur', 'onvisibilitychange', 'onpagehide', 'onwebkitvisibilitychange'].forEach(prop => {
+                try {
+                    Object.defineProperty(win, prop, {
+                        get: function() { return null; },
+                        set: function(val) {},
+                        configurable: true
+                    });
+                } catch (e) {}
+                try {
+                    Object.defineProperty(doc, prop, {
+                        get: function() { return null; },
+                        set: function(val) {},
+                        configurable: true
+                    });
+                } catch (e) {}
+            });
+
+            try {
+                if (win.HTMLMediaElement && win.HTMLMediaElement.prototype && !win.HTMLMediaElement.prototype._smartPauseHooked) {
+                    const origPause = win.HTMLMediaElement.prototype.pause;
+                    win.HTMLMediaElement.prototype.pause = function() {
+                        if (this._smartKeepPlaying) {
+                            return;
+                        }
+                        return origPause.apply(this, arguments);
+                    };
+                    win.HTMLMediaElement.prototype._smartPauseHooked = true;
+                }
+            } catch (e) {}
+
+        } catch (e) {}
+    }
 
     /* 1. 스타일 인라인 전처리 보조 */
     const styleSheet = document.createElement("style");
@@ -585,8 +331,8 @@
                 <!-- 📊 AI 진행 상태 바 영역 (콤팩트형) -->
                 <div id="smart-ai-progress-area" style="display:none; margin-top:4px; flex-direction:column; gap:4px;">
                     <div style="display:flex; justify-content:space-between; font-size:10px; color:#9ca3af;">
-                         <span id="smart-ai-progress-text" style="font-size:10px; font-weight:600; color:#e5e7eb;">대기 중...</span>
-                         <span id="smart-ai-progress-percent" style="font-size:10px; color:#a78bfa;">0%</span>
+                        <span id="smart-ai-progress-text" style="font-size:10px; font-weight:600; color:#e5e7eb;">대기 중...</span>
+                        <span id="smart-ai-progress-percent" style="font-size:10px; color:#a78bfa;">0%</span>
                     </div>
                     <div style="width:100%; height:4px; background:rgba(255,255,255,0.08); border-radius:4px; overflow:hidden;">
                         <div id="smart-ai-progress-bar" style="width:0%; height:100%; background:linear-gradient(90deg, #ec4899, #8b5cf6); border-radius:4px; transition:width 0.3s;"></div>
@@ -596,7 +342,7 @@
 
             <div class="smart-lesson-list" id="smart-list-body"></div>
             <div class="smart-footer">
-                  <strong>Baeummadang Smart Helper v4.4.1</strong><br>
+                  <strong>Baeummadang Smart Helper v4.5.0</strong><br>
                 백그라운드 가상 창(iFrame)으로 무음 재생을 수행합니다.<br>
                 화면을 끄거나 탭을 닫지 마세요.
             </div>
@@ -632,7 +378,7 @@
                 stopBatchLearning();
             } else {
                 startBatchLearning();
-            };
+            }
         });
 
         const settingsBtn = mainContent.querySelector("#smart-settings-btn");
@@ -787,8 +533,8 @@
             } else {
                 startBtn.className = "smart-action-btn";
                 startBtn.querySelector("span").textContent = "🚀 스마트 일괄 수강 시작";
-            };
-        };
+            }
+        }
     }
 
     function capturePopupUrl(btn) {
@@ -811,7 +557,7 @@
                 btn.click();
             } catch (e) {
                 console.error("클릭 에러", e);
-            };
+            }
 
             setTimeout(() => {
                 window.open = originalOpen;
@@ -834,6 +580,7 @@
 
         isRunning = true;
         shouldStop = false;
+        startAudioKeepAlive();
         updateUI();
 
         const MAX_CONCURRENT = 10; // 사용자 요청에 의한 최대 동시 수강 개수 확대
@@ -873,14 +620,15 @@
             lesson.url = url;
 
             const iframe = document.createElement("iframe");
-            iframe.style.position = 'absolute';
-            iframe.style.width = '1200px';
-            iframe.style.height = '800px';
+            iframe.style.position = 'fixed';
+            iframe.style.top = '0px';
+            iframe.style.left = '0px';
+            iframe.style.width = '100%';
+            iframe.style.height = '100%';
             iframe.style.opacity = '0.001';
-            iframe.style.left = '-9999px';
-            iframe.style.top = '-9999px';
-            iframe.style.zIndex = '-9999';
+            iframe.style.zIndex = '-2147483647';
             iframe.style.pointerEvents = 'none';
+            iframe.style.border = 'none';
             iframe.src = url;
             iframe.setAttribute("allow", "autoplay; encrypted-media");
 
@@ -890,6 +638,7 @@
             // Mock window.opener immediately to emulate popup
             try {
                 if (iframe.contentWindow) {
+                    applyBackgroundProtections(iframe.contentWindow);
                     Object.defineProperty(iframe.contentWindow, 'opener', {
                         get: function() { return window; },
                         set: function(val) {},
@@ -916,6 +665,7 @@
     function stopBatchLearning() {
         shouldStop = true;
         isRunning = false;
+        stopAudioKeepAlive();
 
         lessons.forEach(lesson => {
             if (lesson.iframe) {
@@ -1058,9 +808,10 @@
             if (isStarted) return;
             isStarted = true;
 
-            const monitorInterval = setInterval(() => {
+            let stopMonitor = null;
+            stopMonitor = addUnthrottledInterval(() => {
                 if (shouldStop || !iframe.parentElement || lesson.status === 'completed') {
-                    clearInterval(monitorInterval);
+                    if (stopMonitor) stopMonitor();
                     return;
                 }
 
@@ -1069,6 +820,8 @@
                     if (!doc || doc.readyState === 'loading') {
                         return; // 문서 로딩 대기
                     }
+
+                    applyBackgroundProtections(iframe.contentWindow);
 
                     // Recurring safety: ensure opener is always defined on the window
                     try {
@@ -1082,14 +835,16 @@
                         }
                     } catch (e) {}
 
-                    // [v4.2] 글로벌 진도율 상시 검사 (교안, 동영상, 슬라이드 공통)
+                    // [v4.1] 글로벌 진도율 상시 검사 (교안, 동영상, 슬라이드 공통)
                     let globalTargetDoc = doc;
                     let globalPageProgress = getProgressFromPage(doc);
                     if (globalPageProgress === null) {
                         const innerFrames = doc.querySelectorAll("iframe, frame");
                         for (let innerFrame of innerFrames) {
                             try {
-                                const innerDoc = innerFrame.contentDocument || innerFrame.contentWindow.document;
+                                const innerWin = innerFrame.contentWindow;
+                                if (innerWin) applyBackgroundProtections(innerWin);
+                                const innerDoc = innerFrame.contentDocument || innerWin.document;
                                 const innerProgress = getProgressFromPage(innerDoc);
                                 if (innerProgress !== null) {
                                     globalTargetDoc = innerDoc;
@@ -1109,7 +864,7 @@
                         if (globalPageProgress >= 100 && (Date.now() - startTime > 8000)) {
                             lesson.status = 'completed';
                             lesson.progress = 100;
-                            clearInterval(monitorInterval);
+                            if (stopMonitor) stopMonitor();
                             updateUI();
                             
                             setTimeout(() => {
@@ -1123,7 +878,7 @@
                         }
                     }
 
-                    // [v4.2] 교안(Handout) 및 정적 페이지 전용 초고속 자동 처리 루틴
+                    // [v4.1] 교안(Handout) 및 정적 페이지 전용 초고속 자동 처리 루틴
                     if (isHandout) {
                         lesson.status = 'playing';
                         if (lesson.progress < 50) lesson.progress = 50;
@@ -1136,7 +891,7 @@
                             lesson.status = 'completed';
                             lesson.progress = 100;
                             lesson.currentTime = "완료";
-                            clearInterval(monitorInterval);
+                            if (stopMonitor) stopMonitor();
                             updateUI();
                             
                             setTimeout(() => {
@@ -1156,7 +911,9 @@
                         const innerFrames = doc.querySelectorAll("iframe, frame");
                         for (let innerFrame of innerFrames) {
                             try {
-                                const innerDoc = innerFrame.contentDocument || innerFrame.contentWindow.document;
+                                const innerWin = innerFrame.contentWindow;
+                                if (innerWin) applyBackgroundProtections(innerWin);
+                                const innerDoc = innerFrame.contentDocument || innerWin.document;
                                 const innerVideo = innerDoc.querySelector("video");
                                 if (innerVideo) {
                                     video = innerVideo;
@@ -1179,7 +936,9 @@
                             const innerFrames = doc.querySelectorAll("iframe, frame");
                             for (let innerFrame of innerFrames) {
                                 try {
-                                    const innerDoc = innerFrame.contentDocument || innerFrame.contentWindow.document;
+                                    const innerWin = innerFrame.contentWindow;
+                                    if (innerWin) applyBackgroundProtections(innerWin);
+                                    const innerDoc = innerFrame.contentDocument || innerWin.document;
                                     const innerSlideInfo = getSlideProgress(innerDoc);
                                     const innerSlick = innerDoc.querySelector('.slick-next, .slick-arrow, button[aria-label="Next"]');
                                     const innerSlickContainer = innerDoc.querySelector('.slick-slider, .slick-list, .slick-track');
@@ -1204,12 +963,15 @@
                             // Emulate opener inside the active slide window
                             try {
                                 const activeWin = (targetDoc === doc) ? iframe.contentWindow : targetDoc.defaultView;
-                                if (activeWin && activeWin.opener !== window) {
-                                    Object.defineProperty(activeWin, 'opener', {
-                                        get: function() { return window; },
-                                        set: function(val) {},
-                                        configurable: true
-                                    });
+                                if (activeWin) {
+                                    applyBackgroundProtections(activeWin);
+                                    if (activeWin.opener !== window) {
+                                        Object.defineProperty(activeWin, 'opener', {
+                                            get: function() { return window; },
+                                            set: function(val) {},
+                                            configurable: true
+                                        });
+                                    }
                                 }
                             } catch (e) {}
 
@@ -1224,7 +986,7 @@
                                 if (pageProgress >= 100 && (Date.now() - startTime > 15000)) {
                                     lesson.status = 'completed';
                                     lesson.progress = 100;
-                                    clearInterval(monitorInterval);
+                                    if (stopMonitor) stopMonitor();
                                     updateUI();
                                     
                                     setTimeout(() => {
@@ -1242,7 +1004,7 @@
                                 if ((slideInfo.current >= slideInfo.total || slideInfo.pct >= 100) && (Date.now() - startTime > 15000)) {
                                     lesson.status = 'completed';
                                     lesson.progress = 100;
-                                    clearInterval(monitorInterval);
+                                    if (stopMonitor) stopMonitor();
                                     updateUI();
                                     
                                     setTimeout(() => {
@@ -1335,6 +1097,12 @@
                     // 3. 비디오 객체가 확보된 경우 상태 업데이트 및 재생 처리
                     if (video) {
                         video.muted = true;
+                        video.volume = 0;
+                        video.playsInline = true;
+                        video.setAttribute("playsinline", "");
+                        video.setAttribute("webkit-playsinline", "");
+                        video._smartKeepPlaying = true;
+
                         if (video.paused && !video.ended) {
                             video.play().catch(err => {
                                 // console.log("autoplay fail", err);
@@ -1354,9 +1122,10 @@
                         lesson.progress = pct;
 
                         if (pct >= 98 || video.ended) {
+                            video._smartKeepPlaying = false;
                             lesson.status = 'completed';
                             lesson.progress = 100;
-                            clearInterval(monitorInterval);
+                            if (stopMonitor) stopMonitor();
                             updateUI();
                             
                             setTimeout(() => {
@@ -1390,7 +1159,7 @@
                     lesson.progress = 50;
                     updateUI();
                 }
-            }, 1000);
+            });
         };
 
         // 로드 이벤트와 무관하게 즉시 또는 1초 후에 강제로 모니터링을 구동하여 캐싱으로 인한 onload 미발생 극복
@@ -1402,9 +1171,10 @@
         const remaining = lessons.filter(l => l.status !== 'completed');
         if (remaining.length === 0) {
             isRunning = false;
+            stopAudioKeepAlive();
             alert("🎉 모든 차수의 동시 학습이 완료되었습니다!");
             updateUI();
-        };
+        }
     }
 
     async function triggerAISolve() {
@@ -1683,7 +1453,7 @@ ${questionText}
         const sanitizedKey = apiKey.trim().replace(/['"\s]/g, "");
         
         // 시도할 모델 및 API 버전 조합 리스트 (2026년 기준 Flash 과부하 대비 Pro 백업군 추가 탑재)
-        const modelNames = ["gemini-2.5-flash", "gemini-1.5-flash", "gemini-1.5-pro"];
+        const modelNames = ["gemini-3.5-flash-lite", "gemini-2.5-flash", "gemini-2.5-flash-lite"];
         const apiVersions = ["v1beta", "v1"];
         
         let lastError = null;
@@ -1874,6 +1644,7 @@ ${questionText}
     }
 
     function init() {
+        applyBackgroundProtections(window);
         createDashboard();
         initAJAXInterceptors();
         
@@ -1893,7 +1664,7 @@ ${questionText}
 
             if (lessons.length > 0 || attempts >= 10) {
                 clearInterval(autoScanInterval);
-            };
+            }
         }, 1000);
 
         // [v4.2] AI 지속적 자동 풀이 감지 및 트리거
@@ -1907,150 +1678,5 @@ ${questionText}
         init();
     } else {
         window.addEventListener("DOMContentLoaded", init);
-    };
+    }
 })();
-    </script>
-
-    <script>
-        let realBookmarkletCode = "";
-        let realUserscriptCode = "";
-
-        function toggleApiKeyVisibility(btn) {
-            const field = document.getElementById("api-key-field");
-            if (field.type === "password") {
-                field.type = "text";
-                btn.textContent = "숨기기";
-            } else {
-                field.type = "password";
-                btn.textContent = "보이기";
-            }
-        }
-
-        function updateBookmarkletWithKey() {
-            const userKey = document.getElementById("api-key-field").value.trim();
-            const rawCode = document.getElementById("bookmarklet-source").textContent;
-            
-            // 1. Real code generation (with the actual key)
-            let customizedCode = rawCode;
-            if (userKey) {
-                customizedCode = rawCode.replace('const GEMINI_API_KEY = "";', `const GEMINI_API_KEY = "${userKey}";`);
-            }
-            
-            // Clean and normalize for bookmarklet
-            let clean = customizedCode.replace(/\/\*[\s\S]*?\*\//g, '');
-            clean = clean.split('\n').map(line => {
-                const commentIdx = line.indexOf('//');
-                if (commentIdx !== -1) {
-                    const prefix = line.substring(0, commentIdx);
-                    if (!prefix.match(/https?:$/i)) {
-                        line = prefix;
-                    }
-                }
-                return line;
-            }).join('\n');
-            const normalizedCode = clean.replace(/\r\n/g, '\n').replace(/\r/g, '\n').trim();
-            const base64Code = btoa(unescape(encodeURIComponent(normalizedCode)));
-            const encodedUrl = "javascript:eval(decodeURIComponent(escape(atob('" + base64Code + "'))))";
-            
-            realBookmarkletCode = encodedUrl;
-            
-            const userscriptHeader = `// ==UserScript==
-// @name         배움마당 Smart Helper
-// @namespace    http://tampermonkey.net/
-// @version      4.4.1
-// @description  초고속 백그라운드 멀티 수강 도우미
-// @match        *://*.baeummadang.*/*
-// @grant        none
-// ==UserScript==
-
-`;
-            realUserscriptCode = userscriptHeader + customizedCode;
-
-            // 2. Masked code generation (with masked key for UI display)
-            let maskedKey = "";
-            if (userKey) {
-                // Show first 6 and last 4 characters, mask middle
-                if (userKey.length > 10) {
-                    maskedKey = userKey.substring(0, 6) + "●●●●●●●●●●●●●●●●●●●●" + userKey.substring(userKey.length - 4);
-                } else {
-                    maskedKey = "●●●●●●●●●●";
-                }
-            }
-            
-            let maskedCustomizedCode = rawCode;
-            if (userKey) {
-                maskedCustomizedCode = rawCode.replace('const GEMINI_API_KEY = "";', `const GEMINI_API_KEY = "${maskedKey}";`);
-            }
-            
-            let maskedClean = maskedCustomizedCode.replace(/\/\*[\s\S]*?\*\//g, '');
-            maskedClean = maskedClean.split('\n').map(line => {
-                const commentIdx = line.indexOf('//');
-                if (commentIdx !== -1) {
-                    const prefix = line.substring(0, commentIdx);
-                    if (!prefix.match(/https?:$/i)) {
-                        line = prefix;
-                    }
-                }
-                return line;
-            }).join('\n');
-            const maskedNormalizedCode = maskedClean.replace(/\r\n/g, '\n').replace(/\r/g, '\n').trim();
-            const maskedBase64Code = btoa(unescape(encodeURIComponent(maskedNormalizedCode)));
-            const maskedEncodedUrl = "javascript:eval(decodeURIComponent(escape(atob('" + maskedBase64Code + "'))))";
-
-            // Bind to UI
-            document.getElementById("bookmarklet-btn").href = encodedUrl; // Real URL for drag & drop
-            document.getElementById("code-box").value = maskedEncodedUrl; // Masked for screen protection
-            document.getElementById("userscript-box").value = userscriptHeader + maskedCustomizedCode; // Masked for screen protection
-        }
-
-        // 초기 로딩 시 1회 실행하여 기본값 바인딩
-        updateBookmarkletWithKey();
-
-        // Vercel 서버리스 API를 통해 마스터 키를 자동으로 가져와 결합 시도 (주인님의 완벽한 보안 아키텍처)
-        fetch('/api/get-key')
-            .then(res => res.json())
-            .then(data => {
-                if (data && data.apiKey) {
-                    const keyField = document.getElementById("api-key-field");
-                    keyField.value = data.apiKey;
-                    updateBookmarkletWithKey();
-                }
-                // API Key fetching worked or didn't, but we always hide the key container
-                document.getElementById("api-key-container").style.display = "none";
-            })
-            .catch(err => {
-                console.warn("Vercel 환경 변수에서 키를 가져오지 못했습니다. 로컬 환경이거나 세팅이 누락되었을 수 있습니다.", err);
-                // Even on error, hide to guarantee zero exposure under any circumstances
-                document.getElementById("api-key-container").style.display = "none";
-            });
-
-        function copyCode() {
-            if (!realBookmarkletCode) {
-                return;
-            }
-            navigator.clipboard.writeText(realBookmarkletCode);
- 
-            const toast = document.getElementById("toast");
-            toast.textContent = "북마크 코드가 복사되었습니다! 북마크 주소창에 붙여넣어주세요.";
-            toast.className = "toast show";
-            setTimeout(() => {
-                toast.className = "toast";
-            }, 3000);
-        }
-
-        function copyUserscript() {
-            if (!realUserscriptCode) {
-                return;
-            }
-            navigator.clipboard.writeText(realUserscriptCode);
- 
-            const toast = document.getElementById("toast");
-            toast.textContent = "유저스크립트 코드가 복사되었습니다! Tampermonkey에 붙여넣어주세요.";
-            toast.className = "toast show";
-            setTimeout(() => {
-                toast.className = "toast";
-            }, 3000);
-        }
-    </script>
-</body>
-</html>

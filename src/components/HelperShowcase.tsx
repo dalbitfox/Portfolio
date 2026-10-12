@@ -1,353 +1,552 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 export const HelperShowcase: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'overview' | 'architecture' | 'launcher'>('overview');
-  const [iframeLoading, setIframeLoading] = useState<boolean>(true);
+  const [bookmarkletUrl, setBookmarkletUrl] = useState<string>('');
+  const [toastMessage, setToastMessage] = useState<string>('');
+  const [showToast, setShowToast] = useState<boolean>(false);
 
-  const handleTabChange = (tab: 'overview' | 'architecture' | 'launcher') => {
-    setActiveTab(tab);
-    if (tab === 'launcher') {
-      setIframeLoading(true);
+  // v4.5.0 HTML 파일에서 북마크클릿 URL 동적 추출
+  useEffect(() => {
+    fetch('/배움마당%2BSmart%2BHelper%2B(v4.5.0).html')
+      .then((res) => res.text())
+      .then((html) => {
+        const startTag = '<script type="text/plain" id="bookmarklet-source">';
+        const endTag = '</script>';
+        const startIdx = html.indexOf(startTag);
+        if (startIdx !== -1) {
+          const endIdx = html.indexOf(endTag, startIdx);
+          if (endIdx !== -1) {
+            const raw = html.substring(startIdx + startTag.length, endIdx);
+            const clean = raw
+              .split('\n')
+              .map((line) => {
+                const commentIdx = line.indexOf('//');
+                if (commentIdx !== -1) {
+                  const prefix = line.substring(0, commentIdx);
+                  if (!prefix.match(/https?:$/i)) {
+                    return prefix;
+                  }
+                }
+                return line;
+              })
+              .join('\n');
+            const normalized = clean.replace(/\r\n/g, '\n').replace(/\r/g, '\n').trim();
+            const base64Code = btoa(unescape(encodeURIComponent(normalized)));
+            const url = "javascript:eval(decodeURIComponent(escape(atob('" + base64Code + "'))))";
+            setBookmarkletUrl(url);
+          }
+        }
+      })
+      .catch((err) => console.error('Failed to load bookmarklet source:', err));
+  }, []);
+
+  const triggerToast = (msg: string) => {
+    setToastMessage(msg);
+    setShowToast(true);
+    setTimeout(() => {
+      setShowToast(false);
+    }, 3200);
+  };
+
+  const handleCopyBookmarklet = () => {
+    if (bookmarkletUrl) {
+      navigator.clipboard.writeText(bookmarkletUrl);
+      triggerToast('⭐ 즐겨찾기 북마크 코드가 복사되었습니다! 북마크바(Ctrl+Shift+B)에 주소로 등록하세요.');
+    } else {
+      triggerToast('배움마당 추가 포털을 여는 중입니다...');
+      window.open('/배움마당%2BSmart%2BHelper%2B(v4.5.0).html', '_blank');
     }
   };
 
+  const handleOpenInstallPortal = () => {
+    window.open('/배움마당%2BSmart%2BHelper%2B(v4.5.0).html', '_blank');
+  };
+
+  const handleOpenUserscript = () => {
+    window.open('/baeummadang_helper.user.js', '_blank');
+  };
+
   return (
-    <div style={{ animation: 'fadeIn 0.5s ease-out' }}>
-      {/* Title */}
-      <div style={{ marginBottom: '2.5rem' }}>
-        <span className="tag tag-orange" style={{ marginBottom: '0.5rem', fontSize: '0.75rem' }}>AX Automation Suite</span>
-        <h2 style={{ fontSize: '2.25rem', fontFamily: 'var(--font-headings)', fontWeight: 800, color: '#ffffff', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          <img src="/helper-cap.png" alt="Cap Icon" style={{ width: '42px', height: '42px', borderRadius: '50%', boxShadow: '0 4px 12px rgba(236, 72, 153, 0.3)' }} />
+    <div style={{ animation: 'fadeIn 0.5s ease-out', maxWidth: '1050px', margin: '0 auto' }}>
+      {/* 1. Header Section */}
+      <div style={{ marginBottom: '2rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.6rem' }}>
+          <span className="tag tag-orange" style={{ fontSize: '0.75rem', fontWeight: 600 }}>
+            AX Automation Suite
+          </span>
+          <span
+            style={{
+              fontSize: '0.75rem',
+              backgroundColor: 'rgba(236, 72, 153, 0.15)',
+              color: '#f472b6',
+              padding: '0.2rem 0.65rem',
+              borderRadius: '99px',
+              fontWeight: 700,
+              border: '1px solid rgba(236, 72, 153, 0.3)'
+            }}
+          >
+            v4.5.0 최신 업데이트
+          </span>
+        </div>
+
+        <h2
+          style={{
+            fontSize: '2.3rem',
+            fontFamily: 'var(--font-headings)',
+            fontWeight: 800,
+            color: '#ffffff',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.85rem',
+            letterSpacing: '-0.03em'
+          }}
+        >
+          <img
+            src="/helper-cap.png"
+            alt="Cap Icon"
+            style={{
+              width: '46px',
+              height: '46px',
+              borderRadius: '50%',
+              boxShadow: '0 4px 16px rgba(249, 115, 22, 0.35)',
+              border: '1px solid rgba(255, 255, 255, 0.1)'
+            }}
+          />
           배움마당 스마트 도우미 (Smart Helper)
         </h2>
-        <p style={{ color: 'var(--text-secondary)', fontSize: '1.05rem', marginTop: '0.25rem', fontWeight: 300 }}>
-          사내 교육 플랫폼 수강 일정을 감시하고, 백그라운드 학습 및 자동 시험 응시를 완전 무간섭으로 대행하는 생산성 혁신 솔루션
+        <p style={{ color: 'var(--text-secondary)', fontSize: '1.05rem', marginTop: '0.4rem', fontWeight: 300, lineHeight: '1.6' }}>
+          사내 교육 플랫폼 수강 일정을 감시하고, 백그라운드 무음 멀티 학습 및 Gemini AI 기반 100% 자동 시험 응시를 완전 무간섭으로 대행하는 생산성 혁신 솔루션
         </p>
       </div>
 
-      {/* Tab Navigation */}
-      <div style={{ display: 'flex', gap: '0.5rem', borderBottom: '1px solid var(--border-color)', marginBottom: '2.5rem' }}>
-        <button
-          onClick={() => handleTabChange('overview')}
+      {/* 2. Top Action Center (배움마당 추가하는 버튼 & 즐겨찾기 버튼 맨 위 배치) */}
+      <div
+        className="magic-card"
+        style={{
+          marginBottom: '2.5rem',
+          padding: '1.75rem 2rem',
+          backgroundColor: 'rgba(20, 20, 26, 0.65)',
+          border: '1px solid rgba(249, 115, 22, 0.35)',
+          borderRadius: '18px',
+          boxShadow: '0 12px 35px rgba(0, 0, 0, 0.4), 0 0 25px rgba(249, 115, 22, 0.08)'
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.25rem' }}>
+          <div>
+            <span style={{ fontSize: '0.8rem', color: '#f97316', fontWeight: 700, letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+              ⚡ QUICK ACTION CENTER
+            </span>
+            <h3 style={{ fontSize: '1.35rem', fontFamily: 'var(--font-headings)', fontWeight: 700, color: '#ffffff', marginTop: '0.2rem' }}>
+              배움마당 도우미 원클릭 추가 및 설치
+            </h3>
+          </div>
+          <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>
+            확장프로그램 설치 없이 즐겨찾기 클릭 한 번으로 실행 가능
+          </span>
+        </div>
+
+        {/* Buttons Row */}
+        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'stretch' }}>
+          {/* Button 1: 배움마당 추가하기 (설치 포털) */}
+          <button
+            onClick={handleOpenInstallPortal}
+            style={{
+              flex: '1 1 240px',
+              padding: '1rem 1.75rem',
+              borderRadius: '12px',
+              backgroundColor: '#f97316',
+              color: '#ffffff',
+              border: 'none',
+              fontFamily: 'var(--font-headings)',
+              fontSize: '1rem',
+              fontWeight: 700,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '0.6rem',
+              boxShadow: '0 8px 24px rgba(249, 115, 22, 0.35)',
+              transition: 'var(--transition-smooth)'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = '#ea580c';
+              e.currentTarget.style.transform = 'translateY(-2px)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = '#f97316';
+              e.currentTarget.style.transform = 'translateY(0)';
+            }}
+          >
+            <span style={{ fontSize: '1.25rem' }}>🚀</span>
+            <span>배움마당 추가하기 (v4.5.0)</span>
+            <span style={{ fontSize: '0.85rem', opacity: 0.8 }}>↗</span>
+          </button>
+
+          {/* Button 2: 즐겨찾기(북마크) 추가 버튼 (드래그 지원 앵커) */}
+          <a
+            href={bookmarkletUrl || '#'}
+            draggable={!!bookmarkletUrl}
+            onClick={(e) => {
+              e.preventDefault();
+              handleCopyBookmarklet();
+            }}
+            title="마우스로 브라우저 북마크 바로 드래그하거나, 클릭하여 코드를 복사하세요."
+            style={{
+              flex: '1 1 240px',
+              padding: '1rem 1.75rem',
+              borderRadius: '12px',
+              background: 'linear-gradient(135deg, #ec4899, #8b5cf6)',
+              color: '#ffffff',
+              border: '1px solid rgba(255, 255, 255, 0.15)',
+              fontFamily: 'var(--font-headings)',
+              fontSize: '1rem',
+              fontWeight: 700,
+              cursor: 'grab',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '0.6rem',
+              textDecoration: 'none',
+              boxShadow: '0 8px 24px rgba(236, 72, 153, 0.35)',
+              userSelect: 'none',
+              transition: 'var(--transition-smooth)'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.boxShadow = '0 12px 30px rgba(236, 72, 153, 0.55)';
+              e.currentTarget.style.transform = 'translateY(-2px)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.boxShadow = '0 8px 24px rgba(236, 72, 153, 0.35)';
+              e.currentTarget.style.transform = 'translateY(0)';
+            }}
+          >
+            <span style={{ fontSize: '1.25rem' }}>⭐</span>
+            <span>즐겨찾기 추가 (드래그 / 복사)</span>
+          </a>
+
+          {/* Button 3: Tampermonkey 유저스크립트 영속성 추가 */}
+          <button
+            onClick={handleOpenUserscript}
+            style={{
+              flex: '1 1 200px',
+              padding: '1rem 1.5rem',
+              borderRadius: '12px',
+              backgroundColor: 'rgba(255, 255, 255, 0.05)',
+              color: '#e2e8f0',
+              border: '1px solid rgba(255, 255, 255, 0.12)',
+              fontFamily: 'var(--font-headings)',
+              fontSize: '0.95rem',
+              fontWeight: 600,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '0.55rem',
+              transition: 'var(--transition-smooth)'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+              e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.25)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
+              e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.12)';
+            }}
+          >
+            <span style={{ fontSize: '1.15rem' }}>🔄</span>
+            <span>Tampermonkey 추가</span>
+            <span style={{ fontSize: '0.8rem', opacity: 0.6 }}>↗</span>
+          </button>
+        </div>
+
+        {/* Action Guide Tip */}
+        <div
           style={{
-            background: 'none',
-            border: 'none',
-            padding: '0.75rem 1.5rem',
-            fontFamily: 'var(--font-headings)',
-            fontSize: '1rem',
-            fontWeight: 600,
-            cursor: 'pointer',
-            color: activeTab === 'overview' ? '#f97316' : 'var(--text-secondary)',
-            borderBottom: activeTab === 'overview' ? '3px solid #f97316' : '3px solid transparent',
-            transition: 'all 0.3s ease'
+            marginTop: '1.25rem',
+            padding: '0.85rem 1.25rem',
+            backgroundColor: 'rgba(249, 115, 22, 0.06)',
+            border: '1px dashed rgba(249, 115, 22, 0.25)',
+            borderRadius: '10px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.75rem',
+            fontSize: '0.86rem',
+            color: '#fdba74',
+            lineHeight: '1.5'
           }}
         >
-          🔍 프로젝트 개요
-        </button>
-        <button
-          onClick={() => handleTabChange('architecture')}
-          style={{
-            background: 'none',
-            border: 'none',
-            padding: '0.75rem 1.5rem',
-            fontFamily: 'var(--font-headings)',
-            fontSize: '1rem',
-            fontWeight: 600,
-            cursor: 'pointer',
-            color: activeTab === 'architecture' ? '#f97316' : 'var(--text-secondary)',
-            borderBottom: activeTab === 'architecture' ? '3px solid #f97316' : '3px solid transparent',
-            transition: 'all 0.3s ease'
-          }}
-        >
-          ⚙️ 무간섭 자동화 흐름
-        </button>
-        <button
-          onClick={() => handleTabChange('launcher')}
-          style={{
-            background: 'none',
-            border: 'none',
-            padding: '0.75rem 1.5rem',
-            fontFamily: 'var(--font-headings)',
-            fontSize: '1rem',
-            fontWeight: 600,
-            cursor: 'pointer',
-            color: activeTab === 'launcher' ? '#f97316' : 'var(--text-secondary)',
-            borderBottom: activeTab === 'launcher' ? '3px solid #f97316' : '3px solid transparent',
-            transition: 'all 0.3s ease'
-          }}
-        >
-          📥 헬퍼 파일 및 사용법
-        </button>
+          <span style={{ fontSize: '1.1rem' }}>💡</span>
+          <span>
+            <strong>즐겨찾기 등록 방법:</strong> 위 <strong>[⭐ 즐겨찾기 추가]</strong> 버튼을 마우스로 누른 채 상단 <strong>브라우저 북마크바</strong>로 끌어다 놓으세요! (북마크바가 보이지 않는다면 <strong>Ctrl + Shift + B</strong>) 또는 버튼 클릭 시 코드가 즉시 복사됩니다.
+          </span>
+        </div>
       </div>
 
-      {/* Overview Tab */}
-      {activeTab === 'overview' && (
-        <div className="editorial-grid">
-          {/* Main Info */}
-          <div className="card span-8">
-            <h3 style={{ fontFamily: 'var(--font-headings)', fontSize: '1.4rem', marginBottom: '1.25rem', color: '#ffffff' }}>
-              💡 프로젝트 배경 및 목적
-            </h3>
-            <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem', lineHeight: '1.7', fontWeight: 300 }}>
-              바쁜 실무 환경 속에서 필수로 이수해야 하는 사이버 동영상 교육 일정들을 바쁜 업무 도중 틈틈이 수동으로 클릭하고 수강 기한을 챙겨야 하는 번거로움을 해결하기 위해 탄생했습니다.<br />
-              사용자가 신경 쓰지 않는 동안에도 프로그램이 백그라운드 환경에서 학습 진도를 나가고, 시험 응시까지 완수함으로써 실질적인 실무 집중 시간을 보장합니다.
-            </p>
-            <div className="divider" style={{ borderTop: '1px solid rgba(255,255,255,0.06)', margin: '1.5rem 0' }}></div>
-            
-            <h4 style={{ fontFamily: 'var(--font-headings)', fontSize: '1.15rem', marginBottom: '0.85rem', color: '#f97316' }}>
-              ✨ 핵심 자동화 기능 (Zero-Human Interference)
+      {/* 3. Core Automation Features (One-Page Briefing) */}
+      <div style={{ marginBottom: '3rem' }}>
+        <h3 style={{ fontFamily: 'var(--font-headings)', fontSize: '1.45rem', fontWeight: 800, color: '#ffffff', marginBottom: '1.25rem' }}>
+          ✨ 핵심 자동화 기능 (Zero-Human Interference)
+        </h3>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.25rem' }}>
+          {/* Feature 1 */}
+          <div
+            className="magic-card"
+            style={{
+              padding: '1.75rem',
+              backgroundColor: 'rgba(10, 10, 10, 0.55)',
+              border: '1px solid rgba(255, 255, 255, 0.07)'
+            }}
+          >
+            <div style={{ fontSize: '1.8rem', marginBottom: '0.75rem' }}>🔇</div>
+            <h4 style={{ fontFamily: 'var(--font-headings)', fontSize: '1.15rem', color: '#f97316', marginBottom: '0.5rem', fontWeight: 700 }}>
+              초고속 백그라운드 학습
             </h4>
-            <ul style={{ paddingLeft: '1.25rem', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: '0.75rem', fontWeight: 300, lineHeight: '1.6' }}>
-              <li>
-                <strong>동영상 강의 백그라운드 학습:</strong> 
-                브라우저 탭 비활성화 시 자동 정지되는 제약(Page Visibility API)을 극복하고, 완전한 백그라운드 무음 모드로 동영상을 자율 학습하여 진도율을 수료 기준까지 완수합니다.
-              </li>
-              <li>
-                <strong>시험 응시 100% 자동 대행:</strong> 
-                수강 완료 후 필수적으로 수행되는 교육별 퀴즈 및 평가 시험 문항들을 100% 자동 연산하여 무간섭으로 고득점 응시를 완료하고 수료 기준을 충족합니다.
-              </li>
-              <li>
-                <strong>실시간 스케줄링 및 챗봇 통보:</strong> 
-                사내 메신저 및 Webhook 연동을 통해, 신규 교육 일정이 감지되거나 자동 수료가 끝나는 시점에 챗봇 알람을 실시간으로 발송합니다.
-              </li>
-            </ul>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.88rem', lineHeight: '1.6', fontWeight: 300 }}>
+              브라우저 탭 비활성화 시 자동 정지되는 제약(Page Visibility API)을 극복하고, Web Worker 무간섭 타이머로 다른 업무 중에도 완전한 무음 모드로 동영상을 자율 학습하여 진도율 100%를 완수합니다.
+            </p>
           </div>
 
-          {/* Quick Specs */}
-          <div className="card span-4" style={{ backgroundColor: 'var(--bg-primary)', border: '1px solid rgba(255,255,255,0.05)' }}>
-            <h3 style={{ fontFamily: 'var(--font-headings)', fontSize: '1.25rem', marginBottom: '1.25rem', color: '#ffffff' }}>
-              🛠️ System Spec
-            </h3>
+          {/* Feature 2 */}
+          <div
+            className="magic-card"
+            style={{
+              padding: '1.75rem',
+              backgroundColor: 'rgba(10, 10, 10, 0.55)',
+              border: '1px solid rgba(255, 255, 255, 0.07)'
+            }}
+          >
+            <div style={{ fontSize: '1.8rem', marginBottom: '0.75rem' }}>💯</div>
+            <h4 style={{ fontFamily: 'var(--font-headings)', fontSize: '1.15rem', color: '#f472b6', marginBottom: '0.5rem', fontWeight: 700 }}>
+              Gemini AI 시험 100% 자동 대행
+            </h4>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.88rem', lineHeight: '1.6', fontWeight: 300 }}>
+              수강 완료 후 필수적으로 요구되는 교육별 퀴즈 및 평가 시험 문항들을 Gemini AI와 지능형 문제풀이 엔진이 실시간 연산하여, 어떠한 수동 조작 없이도 고득점으로 안정적인 수료 기준을 달성합니다.
+            </p>
+          </div>
+
+          {/* Feature 3 */}
+          <div
+            className="magic-card"
+            style={{
+              padding: '1.75rem',
+              backgroundColor: 'rgba(10, 10, 10, 0.55)',
+              border: '1px solid rgba(255, 255, 255, 0.07)'
+            }}
+          >
+            <div style={{ fontSize: '1.8rem', marginBottom: '0.75rem' }}>🛡️</div>
+            <h4 style={{ fontFamily: 'var(--font-headings)', fontSize: '1.15rem', color: '#60a5fa', marginBottom: '0.5rem', fontWeight: 700 }}>
+              자가복구 & 실시간 알림
+            </h4>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.88rem', lineHeight: '1.6', fontWeight: 300 }}>
+              네트워크 단절이나 가상 브라우저 이상 시 캐시 세션을 복원하는 이중 자가복구 구조(Self-Healing Loop)를 내장했습니다. 신규 교육 일정 감지 및 수료 완료 시 웹훅 알림을 즉시 발송합니다.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* 4. Simple 3-Step Flow Diagram */}
+      <div
+        className="magic-card"
+        style={{
+          marginBottom: '3rem',
+          padding: '2rem',
+          backgroundColor: 'rgba(14, 14, 18, 0.5)',
+          border: '1px solid rgba(255, 255, 255, 0.08)'
+        }}
+      >
+        <h3 style={{ fontFamily: 'var(--font-headings)', fontSize: '1.35rem', fontWeight: 800, color: '#ffffff', marginBottom: '1.5rem', textAlign: 'center' }}>
+          ⚙️ 간편 3단계 사용 흐름
+        </h3>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.25rem' }}>
+          <div
+            style={{
+              padding: '1.25rem',
+              backgroundColor: 'rgba(255, 255, 255, 0.02)',
+              border: '1px solid rgba(255, 255, 255, 0.06)',
+              borderRadius: '12px',
+              textAlign: 'center'
+            }}
+          >
+            <div style={{ width: '32px', height: '32px', borderRadius: '50%', backgroundColor: '#f97316', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, margin: '0 auto 0.75rem auto' }}>
+              1
+            </div>
+            <h5 style={{ fontFamily: 'var(--font-headings)', fontSize: '1rem', color: '#e2e8f0', marginBottom: '0.35rem' }}>
+              배움마당 사이트 접속
+            </h5>
+            <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', lineHeight: '1.5', margin: 0, fontWeight: 300 }}>
+              LGU+ 사내 배움마당 로그인 후 수강 대상 과목 상세 화면(차시 목록)으로 이동
+            </p>
+          </div>
+
+          <div
+            style={{
+              padding: '1.25rem',
+              backgroundColor: 'rgba(236, 72, 153, 0.04)',
+              border: '1px solid rgba(236, 72, 153, 0.2)',
+              borderRadius: '12px',
+              textAlign: 'center'
+            }}
+          >
+            <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'linear-gradient(135deg, #ec4899, #8b5cf6)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, margin: '0 auto 0.75rem auto' }}>
+              2
+            </div>
+            <h5 style={{ fontFamily: 'var(--font-headings)', fontSize: '1rem', color: '#f472b6', marginBottom: '0.35rem' }}>
+              즐겨찾기 클릭 (실행)
+            </h5>
+            <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', lineHeight: '1.5', margin: 0, fontWeight: 300 }}>
+              상단 북마크바의 <strong>[⭐ 배움마당 도우미]</strong> 클릭 (Tampermonkey는 자동 구동)
+            </p>
+          </div>
+
+          <div
+            style={{
+              padding: '1.25rem',
+              backgroundColor: 'rgba(59, 130, 246, 0.04)',
+              border: '1px solid rgba(59, 130, 246, 0.2)',
+              borderRadius: '12px',
+              textAlign: 'center'
+            }}
+          >
+            <div style={{ width: '32px', height: '32px', borderRadius: '50%', backgroundColor: '#3b82f6', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, margin: '0 auto 0.75rem auto' }}>
+              3
+            </div>
+            <h5 style={{ fontFamily: 'var(--font-headings)', fontSize: '1rem', color: '#60a5fa', marginBottom: '0.35rem' }}>
+              자동 수강 및 시험 완료
+            </h5>
+            <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', lineHeight: '1.5', margin: 0, fontWeight: 300 }}>
+              화면에 스마트 위젯이 뜨며 미이수 강의 동시 수강 및 시험까지 완전 무간섭 자동 패스!
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* 5. Live Interface Preview & System Spec */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.5rem', marginBottom: '3rem' }}>
+        {/* Left: Interface Preview */}
+        <div
+          className="magic-card"
+          style={{
+            padding: '1.75rem',
+            backgroundColor: 'rgba(10, 10, 10, 0.55)',
+            border: '1px solid rgba(255, 255, 255, 0.08)'
+          }}
+        >
+          <h4 style={{ fontFamily: 'var(--font-headings)', fontSize: '1.15rem', color: '#ffffff', marginBottom: '1rem', fontWeight: 700 }}>
+            📸 실제 구동 화면 (멀티 수강 위젯)
+          </h4>
+          <div
+            style={{
+              borderRadius: '12px',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              overflow: 'hidden',
+              boxShadow: '0 12px 24px rgba(0, 0, 0, 0.4)',
+              marginBottom: '1rem'
+            }}
+          >
+            <img src="/helper-widget.png" alt="Baeummadang Smart Helper Widget" style={{ width: '100%', display: 'block' }} />
+          </div>
+          <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: '1.5', margin: 0, fontWeight: 300 }}>
+            가상 iFrame을 생성하여 백그라운드 무음 모드로 동시 수강을 보조하는 위젯입니다. 진행률(%) 그래디언트 바와 완료 체크 마크를 통해 여러 강의의 실시간 상태를 한눈에 통제합니다.
+          </p>
+        </div>
+
+        {/* Right: System Spec & Downloads */}
+        <div
+          className="magic-card"
+          style={{
+            padding: '1.75rem',
+            backgroundColor: 'rgba(10, 10, 10, 0.55)',
+            border: '1px solid rgba(255, 255, 255, 0.08)',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between'
+          }}
+        >
+          <div>
+            <h4 style={{ fontFamily: 'var(--font-headings)', fontSize: '1.15rem', color: '#ffffff', marginBottom: '1.25rem', fontWeight: 700 }}>
+              🛠️ System Specifications
+            </h4>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <div>
-                <span style={{ fontSize: '0.75rem', color: 'var(--text-tertiary)', fontWeight: 600, letterSpacing: '0.05em' }}>ENGINE CORE</span>
-                <p style={{ fontWeight: 600, fontSize: '0.95rem', color: '#e2e8f0', marginTop: '0.1rem' }}>Node.js & Puppeteer Engine</p>
+                <span style={{ fontSize: '0.72rem', color: 'var(--text-tertiary)', fontWeight: 600, letterSpacing: '0.05em' }}>ENGINE CORE</span>
+                <p style={{ fontWeight: 600, fontSize: '0.92rem', color: '#e2e8f0', marginTop: '0.1rem' }}>JavaScript & Web Worker (Unthrottled)</p>
               </div>
               <div>
-                <span style={{ fontSize: '0.75rem', color: 'var(--text-tertiary)', fontWeight: 600, letterSpacing: '0.05em' }}>AUTOMATION</span>
-                <p style={{ fontWeight: 600, fontSize: '0.95rem', color: '#e2e8f0', marginTop: '0.1rem' }}>Headless Chromium Driver</p>
+                <span style={{ fontSize: '0.72rem', color: 'var(--text-tertiary)', fontWeight: 600, letterSpacing: '0.05em' }}>AI EXAM ENGINE</span>
+                <p style={{ fontWeight: 600, fontSize: '0.92rem', color: '#f472b6', marginTop: '0.1rem' }}>Gemini AI Automated Problem Solving</p>
               </div>
               <div>
-                <span style={{ fontSize: '0.75rem', color: 'var(--text-tertiary)', fontWeight: 600, letterSpacing: '0.05em' }}>INTEGRATION</span>
-                <p style={{ fontWeight: 600, fontSize: '0.95rem', color: '#e2e8f0', marginTop: '0.1rem' }}>HTTP REST Webhook Bot</p>
+                <span style={{ fontSize: '0.72rem', color: 'var(--text-tertiary)', fontWeight: 600, letterSpacing: '0.05em' }}>LATEST UPDATE</span>
+                <p style={{ fontWeight: 600, fontSize: '0.92rem', color: '#f97316', marginTop: '0.1rem' }}>v4.5.0 Stable Release</p>
               </div>
               <div>
-                <span style={{ fontSize: '0.75rem', color: 'var(--text-tertiary)', fontWeight: 600, letterSpacing: '0.05em' }}>LATEST STABLE</span>
-                <p style={{ fontWeight: 600, fontSize: '0.95rem', color: '#f97316', marginTop: '0.1rem' }}>v4.4.1 Stable Release</p>
+                <span style={{ fontSize: '0.72rem', color: 'var(--text-tertiary)', fontWeight: 600, letterSpacing: '0.05em' }}>COMPATIBILITY</span>
+                <p style={{ fontWeight: 600, fontSize: '0.92rem', color: '#94a3b8', marginTop: '0.1rem' }}>Chrome, Edge, Whale (PC Browser)</p>
               </div>
             </div>
           </div>
 
-          {/* Live Screenshots Showcasing Actual Interface */}
-          <div className="card span-12" style={{ marginTop: '2rem', backgroundColor: 'rgba(9, 9, 11, 0.3)', border: '1px solid rgba(255,255,255,0.06)' }}>
-            <h3 style={{ fontFamily: 'var(--font-headings)', fontSize: '1.4rem', marginBottom: '1.5rem', color: '#ffffff' }}>
-              📸 실제 구동 화면 및 기능 상세
-            </h3>
-            
-            <div style={{ display: 'flex', justifyContent: 'center' }}>
-              {/* Screenshot 1: Background Multi-player widget */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem', maxWidth: '600px', width: '100%' }}>
-                <div style={{ borderRadius: '12px', border: '1px solid rgba(255, 255, 255, 0.1)', overflow: 'hidden', boxShadow: '0 12px 24px rgba(0, 0, 0, 0.4)' }}>
-                  <img src="/helper-widget.png" alt="Baeummadang Smart Helper Widget Interface" style={{ width: '100%', display: 'block' }} />
-                </div>
-                <h4 style={{ fontFamily: 'var(--font-headings)', fontSize: '1.05rem', margin: '0.5rem 0 0.25rem 0', color: '#f97316' }}>
-                  🚀 초고속 백그라운드 멀티 수강 위젯
-                </h4>
-                <p style={{ fontSize: '0.88rem', color: 'var(--text-secondary)', lineHeight: '1.5', margin: 0, fontWeight: 300 }}>
-                  가상 iFrame 창을 생성하여 백그라운드 무음 모드로 동시 수강을 보조하는 위젯입니다. 진행률(%) 그래디언트 바와 완료 체크 마크를 통해 여러 강의의 실시간 상태를 한눈에 통제할 수 있습니다.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Architecture Tab */}
-      {activeTab === 'architecture' && (
-        <div className="magic-card span-12" style={{ border: '1px solid var(--border-color)', backgroundColor: 'rgba(9, 9, 11, 0.4)' }}>
-          <h3 style={{ fontFamily: 'var(--font-headings)', fontSize: '1.4rem', marginBottom: '1.5rem', textAlign: 'center', color: '#ffffff' }}>
-            ⚙️ 배움마당 스마트 헬퍼 자동화 알고리즘
-          </h3>
-          
-          {/* Custom Pure CSS Diagram */}
-          <div style={{ display: 'flex', justifyContent: 'space-around', alignItems: 'center', flexWrap: 'wrap', gap: '1.5rem', padding: '2rem 0' }}>
-            {/* Box 1 */}
-            <div style={{ width: '180px', padding: '1.25rem', backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border-color)', borderRadius: '12px', textAlign: 'center' }}>
-              <span style={{ fontSize: '1.5rem' }}>📡</span>
-              <h4 style={{ fontSize: '0.95rem', marginTop: '0.5rem', fontFamily: 'var(--font-headings)', color: '#e2e8f0' }}>일정 실시간 감지</h4>
-              <p style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', marginTop: '0.25rem' }}>배움마당 플랫폼 미수강 과정 주기적 자동 스캔</p>
-            </div>
-
-            <div style={{ fontSize: '1.5rem', color: '#f97316' }}>➔</div>
-
-            {/* Box 2 */}
-            <div style={{ width: '200px', padding: '1.25rem', backgroundColor: 'rgba(249, 115, 22, 0.08)', border: '1px solid rgba(249, 115, 22, 0.25)', borderRadius: '12px', textAlign: 'center' }}>
-              <span style={{ fontSize: '1.5rem' }}>🔇</span>
-              <h4 style={{ fontSize: '0.95rem', marginTop: '0.5rem', fontFamily: 'var(--font-headings)', color: '#f97316' }}>백그라운드 학습</h4>
-              <p style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', marginTop: '0.25rem' }}>Headless Chromium 브라우저를 통한 무음 자동 진도</p>
-            </div>
-
-            <div style={{ fontSize: '1.5rem', color: '#f97316' }}>➔</div>
-
-            {/* Box 3 */}
-            <div style={{ width: '200px', padding: '1.25rem', backgroundColor: 'rgba(59, 130, 246, 0.08)', border: '1px solid rgba(59, 130, 246, 0.25)', borderRadius: '12px', textAlign: 'center' }}>
-              <span style={{ fontSize: '1.5rem' }}>💯</span>
-              <h4 style={{ fontSize: '0.95rem', marginTop: '0.5rem', fontFamily: 'var(--font-headings)', color: '#60a5fa' }}>시험 100% 자동 대행</h4>
-              <p style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', marginTop: '0.25rem' }}>평가 문항 파싱 및 지능형 문제풀이 엔진 구동</p>
-            </div>
-
-            <div style={{ fontSize: '1.5rem', color: '#f97316' }}>➔</div>
-
-            {/* Box 4 */}
-            <div style={{ width: '180px', padding: '1.25rem', backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border-color)', borderRadius: '12px', textAlign: 'center' }}>
-              <span style={{ fontSize: '1.5rem' }}>💬</span>
-              <h4 style={{ fontSize: '0.95rem', marginTop: '0.5rem', fontFamily: 'var(--font-headings)', color: '#e2e8f0' }}>알림 통보</h4>
-              <p style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', marginTop: '0.25rem' }}>수료 결과 및 학습 완료 통계 챗봇 Webhook 알림</p>
-            </div>
-          </div>
-
-          <div style={{ padding: '1.25rem', backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border-color)', borderRadius: '8px', marginTop: '1.5rem' }}>
-            <h4 style={{ fontFamily: 'var(--font-headings)', fontSize: '1.05rem', marginBottom: '0.5rem', color: '#ffffff' }}>
-              ⚙️ 비정상 정지 우회 및 상태 모니터링 시스템
-            </h4>
-            <p style={{ fontSize: '0.88rem', color: 'var(--text-secondary)', lineHeight: '1.6', fontWeight: 300 }}>
-              네트워크 순간 단절, 장시간 미반응 등의 가상 브라우저 이상 상태 발생 시, 프로그램 스스로 캐시 상태를 파악하여 세션을 복원하고 미이수 지점부터 재시작하는 **이중 자가복구 구조(Self-Healing Loop)**를 구축했습니다.
-              또한 시험 문제 파서 엔진은 각 문항의 퀴즈 해설 정답 및 기출 패턴 데이터베이싱 매칭을 수행하여 오답 없이 안정적인 점수대로 수료를 완수합니다.
-            </p>
-          </div>
-        </div>
-      )}
-
-      {/* Launcher Tab (Renders the HTML Helper file inside a 950px full size iframe) */}
-      {activeTab === 'launcher' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-          {/* Action Bar */}
-          <div 
-            style={{ 
-              display: 'flex', 
-              justifyContent: 'space-between', 
-              alignItems: 'center', 
-              gap: '1.5rem',
-              backgroundColor: 'rgba(9, 9, 11, 0.4)',
-              border: '1px solid rgba(255, 255, 255, 0.05)',
-              padding: '1rem 1.5rem',
-              borderRadius: '10px',
-              flexWrap: 'wrap'
-            }}
-          >
-            <div style={{ flex: 1 }}>
-              <span style={{ fontSize: '0.82rem', color: '#f97316', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                📄 배움마당 Smart Helper (v4.4.1).html
-              </span>
-              <p style={{ color: 'var(--text-secondary)', fontSize: '0.88rem', margin: '0.2rem 0 0 0', fontWeight: 300, lineHeight: '1.5' }}>
-                아래 화면에서 스마트 헬퍼 프로그램 완성본 콘솔이 실시간으로 로딩되었습니다. 직접 사번/비밀번호 설정을 기입하여 무간섭 자동 수료를 동작시킬 수 있으며, 단독 실행을 원하는 경우 우측 버튼을 누르십시오.
-              </p>
-            </div>
-            <div>
-              <button
-                onClick={() => window.open('/배움마당%2BSmart%2BHelper%2B(v4.4.1).html', '_blank')}
-                style={{
-                  padding: '0.6rem 1.2rem',
-                  borderRadius: '6px',
-                  backgroundColor: 'transparent',
-                  color: '#f97316',
-                  border: '1px solid rgba(249, 115, 22, 0.3)',
-                  fontFamily: 'var(--font-headings)',
-                  fontSize: '0.85rem',
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.4rem',
-                  transition: 'all 0.2s ease'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = 'rgba(249, 115, 22, 0.08)';
-                  e.currentTarget.style.borderColor = '#f97316';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = 'transparent';
-                  e.currentTarget.style.borderColor = 'rgba(249, 115, 22, 0.3)';
-                }}
-              >
-                새 창에서 열기 ↗
-              </button>
-            </div>
-          </div>
-
-          {/* Iframe Frame Container */}
-          <div 
-            style={{ 
-              position: 'relative', 
-              width: '100%', 
-              height: '1550px',
-              backgroundColor: '#141414',
-              borderRadius: '12px',
-              border: '1px solid rgba(255, 255, 255, 0.08)',
-              boxShadow: '0 20px 40px rgba(0, 0, 0, 0.6)',
-              overflow: 'hidden'
-            }}
-          >
-            {/* Loading Spinner */}
-            {iframeLoading && (
-              <div 
-                style={{ 
-                  position: 'absolute', 
-                  top: 0, 
-                  left: 0, 
-                  right: 0, 
-                  bottom: 0, 
-                  display: 'flex', 
-                  flexDirection: 'column',
-                  justifyContent: 'center', 
-                  alignItems: 'center', 
-                  backgroundColor: 'rgba(20, 20, 20, 0.95)',
-                  zIndex: 5,
-                  gap: '1rem'
-                }}
-              >
-                <div 
-                  style={{ 
-                    width: '40px', 
-                    height: '40px', 
-                    borderRadius: '50%', 
-                    border: '3px solid rgba(249, 115, 22, 0.1)', 
-                    borderTopColor: '#f97316', 
-                    animation: 'spin 1s linear infinite'
-                  }}
-                />
-                <span style={{ fontSize: '0.88rem', color: 'rgba(255,255,255,0.4)', fontFamily: 'var(--font-headings)' }}>
-                  헬퍼 프로그램을 화면에 로딩하고 있습니다...
-                </span>
-              </div>
-            )}
-
-            {/* Embedded Iframe */}
-            <iframe
-              src="/배움마당%2BSmart%2BHelper%2B(v4.4.1).html"
-              title="배움마당 스마트 헬퍼"
-              onLoad={() => setIframeLoading(false)}
+          <div style={{ marginTop: '1.75rem', paddingTop: '1.25rem', borderTop: '1px solid rgba(255, 255, 255, 0.08)' }}>
+            <button
+              onClick={handleOpenInstallPortal}
               style={{
                 width: '100%',
-                height: '100%',
-                border: 'none',
-                backgroundColor: 'transparent',
-                overflow: 'hidden'
+                padding: '0.8rem',
+                borderRadius: '8px',
+                backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                color: '#ffffff',
+                border: '1px solid rgba(255, 255, 255, 0.15)',
+                fontFamily: 'var(--font-headings)',
+                fontSize: '0.88rem',
+                fontWeight: 600,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '0.5rem',
+                transition: 'var(--transition-smooth)'
               }}
-              scrolling="no"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-            />
-
-            {/* Local Spin CSS */}
-            <style>{`
-              @keyframes spin {
-                to { transform: rotate(360deg); }
-              }
-            `}</style>
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.15)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.08)';
+              }}
+            >
+              <span>📄 전체 설치 포털 단독 창으로 열기</span>
+              <span>↗</span>
+            </button>
           </div>
         </div>
-      )}
+      </div>
+
+      {/* Floating Toast Notification */}
+      <div
+        style={{
+          position: 'fixed',
+          bottom: '36px',
+          left: '50%',
+          transform: showToast ? 'translateX(-50%) translateY(0)' : 'translateX(-50%) translateY(90px)',
+          opacity: showToast ? 1 : 0,
+          backgroundColor: '#10b981',
+          color: '#ffffff',
+          padding: '12px 24px',
+          borderRadius: '50px',
+          fontSize: '0.9rem',
+          fontWeight: 600,
+          boxShadow: '0 10px 30px rgba(16, 185, 129, 0.45)',
+          transition: 'all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+          zIndex: 1000,
+          pointerEvents: 'none',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.5rem'
+        }}
+      >
+        <span>{toastMessage}</span>
+      </div>
     </div>
   );
 };
