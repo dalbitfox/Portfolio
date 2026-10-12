@@ -5,9 +5,25 @@ import { ProjectsPage } from './components/ProjectsPage';
 import { LadderGame } from './components/LadderGame';
 import { NetboxShowcase } from './components/NetboxShowcase';
 import { HelperShowcase } from './components/HelperShowcase';
+
 function App() {
   const [activeTab, setActiveTab] = useState<string>('home');
   const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  // Tab switch scroll-to-top handler
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+
+    const frameId = requestAnimationFrame(() => {
+      window.scrollTo(0, 0);
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+    });
+
+    return () => cancelAnimationFrame(frameId);
+  }, [activeTab]);
 
   // Global High-Fidelity Starry Night Canvas Particle System (Antigravity Physics Engine)
   useEffect(() => {
