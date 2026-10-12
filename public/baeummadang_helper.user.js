@@ -289,7 +289,14 @@
     }
 
     function createDashboard() {
-        if (document.getElementById("smart-helper-container")) return;
+        const existing = document.getElementById("smart-helper-container");
+        if (existing) {
+            const trg = document.getElementById("smart-helper-trigger");
+            if (trg && trg.style.display !== "none") {
+                trg.click();
+            }
+            return;
+        }
 
         container = document.createElement("div");
         container.id = "smart-helper-container";

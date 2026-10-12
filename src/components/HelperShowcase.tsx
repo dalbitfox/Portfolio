@@ -18,7 +18,10 @@ export const HelperShowcase: React.FC = () => {
           const endIdx = html.indexOf(endTag, startIdx);
           if (endIdx !== -1) {
             const raw = html.substring(startIdx + startTag.length, endIdx);
-            const clean = raw
+            // 1. 블록 주석 제거
+            const noBlock = raw.replace(/\/\*[\s\S]*?\*\//g, '');
+            // 2. 한 줄 주석 제거
+            const clean = noBlock
               .split('\n')
               .map((line) => {
                 const commentIdx = line.indexOf('//');
@@ -32,8 +35,12 @@ export const HelperShowcase: React.FC = () => {
               })
               .join('\n');
             const normalized = clean.replace(/\r\n/g, '\n').replace(/\r/g, '\n').trim();
-            const base64Code = btoa(unescape(encodeURIComponent(normalized)));
-            const url = "javascript:eval(decodeURIComponent(escape(atob('" + base64Code + "'))))";
+
+            // 3. UTF-8 안전 인코딩 (이모지 🎓 URIError 방지)
+            const utf8Bytes = new TextEncoder().encode(normalized);
+            const binString = Array.from(utf8Bytes, (b) => String.fromCharCode(b)).join('');
+            const base64Code = btoa(binString);
+            const url = "javascript:(function(){try{eval(new TextDecoder().decode(Uint8Array.from(atob('" + base64Code + "'),function(c){return c.charCodeAt(0)})))}catch(e){var s=document.createElement('script');s.src='https://seobu.vercel.app/baeummadang_helper.user.js?t='+Date.now();document.body.appendChild(s);}})();";
             setBookmarkletUrl(url);
           }
         }

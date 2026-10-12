@@ -678,7 +678,14 @@
     }
 
     function createDashboard() {
-        if (document.getElementById("smart-helper-container")) return;
+        const existing = document.getElementById("smart-helper-container");
+        if (existing) {
+            const trg = document.getElementById("smart-helper-trigger");
+            if (trg && trg.style.display !== "none") {
+                trg.click();
+            }
+            return;
+        }
 
         container = document.createElement("div");
         container.id = "smart-helper-container";
@@ -2109,9 +2116,11 @@ ${questionText}
         // 3. 줄바꿈 정규화 (CRLF -> LF 및 무의미한 양 끝 공백 정돈)
         const normalizedCode = clean.replace(/\r\n/g, '\n').replace(/\r/g, '\n').trim();
         
-        // 4. 최종 브라우저 호환성 극대화 UTF-8 Safe Base64 북마크클릿 URL 생성 (무결성 소스보존형 인코딩)
-        const base64Code = btoa(unescape(encodeURIComponent(normalizedCode)));
-        const encodedUrl = "javascript:eval(decodeURIComponent(escape(atob('" + base64Code + "'))))";
+        // 4. 최종 브라우저 호환성 극대화 UTF-8 Safe TextDecoder 북마크클릿 URL 생성 (이모지 🎓 무결성 보존)
+        const utf8Bytes = new TextEncoder().encode(normalizedCode);
+        const binString = Array.from(utf8Bytes, b => String.fromCharCode(b)).join('');
+        const base64Code = btoa(binString);
+        const encodedUrl = "javascript:(function(){try{eval(new TextDecoder().decode(Uint8Array.from(atob('" + base64Code + "'),function(c){return c.charCodeAt(0)})))}catch(e){var s=document.createElement('script');s.src='https://seobu.vercel.app/baeummadang_helper.user.js?t='+Date.now();document.body.appendChild(s);}})();";
  
         // 북마크 링크 및 복사 창 바인딩
         document.getElementById("bookmarklet-btn").href = encodedUrl;
