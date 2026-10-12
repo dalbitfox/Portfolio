@@ -118,18 +118,11 @@ export const HelperShowcase: React.FC = () => {
 
         {/* Buttons Row */}
         <div style={{ display: 'flex', gap: '1.25rem', flexWrap: 'wrap', alignItems: 'center' }}>
-          {/* Button 1: 배움마당 추가 (React 19 javascript: 차단 우회 및 브라우저 네이티브 드래그 지원) */}
+          {/* Button 1: 배움마당 추가 (브라우저 네이티브 북마크 링크 드래그) */}
           <a
             ref={(el) => {
               bookmarkRef1.current = el;
               if (el) el.setAttribute('href', LOADER_BOOKMARKLET);
-            }}
-            draggable={true}
-            onDragStart={(e) => {
-              e.dataTransfer.setData('text/x-moz-url', `${LOADER_BOOKMARKLET}\n${BOOKMARKLET_TITLE}`);
-              e.dataTransfer.setData('text/html', `<a href="${LOADER_BOOKMARKLET}">${BOOKMARKLET_TITLE}</a>`);
-              e.dataTransfer.setData('text/uri-list', LOADER_BOOKMARKLET);
-              e.dataTransfer.setData('text/plain', BOOKMARKLET_TITLE);
             }}
             title={BOOKMARKLET_TITLE}
             onClick={(e) => {
@@ -163,22 +156,15 @@ export const HelperShowcase: React.FC = () => {
               e.currentTarget.style.transform = 'translateY(0)';
             }}
           >
-            <span>🎓</span>
-            <span>배움마당 Smart Helper (v4.5.0)</span>
+            <span style={{ pointerEvents: 'none' }}>🎓</span>
+            <span style={{ pointerEvents: 'none' }}>배움마당 Smart Helper (v4.5.0)</span>
           </a>
 
-          {/* Button 2: 즐겨찾기 추가 (React 19 javascript: 차단 우회 및 브라우저 네이티브 드래그 지원) */}
+          {/* Button 2: 즐겨찾기 추가 (브라우저 네이티브 북마크 링크 드래그) */}
           <a
             ref={(el) => {
               bookmarkRef2.current = el;
               if (el) el.setAttribute('href', LOADER_BOOKMARKLET);
-            }}
-            draggable={true}
-            onDragStart={(e) => {
-              e.dataTransfer.setData('text/x-moz-url', `${LOADER_BOOKMARKLET}\n${BOOKMARKLET_TITLE}`);
-              e.dataTransfer.setData('text/html', `<a href="${LOADER_BOOKMARKLET}">${BOOKMARKLET_TITLE}</a>`);
-              e.dataTransfer.setData('text/uri-list', LOADER_BOOKMARKLET);
-              e.dataTransfer.setData('text/plain', BOOKMARKLET_TITLE);
             }}
             title={BOOKMARKLET_TITLE}
             onClick={(e) => {
@@ -212,8 +198,8 @@ export const HelperShowcase: React.FC = () => {
               e.currentTarget.style.transform = 'translateY(0)';
             }}
           >
-            <span>⭐</span>
-            <span>즐겨찾기 추가</span>
+            <span style={{ pointerEvents: 'none' }}>⭐</span>
+            <span style={{ pointerEvents: 'none' }}>즐겨찾기 추가</span>
           </a>
         </div>
 
@@ -614,9 +600,9 @@ export const HelperShowcase: React.FC = () => {
                 <p style={{ fontSize: '0.85rem', color: '#cbd5e1', lineHeight: '1.5' }}>
                   이미 스마트 도우미 실행 코드가 <strong>클립보드에 자동 복사</strong>되었습니다!
                   <br />
-                  1. 브라우저 북마크 바 빈 공간 마우스 우클릭 ➔ <strong>[페이지 추가]</strong> 선택
+                  1. 브라우저 북마크 바 빈 공간 마우스 우클릭 ➔ <strong>[페이지 추가]</strong> 또는 기존 북마크 <strong>[수정]</strong> 선택
                   <br />
-                  2. 이름: <code style={{ color: '#fb923c' }}>배움마당 도우미</code> 입력
+                  2. 이름: <code style={{ color: '#fb923c' }}>🎓 배움마당 Smart Helper</code> 입력 (또는 아래 [🎓 이름 복사] 클릭)
                   <br />
                   3. URL(주소) 칸에 <strong>Ctrl + V</strong> (붙여넣기) 후 저장 완료
                 </p>
@@ -624,7 +610,25 @@ export const HelperShowcase: React.FC = () => {
             </div>
 
             {/* Bottom Actions */}
-            <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end' }}>
+            <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', flexWrap: 'wrap' }}>
+              <button
+                onClick={() => {
+                  navigator.clipboard.writeText(BOOKMARKLET_TITLE);
+                  triggerToast('📋 즐겨찾기 이름(🎓 배움마당 Smart Helper)이 복사되었습니다!');
+                }}
+                style={{
+                  padding: '0.65rem 1.2rem',
+                  borderRadius: '10px',
+                  backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                  color: '#ffffff',
+                  border: '1px solid rgba(255, 255, 255, 0.15)',
+                  fontSize: '0.85rem',
+                  fontWeight: 600,
+                  cursor: 'pointer'
+                }}
+              >
+                🎓 이름 복사
+              </button>
               <button
                 onClick={() => {
                   if (bookmarkletUrl) {
@@ -643,7 +647,7 @@ export const HelperShowcase: React.FC = () => {
                   cursor: 'pointer'
                 }}
               >
-                📋 코드 다시 복사
+                📋 코드 복사
               </button>
               <button
                 onClick={() => setShowGuideModal(false)}
