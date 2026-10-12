@@ -279,11 +279,11 @@ function App() {
               <li className={`nav-item ${activeTab === 'home' ? 'active' : ''}`}>
                 <button onClick={() => setActiveTab('home')}>Home</button>
               </li>
-              <li className={`nav-item ${activeTab === 'about' ? 'active' : ''}`}>
-                <button onClick={() => setActiveTab('about')}>ABOUT</button>
-              </li>
               <li className={`nav-item ${activeTab === 'projects' ? 'active' : ''}`}>
                 <button onClick={() => setActiveTab('projects')}>PROJECTS</button>
+              </li>
+              <li className={`nav-item ${activeTab === 'about' ? 'active' : ''}`}>
+                <button onClick={() => setActiveTab('about')}>ABOUT</button>
               </li>
             </ul>
           </nav>

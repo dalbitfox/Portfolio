@@ -33,20 +33,20 @@ export const Dashboard: React.FC<DashboardProps> = ({ setActiveTab }) => {
         }}
       >
         <button 
-          onClick={() => setActiveTab('about')} 
-          style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255, 255, 255, 0.45)', transition: 'var(--transition-smooth)' }}
-          onMouseEnter={(e) => e.currentTarget.style.color = '#ffffff'}
-          onMouseLeave={(e) => e.currentTarget.style.color = 'rgba(255, 255, 255, 0.45)'}
-        >
-          ABOUT
-        </button>
-        <button 
           onClick={() => setActiveTab('projects')} 
           style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255, 255, 255, 0.45)', transition: 'var(--transition-smooth)' }}
           onMouseEnter={(e) => e.currentTarget.style.color = '#ffffff'}
           onMouseLeave={(e) => e.currentTarget.style.color = 'rgba(255, 255, 255, 0.45)'}
         >
           PROJECTS
+        </button>
+        <button 
+          onClick={() => setActiveTab('about')} 
+          style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255, 255, 255, 0.45)', transition: 'var(--transition-smooth)' }}
+          onMouseEnter={(e) => e.currentTarget.style.color = '#ffffff'}
+          onMouseLeave={(e) => e.currentTarget.style.color = 'rgba(255, 255, 255, 0.45)'}
+        >
+          ABOUT
         </button>
       </nav>
 
