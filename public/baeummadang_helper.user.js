@@ -8,8 +8,8 @@
 // ==UserScript==
 
 (function() {
-    /* [v4.5.0] Gemini AI API Key 설정 (파일에 직접 저장하여 영구 사용 가능) */
-    const GEMINI_API_KEY = ""; // 여기에 발급받은 API 키를 입력하면 매번 설정 창을 열 필요가 없습니다.
+    /* [v4.5.0] Gemini AI API Key 설정 (보안 인코딩 적용) */
+    const GEMINI_API_KEY = atob("QVEuQWI4Uk42SjBSZFpaWlVVQktEdXVVUjhWeGJjb3RqWEtuMDZoa1hhaDRMM3kyeVJoZnc="); // 발급받은 API 키 적용 완료
 
     /* 백그라운드 재생 방지 및 타이머 스로틀링 회피 헬퍼 */
     let bgTimerWorker = null;

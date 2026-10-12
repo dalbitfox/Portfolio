@@ -48,22 +48,25 @@ export const HelperShowcase: React.FC = () => {
     }, 3200);
   };
 
-  const handleCopyBookmarklet = () => {
+  const handleAddToFavorites = () => {
+    // 1. Legacy IE/Edge
+    try {
+      if ((window as any).external && 'AddFavorite' in (window as any).external) {
+        (window as any).external.AddFavorite(window.location.href, document.title);
+        triggerToast('⭐ 즐겨찾기에 추가되었습니다!');
+        return;
+      }
+    } catch {
+      // modern browser continues
+    }
+
+    // 2. Modern Browsers (Chrome, Edge, Whale)
     if (bookmarkletUrl) {
       navigator.clipboard.writeText(bookmarkletUrl);
-      triggerToast('⭐ 즐겨찾기 북마크 코드가 복사되었습니다! 북마크바(Ctrl+Shift+B)에 주소로 등록하세요.');
+      triggerToast('⭐ [Ctrl + D]를 누르면 즐겨찾기에 즉시 추가됩니다! (북마크 코드도 함께 복사되었습니다)');
     } else {
-      triggerToast('배움마당 추가 포털을 여는 중입니다...');
-      window.open('/배움마당%2BSmart%2BHelper%2B(v4.5.0).html', '_blank');
+      triggerToast('⭐ [Ctrl + D]를 누르면 현재 페이지가 즐겨찾기에 즉시 추가됩니다!');
     }
-  };
-
-  const handleOpenInstallPortal = () => {
-    window.open('/배움마당%2BSmart%2BHelper%2B(v4.5.0).html', '_blank');
-  };
-
-  const handleOpenUserscript = () => {
-    window.open('/baeummadang_helper.user.js', '_blank');
   };
 
   return (
@@ -146,138 +149,100 @@ export const HelperShowcase: React.FC = () => {
         </div>
 
         {/* Buttons Row */}
-        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'stretch' }}>
-          {/* Button 1: 배움마당 추가하기 (설치 포털) */}
-          <button
-            onClick={handleOpenInstallPortal}
-            style={{
-              flex: '1 1 240px',
-              padding: '1rem 1.75rem',
-              borderRadius: '12px',
-              backgroundColor: '#f97316',
-              color: '#ffffff',
-              border: 'none',
-              fontFamily: 'var(--font-headings)',
-              fontSize: '1rem',
-              fontWeight: 700,
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '0.6rem',
-              boxShadow: '0 8px 24px rgba(249, 115, 22, 0.35)',
-              transition: 'var(--transition-smooth)'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = '#ea580c';
-              e.currentTarget.style.transform = 'translateY(-2px)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = '#f97316';
-              e.currentTarget.style.transform = 'translateY(0)';
-            }}
-          >
-            <span style={{ fontSize: '1.25rem' }}>🚀</span>
-            <span>배움마당 추가하기 (v4.5.0)</span>
-            <span style={{ fontSize: '0.85rem', opacity: 0.8 }}>↗</span>
-          </button>
-
-          {/* Button 2: 즐겨찾기(북마크) 추가 버튼 (드래그 지원 앵커) */}
+        <div style={{ display: 'flex', gap: '1.25rem', flexWrap: 'wrap', alignItems: 'center' }}>
+          {/* Button 1: 배움마당 추가 (두 번째 스샷의 배움마당 SMART HELPER 버튼과 동일한 드래그 앤 드롭 버튼) */}
           <a
             href={bookmarkletUrl || '#'}
-            draggable={!!bookmarkletUrl}
+            draggable={true}
+            title="마우스로 누른 채 상단 브라우저 북마크(즐겨찾기) 바로 끌어다 놓으세요!"
             onClick={(e) => {
-              e.preventDefault();
-              handleCopyBookmarklet();
+              if (bookmarkletUrl) {
+                navigator.clipboard.writeText(bookmarkletUrl);
+                triggerToast('🎓 마우스로 북마크바(Ctrl+Shift+B)로 끌어다 놓으시거나, 복사된 코드를 북마크 주소에 붙여넣으세요!');
+              } else {
+                e.preventDefault();
+                window.open('/배움마당%2BSmart%2BHelper%2B(v4.5.0).html', '_blank');
+              }
             }}
-            title="마우스로 브라우저 북마크 바로 드래그하거나, 클릭하여 코드를 복사하세요."
             style={{
-              flex: '1 1 240px',
-              padding: '1rem 1.75rem',
-              borderRadius: '12px',
-              background: 'linear-gradient(135deg, #ec4899, #8b5cf6)',
-              color: '#ffffff',
-              border: '1px solid rgba(255, 255, 255, 0.15)',
-              fontFamily: 'var(--font-headings)',
-              fontSize: '1rem',
-              fontWeight: 700,
-              cursor: 'grab',
-              display: 'flex',
+              display: 'inline-flex',
               alignItems: 'center',
-              justifyContent: 'center',
-              gap: '0.6rem',
+              gap: '10px',
+              padding: '16px 36px',
+              fontSize: '18px',
+              fontWeight: 800,
+              color: '#ffffff',
+              background: 'linear-gradient(135deg, #ec4899, #8b5cf6)',
+              borderRadius: '50px',
               textDecoration: 'none',
-              boxShadow: '0 8px 24px rgba(236, 72, 153, 0.35)',
+              boxShadow: '0 8px 30px rgba(236, 72, 153, 0.45)',
+              cursor: 'grab',
               userSelect: 'none',
-              transition: 'var(--transition-smooth)'
+              border: '2px solid rgba(255, 255, 255, 0.15)',
+              transition: 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.boxShadow = '0 12px 30px rgba(236, 72, 153, 0.55)';
-              e.currentTarget.style.transform = 'translateY(-2px)';
+              e.currentTarget.style.boxShadow = '0 12px 40px rgba(236, 72, 153, 0.65)';
+              e.currentTarget.style.transform = 'translateY(-3px)';
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.boxShadow = '0 8px 24px rgba(236, 72, 153, 0.35)';
+              e.currentTarget.style.boxShadow = '0 8px 30px rgba(236, 72, 153, 0.45)';
               e.currentTarget.style.transform = 'translateY(0)';
             }}
           >
-            <span style={{ fontSize: '1.25rem' }}>⭐</span>
-            <span>즐겨찾기 추가 (드래그 / 복사)</span>
+            <span>🎓</span>
+            <span>배움마당 Smart Helper (v4.5.0)</span>
           </a>
 
-          {/* Button 3: Tampermonkey 유저스크립트 영속성 추가 */}
+          {/* Button 2: 즐겨찾기 추가 (누르면 즐겨찾기에 바로 추가) */}
           <button
-            onClick={handleOpenUserscript}
+            onClick={handleAddToFavorites}
             style={{
-              flex: '1 1 200px',
-              padding: '1rem 1.5rem',
-              borderRadius: '12px',
-              backgroundColor: 'rgba(255, 255, 255, 0.05)',
-              color: '#e2e8f0',
-              border: '1px solid rgba(255, 255, 255, 0.12)',
-              fontFamily: 'var(--font-headings)',
-              fontSize: '0.95rem',
-              fontWeight: 600,
-              cursor: 'pointer',
-              display: 'flex',
+              display: 'inline-flex',
               alignItems: 'center',
-              justifyContent: 'center',
-              gap: '0.55rem',
+              gap: '10px',
+              padding: '16px 36px',
+              fontSize: '18px',
+              fontWeight: 800,
+              color: '#ffffff',
+              background: 'linear-gradient(135deg, #f97316, #ea580c)',
+              borderRadius: '50px',
+              border: 'none',
+              fontFamily: 'var(--font-headings)',
+              cursor: 'pointer',
+              boxShadow: '0 8px 30px rgba(249, 115, 22, 0.4)',
               transition: 'var(--transition-smooth)'
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
-              e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.25)';
+              e.currentTarget.style.boxShadow = '0 12px 40px rgba(249, 115, 22, 0.6)';
+              e.currentTarget.style.transform = 'translateY(-2px)';
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
-              e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.12)';
+              e.currentTarget.style.boxShadow = '0 8px 30px rgba(249, 115, 22, 0.4)';
+              e.currentTarget.style.transform = 'translateY(0)';
             }}
           >
-            <span style={{ fontSize: '1.15rem' }}>🔄</span>
-            <span>Tampermonkey 추가</span>
-            <span style={{ fontSize: '0.8rem', opacity: 0.6 }}>↗</span>
+            <span>⭐</span>
+            <span>즐겨찾기 추가</span>
           </button>
         </div>
 
-        {/* Action Guide Tip */}
+        {/* Action Guide Tip (두번째 스샷 안내 문구 일치) */}
         <div
           style={{
-            marginTop: '1.25rem',
-            padding: '0.85rem 1.25rem',
-            backgroundColor: 'rgba(249, 115, 22, 0.06)',
-            border: '1px dashed rgba(249, 115, 22, 0.25)',
-            borderRadius: '10px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.75rem',
-            fontSize: '0.86rem',
-            color: '#fdba74',
-            lineHeight: '1.5'
+            marginTop: '1.5rem',
+            padding: '1rem 1.5rem',
+            backgroundColor: 'rgba(236, 72, 153, 0.04)',
+            border: '1px dashed rgba(236, 72, 153, 0.25)',
+            borderRadius: '14px',
+            fontSize: '0.92rem',
+            color: '#e2e8f0',
+            lineHeight: '1.6'
           }}
         >
-          <span style={{ fontSize: '1.1rem' }}>💡</span>
-          <span>
-            <strong>즐겨찾기 등록 방법:</strong> 위 <strong>[⭐ 즐겨찾기 추가]</strong> 버튼을 마우스로 누른 채 상단 <strong>브라우저 북마크바</strong>로 끌어다 놓으세요! (북마크바가 보이지 않는다면 <strong>Ctrl + Shift + B</strong>) 또는 버튼 클릭 시 코드가 즉시 복사됩니다.
+          위 보라색 버튼을 마우스로 누른 채, <strong style={{ color: '#fb7185' }}>브라우저 북마크(즐겨찾기) 바</strong>로 끌어다 놓으세요!<br />
+          <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>
+            * 북마크 바가 안 보인다면 키보드의 <strong>Ctrl + Shift + B</strong>를 누르세요.
           </span>
         </div>
       </div>
@@ -490,7 +455,7 @@ export const HelperShowcase: React.FC = () => {
 
           <div style={{ marginTop: '1.75rem', paddingTop: '1.25rem', borderTop: '1px solid rgba(255, 255, 255, 0.08)' }}>
             <button
-              onClick={handleOpenInstallPortal}
+              onClick={() => window.open('/배움마당%2BSmart%2BHelper%2B(v4.5.0).html', '_blank')}
               style={{
                 width: '100%',
                 padding: '0.8rem',

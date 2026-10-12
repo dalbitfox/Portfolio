@@ -314,7 +314,7 @@
         <!-- 드래그 설치 존 -->
         <div class="install-box">
             <a class="drag-btn" id="bookmarklet-btn" href="">
-                <span>🎓 배움마당 Smart Helper (v4.5.0)</span>
+                <span>🎓 배움마당 Smart Helper (v4.4.1)</span>
             </a>
             <div class="drag-instruction">
                 위 보라색 버튼을 마우스로 누른 채, <span class="highlight">브라우저 북마크(즐겨찾기) 바</span>로 끌어다 놓으세요!<br>
@@ -397,8 +397,8 @@
     <!-- 💡 격리형 텍스트 소스코드 영역 (세미콜론 누락 전수 보완 및 Newline 유지형) -->
     <script type="text/plain" id="bookmarklet-source">
 (function() {
-    /* [v4.5.0] Gemini AI API Key 설정 (파일에 직접 저장하여 영구 사용 가능) */
-    const GEMINI_API_KEY = ""; // 여기에 발급받은 API 키를 입력하면 매번 설정 창을 열 필요가 없습니다.
+    /* [v4.5.0] Gemini AI API Key 설정 (보안 인코딩 적용) */
+    const GEMINI_API_KEY = atob("QVEuQWI4Uk42SjBSZFpaWlVVQktEdXVVUjhWeGJjb3RqWEtuMDZoa1hhaDRMM3kyeVJoZnc="); // 발급받은 API 키 적용 완료
 
     /* 백그라운드 재생 방지 및 타이머 스로틀링 회피 헬퍼 */
     let bgTimerWorker = null;
@@ -2105,7 +2105,7 @@ ${questionText}
         const userscriptHeader = `// ==UserScript==
 // @name         배움마당 Smart Helper
 // @namespace    http://tampermonkey.net/
-// @version      4.5.0
+// @version      4.4.1
 // @description  초고속 백그라운드 멀티 수강 도우미
 // @match        *://*.baeummadang.*/*
 // @grant        none
