@@ -113,21 +113,35 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ setActiveTab }) => {
       >
         
         {/* Project 2: AX-자동메일시스템 */}
-        <div className="magic-card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minHeight: '220px', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
+        <div 
+          onClick={() => setActiveTab('mail-automation')}
+          className="magic-card" 
+          style={{ 
+            display: 'flex', 
+            flexDirection: 'column', 
+            justifyContent: 'space-between', 
+            minHeight: '220px', 
+            border: '1px solid rgba(106, 63, 160, 0.35)', 
+            cursor: 'pointer',
+            backgroundColor: 'rgba(106, 63, 160, 0.02)'
+          }}
+        >
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-              <span className="tag" style={{ backgroundColor: 'rgba(255,255,255,0.05)', color: 'var(--text-secondary)', fontSize: '0.65rem' }}>Python & SMTP</span>
+              <span className="tag" style={{ backgroundColor: 'rgba(106, 63, 160, 0.15)', color: '#D8B4FE', fontSize: '0.65rem', border: '1px solid rgba(106, 63, 160, 0.3)' }}>
+                AX 과제 완료 • Power Automate & AI
+              </span>
               <span style={{ fontSize: '1.25rem' }}>✉️</span>
             </div>
             <h4 style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: '0.5rem', fontFamily: 'var(--font-headings)' }}>
-              AX-자동메일시스템
+              NW 작업협의 고객 메일 자동화
             </h4>
             <p style={{ color: 'var(--text-secondary)', fontSize: '0.82rem', lineHeight: '1.5', fontWeight: 300 }}>
-              서부기술 대량 장비 상태 수집 서버 로그와 긴급 오류 알림 이메일 발송을 완전 자동화하는 경량 크론 스케줄러 시스템입니다.
+              공문 PDF OCR 판독부터 AI Builder 분석, 기관 식별, 담당자 자동 매칭, 15단계 오발송 방지 검증, 고객 메일 발송 및 22시 대시보드까지 End-to-End 무인 자동화.
             </p>
           </div>
-          <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontWeight: 500, marginTop: '1rem' }}>
-            🛠️ 내부 전용 서버에서 구동 중
+          <span style={{ fontSize: '0.78rem', color: '#D8B4FE', fontWeight: 600, marginTop: '1rem' }}>
+            ⚡ 상세 아키텍처 & 12단계 플로우 보기 (월 200+건 처리) →
           </span>
         </div>
 
