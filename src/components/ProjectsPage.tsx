@@ -317,51 +317,136 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ setActiveTab }) => {
           </span>
         </div>
 
-      </div>
-
-      <div className="line-divider" style={{ marginBottom: '3rem' }}></div>
-
-      {/* 4 Empty Placeholder Cards for Future Projects (비어있는 예비 카드 4개 구성) */}
-      <h3 style={{ fontSize: '1.2rem', color: 'var(--text-muted)', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: '1.5rem', fontFamily: 'var(--font-headings)' }}>
-        Upcoming Projects
-      </h3>
-
-      <div 
-        style={{ 
-          display: 'grid', 
-          gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', 
-          gap: '1.5rem',
-          marginBottom: '2rem'
-        }}
-      >
-        {Array.from({ length: 4 }).map((_, i) => (
-          <div 
-            key={`placeholder-${i}`}
-            className="magic-card" 
-            style={{ 
-              border: '1px dashed rgba(255, 255, 255, 0.12)', 
-              backgroundColor: 'rgba(255, 255, 255, 0.005)', 
-              color: 'var(--text-muted)', 
-              textAlign: 'center', 
-              justifyContent: 'center', 
-              alignItems: 'center',
-              minHeight: '160px', 
-              cursor: 'not-allowed',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '0.5rem',
-              boxShadow: 'none'
-            }}
-          >
-            <span style={{ fontSize: '1.5rem', opacity: 0.2 }}>🔒</span>
-            <div style={{ fontFamily: 'var(--font-headings)', fontWeight: 600, fontSize: '0.88rem', color: 'rgba(255, 255, 255, 0.25)' }}>
-              Project Spaceholder #{i + 1}
+        {/* Project 8: 말랑말랑 스트레스 젤리 파괴자 */}
+        <div 
+          onClick={() => setActiveTab('squishy')}
+          className="magic-card" 
+          style={{ 
+            display: 'flex', 
+            flexDirection: 'column', 
+            justifyContent: 'space-between', 
+            minHeight: '220px', 
+            border: '1px solid rgba(255, 107, 139, 0.3)', 
+            cursor: 'pointer',
+            backgroundColor: 'rgba(255, 107, 139, 0.02)'
+          }}
+        >
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+              <span className="tag" style={{ backgroundColor: 'rgba(255, 107, 139, 0.15)', color: '#FF6B8B', fontSize: '0.65rem', border: '1px solid rgba(255, 107, 139, 0.3)' }}>
+                Casual Clicker • Netlify Live
+              </span>
+              <span style={{ fontSize: '1.25rem' }}>🍡</span>
             </div>
-            <span style={{ fontSize: '0.72rem', color: 'rgba(255, 255, 255, 0.15)', fontWeight: 300 }}>
-              준비 중 (Coming Soon)
-            </span>
+            <h4 style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: '0.5rem', fontFamily: 'var(--font-headings)', color: '#FF6B8B' }}>
+              스트레스 젤리 파괴자
+            </h4>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.82rem', lineHeight: '1.5', fontWeight: 300 }}>
+              일상의 온갖 스트레스를 젤리 몬스터로 깨부수는 힐링 액션 게임. 커스텀 스트레스 타겟 소환, 5X 피버 타임, 젤리 도감 지원.
+            </p>
           </div>
-        ))}
+          <span style={{ fontSize: '0.78rem', color: '#FF6B8B', fontWeight: 600, marginTop: '1rem' }}>
+            🎮 스트레스 부수러 가기 (5286.netlify.app) →
+          </span>
+        </div>
+
+        {/* Project 9: 대전무역회관 점심 다트 */}
+        <div 
+          onClick={() => setActiveTab('lunchdot')}
+          className="magic-card" 
+          style={{ 
+            display: 'flex', 
+            flexDirection: 'column', 
+            justifyContent: 'space-between', 
+            minHeight: '220px', 
+            border: '1px solid rgba(249, 115, 22, 0.3)', 
+            cursor: 'pointer',
+            backgroundColor: 'rgba(249, 115, 22, 0.02)'
+          }}
+        >
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+              <span className="tag tag-orange" style={{ fontSize: '0.65rem' }}>Decision Tool • Netlify Live</span>
+              <span style={{ fontSize: '1.25rem' }}>🎯</span>
+            </div>
+            <h4 style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: '0.5rem', fontFamily: 'var(--font-headings)', color: '#f97316' }}>
+              대전무역회관 점심 다트
+            </h4>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.82rem', lineHeight: '1.5', fontWeight: 300 }}>
+              월평동 직장인을 위한 점심 메뉴 결정 솔루션. 3단계 회전 속도 다트 과녁판, 동료 명단 점수판(Ledger), 카카오맵 식당 연동.
+            </p>
+          </div>
+          <span style={{ fontSize: '0.78rem', color: '#f97316', fontWeight: 600, marginTop: '1rem' }}>
+            🎮 다트 던지러 가기 (lunchdot.netlify.app) →
+          </span>
+        </div>
+
+        {/* Project 10: 아기돼지 삼형제의 철통방어 */}
+        <div 
+          onClick={() => setActiveTab('3pig')}
+          className="magic-card" 
+          style={{ 
+            display: 'flex', 
+            flexDirection: 'column', 
+            justifyContent: 'space-between', 
+            minHeight: '220px', 
+            border: '1px solid rgba(230, 126, 34, 0.3)', 
+            cursor: 'pointer',
+            backgroundColor: 'rgba(230, 126, 34, 0.02)'
+          }}
+        >
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+              <span className="tag" style={{ backgroundColor: 'rgba(230, 126, 34, 0.15)', color: '#F39C12', fontSize: '0.65rem', border: '1px solid rgba(230, 126, 34, 0.3)' }}>
+                Tower Defense • Netlify Live
+              </span>
+              <span style={{ fontSize: '1.25rem' }}>🐷</span>
+            </div>
+            <h4 style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: '0.5rem', fontFamily: 'var(--font-headings)', color: '#F39C12' }}>
+              아기돼지 삼형제의 철통방어
+            </h4>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.82rem', lineHeight: '1.5', fontWeight: 300 }}>
+              동화 원작 실시간 수성 디펜스 게임. 짚/나무/벽돌 성벽 업그레이드, 삼형제 고유 스킬 연계 폭격, 힙스터 늑대 제왕 보스전.
+            </p>
+          </div>
+          <span style={{ fontSize: '0.78rem', color: '#F39C12', fontWeight: 600, marginTop: '1rem' }}>
+            🎮 철통수성하러 가기 (3pig.netlify.app) →
+          </span>
+        </div>
+
+        {/* Project 11: OnTetris · 함께 쌓는 승부 */}
+        <div 
+          onClick={() => setActiveTab('ontetris')}
+          className="magic-card" 
+          style={{ 
+            display: 'flex', 
+            flexDirection: 'column', 
+            justifyContent: 'space-between', 
+            minHeight: '220px', 
+            border: '1px solid rgba(56, 189, 248, 0.3)', 
+            cursor: 'pointer',
+            backgroundColor: 'rgba(56, 189, 248, 0.02)'
+          }}
+        >
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+              <span className="tag" style={{ backgroundColor: 'rgba(56, 189, 248, 0.15)', color: '#38BDF8', fontSize: '0.65rem', border: '1px solid rgba(56, 189, 248, 0.3)' }}>
+                Multiplayer Battle • Vercel Live
+              </span>
+              <span style={{ fontSize: '1.25rem' }}>🧩</span>
+            </div>
+            <h4 style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: '0.5rem', fontFamily: 'var(--font-headings)', color: '#38BDF8' }}>
+              OnTetris · 함께 쌓는 승부
+            </h4>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.82rem', lineHeight: '1.5', fontWeight: 300 }}>
+              실시간 1:1 대전 및 지능형 AI 배틀 블록 게임. 실시간 라인 밀어내기 공격, 인게임 라이브 채팅, 티어 랭킹 순위표 완벽 지원.
+            </p>
+          </div>
+          <span style={{ fontSize: '0.78rem', color: '#38BDF8', fontWeight: 600, marginTop: '1rem' }}>
+            🎮 테트리스 대전 입장 (ontetris.vercel.app) →
+          </span>
+        </div>
+
       </div>
 
     </div>

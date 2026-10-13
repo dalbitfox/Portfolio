@@ -7,6 +7,10 @@ import { NetboxShowcase } from './components/NetboxShowcase';
 import { HelperShowcase } from './components/HelperShowcase';
 import { TrafficReportShowcase } from './components/TrafficReportShowcase';
 import { MailAutomationShowcase } from './components/MailAutomationShowcase';
+import { SquishyShowcase } from './components/SquishyShowcase';
+import { LunchDotShowcase } from './components/LunchDotShowcase';
+import { ThreePigsShowcase } from './components/ThreePigsShowcase';
+import { OnTetrisShowcase } from './components/OnTetrisShowcase';
 
 function App() {
   const [activeTab, setActiveTab] = useState<string>('home');
@@ -279,6 +283,14 @@ function App() {
         return <TrafficReportShowcase />;
       case 'mail-automation':
         return <MailAutomationShowcase />;
+      case 'squishy':
+        return <SquishyShowcase />;
+      case 'lunchdot':
+        return <LunchDotShowcase />;
+      case '3pig':
+        return <ThreePigsShowcase />;
+      case 'ontetris':
+        return <OnTetrisShowcase />;
       default:
         return <Dashboard setActiveTab={setActiveTab} />;
     }
@@ -315,7 +327,7 @@ function App() {
       {/* Main Content Area */}
       <main className="main-content">
         {/* Render a navigation back breadcrumb if we are in a sub-tool */}
-        {['roulette', 'dart', 'ladder', 'netbox', 'helper', 'traffic-report', 'mail-automation'].includes(activeTab) && (
+        {['roulette', 'dart', 'ladder', 'netbox', 'helper', 'traffic-report', 'mail-automation', 'squishy', 'lunchdot', '3pig', 'ontetris'].includes(activeTab) && (
           <div style={{ marginBottom: '2rem', animation: 'fadeIn 0.4s ease-out' }}>
             <button 
               onClick={() => setActiveTab('projects')}
