@@ -132,21 +132,33 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ setActiveTab }) => {
         </div>
 
         {/* Project 3: AX-월간정기리포트 */}
-        <div className="magic-card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minHeight: '220px', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
+        <div 
+          onClick={() => setActiveTab('traffic-report')}
+          className="magic-card" 
+          style={{ 
+            display: 'flex', 
+            flexDirection: 'column', 
+            justifyContent: 'space-between', 
+            minHeight: '220px', 
+            border: '1px solid rgba(242, 140, 40, 0.35)', 
+            cursor: 'pointer',
+            backgroundColor: 'rgba(242, 140, 40, 0.02)'
+          }}
+        >
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-              <span className="tag" style={{ backgroundColor: 'rgba(255,255,255,0.05)', color: 'var(--text-secondary)', fontSize: '0.65rem' }}>React & Chart.js</span>
-              <span style={{ fontSize: '1.25rem' }}>📊</span>
+              <span className="tag tag-orange" style={{ fontSize: '0.65rem' }}>AX 과제 완료 • 무인 자동화</span>
+              <span style={{ fontSize: '1.25rem' }}>⚡</span>
             </div>
             <h4 style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: '0.5rem', fontFamily: 'var(--font-headings)' }}>
-              AX-월간정기리포트
+              고객 월간 트래픽 보고서 자동화
             </h4>
             <p style={{ color: 'var(--text-secondary)', fontSize: '0.82rem', lineHeight: '1.5', fontWeight: 300 }}>
-              매월 사내 네트워크 트래픽 로그 및 가동 시간을 가공하여 시각 차트와 PDF 리포트로 자동 생성하고 다운로드해주는 기안 보조 툴입니다.
+              IPNMS 데이터 수집부터 XLSX·HTML·PPTX·TXT 보고서 생성, AI Builder GPT 요약, Outlook 자동 메일 발송까지 325회선 전 과정 무인 자동화.
             </p>
           </div>
-          <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontWeight: 500, marginTop: '1rem' }}>
-            📊 인프라 통계 탭과 연동 예정
+          <span style={{ fontSize: '0.78rem', color: '#f97316', fontWeight: 600, marginTop: '1rem' }}>
+            ⚡ 상세 성과 & 6단계 플로우 보기 (연 119시간 절감) →
           </span>
         </div>
 
