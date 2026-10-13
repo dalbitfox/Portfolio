@@ -1285,10 +1285,10 @@
             apiKey = localStorage.getItem("smart_gemini_key") || "";
         }
 
+        // SeobuTech 보안 프록시(/api/solve)가 서버 내부 키로 연산 대행 가능하므로 안전하게 지속 진행
         if (!apiKey) {
-            alert("Gemini API Key가 등록되지 않았습니다.");
-            stopAISolver();
-            return;
+            console.log("[AI] 로컬 키 부재 -> SeobuTech 보안 서버리스 프록시 모드로 진행합니다.");
+            apiKey = "PROXY_MANAGED_KEY";
         }
 
         const aiBtn = document.querySelector("#smart-ai-btn");
@@ -1472,11 +1472,41 @@ ${questionText}
     }
 
     async function callGeminiAPI(apiKey, prompt) {
-        // API Key 정제 (앞뒤 공백 및 따옴표 제거)
-        const sanitizedKey = apiKey.trim().replace(/['"\s]/g, "");
-        
-        // 시도할 모델 및 API 버전 조합 리스트 (2026년 기준 실제 응답 200 검증 완료 모델 우선순위)
-        const modelNames = ["gemini-2.5-flash", "gemini-3.5-flash-lite", "gemini-3.5-flash"];
+        // [1순위] SeobuTech 보안 프록시 엔드포인트 호출 (사내망 방화벽/Google 도메인 차단 100% 우회)
+        try {
+            console.log("[AI] SeobuTech 보안 프록시 서버(api/solve)로 정답 연산 요청 중...");
+            const proxyRes = await fetch("https://seobu.vercel.app/api/solve", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    prompt: prompt,
+                    apiKey: (apiKey && apiKey !== "PROXY_MANAGED_KEY") ? apiKey : undefined
+                })
+            });
+
+            if (proxyRes.ok) {
+                const proxyData = await proxyRes.json();
+                if (proxyData && proxyData.success && proxyData.answer) {
+                    console.log(`[AI] 보안 프록시 응답 성공! (엔진: ${proxyData.model || 'Gemini'})`);
+                    return proxyData.answer;
+                } else if (proxyData && proxyData.error) {
+                    console.warn("[AI] 보안 프록시 오류 반환:", proxyData.error, proxyData.details);
+                }
+            } else {
+                console.warn(`[AI] 보안 프록시 서버 HTTP 오류 (${proxyRes.status})`);
+            }
+        } catch (proxyErr) {
+            console.warn("[AI] 보안 프록시 서버 통신 실패 (클라이언트 직접 통신 모드로 폴백):", proxyErr);
+        }
+
+        // [2순위 백업] 프록시 응답 실패 시 클라이언트 브라우저 직접 구글 API 호출 (개인망/오프라인 백업)
+        const sanitizedKey = apiKey ? apiKey.trim().replace(/['"\s]/g, "") : "";
+        if (!sanitizedKey || sanitizedKey === "PROXY_MANAGED_KEY") {
+            throw new Error("보안 프록시 서버 연산에 실패했으며, 클라이언트 직접 호출을 위한 백업 API Key가 없습니다.");
+        }
+
+        // 시도할 모델 및 API 버전 조합 리스트 (검증 완료된 모델 우선순위)
+        const modelNames = ["gemini-3.5-flash-lite", "gemini-3.5-flash", "gemini-2.5-flash"];
         const apiVersions = ["v1beta", "v1"];
         
         let lastError = null;
@@ -1489,7 +1519,7 @@ ${questionText}
                 // 일시적인 과부하(503/429) 대비 최대 2회 자동 재시도 루프
                 for (let attempt = 0; attempt < 2; attempt++) {
                     try {
-                        console.log(`[AI] 호출 시도 (시도 ${attempt + 1}): ${version} / ${model}...`);
+                        console.log(`[AI] 직접 호출 시도 (시도 ${attempt + 1}): ${version} / ${model}...`);
                         const response = await fetch(url, {
                             method: 'POST',
                             headers: {
@@ -1529,7 +1559,7 @@ ${questionText}
                             if ((response.status === 503 || response.status === 429) && attempt < 1) {
                                 console.warn(`[AI] 임시 오류(${response.status}) 감지. 1.5초 후 자동으로 재시도합니다.`);
                                 await new Promise(r => setTimeout(r, 1500));
-                                continue; // 재시도 루프 실행
+                                continue;
                             }
                             
                             throw new Error(errorMsg);
@@ -1537,19 +1567,18 @@ ${questionText}
 
                         const data = await response.json();
                         if (data && data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0]) {
-                            console.log(`[AI] 호출 성공: ${version} / ${model}`);
+                            console.log(`[AI] 직접 호출 성공: ${version} / ${model}`);
                             return data.candidates[0].content.parts[0].text;
                         } else {
                             throw new Error(`응답 형식 비정상`);
                         }
                     } catch (err) {
                         const cleanErrMsg = err.message.replace(/\n/g, ' ').trim();
-                        // 마지막 재시도 차례도 실패했거나 503/429 외의 일반 에러인 경우에만 누적하고 다음 조합으로 패스
                         if (attempt === 1 || !(cleanErrMsg.includes("503") || cleanErrMsg.includes("429"))) {
                             console.warn(`[AI] 최종 실패 (${version} / ${model}):`, cleanErrMsg);
                             diagnosticErrors.push(`* [${model} / ${version}] -> ${cleanErrMsg}`);
                             lastError = err;
-                            break; // 재시도 루프 탈출 -> 다음 모델/버전으로 진행
+                            break;
                         } else {
                             console.warn(`[AI] 재시도 대기중... 일시적 오류:`, cleanErrMsg);
                         }
@@ -1559,8 +1588,8 @@ ${questionText}
         }
 
         // 모든 조합 시도 실패 시 누적된 상세 원인들과 함께 에러 throw
-        const maskedKey = apiKey.length > 10 ? (apiKey.substring(0, 7) + "..." + apiKey.substring(apiKey.length - 4)) : "없음";
-        const finalDiagnosticReport = `Gemini API 호출에 모두 실패했습니다. (현재 진단에 사용 중인 API Key: ${maskedKey})\n\n[각 모델/버전별 상세 원인]\n` + diagnosticErrors.join("\n") + "\n\n(참고: 만약 사용 중인 API Key가 새로 발급한 키가 아닌 옛날 키로 표시된다면, 기존 즐겨찾기(북마크)를 완전히 삭제하고 새로고침하여 새로 드래그해 재설치해 주시기 바랍니다.)";
+        const maskedKey = sanitizedKey.length > 10 ? (sanitizedKey.substring(0, 7) + "..." + sanitizedKey.substring(sanitizedKey.length - 4)) : "없음";
+        const finalDiagnosticReport = `Gemini API 호출에 모두 실패했습니다. (현재 진단에 사용 중인 API Key: ${maskedKey})\n\n[각 모델/버전별 상세 원인]\n` + diagnosticErrors.join("\n") + "\n\n(참고: 사내망 방화벽 환경인 경우 구글 직접 통신이 차단될 수 있습니다.)";
         throw new Error(finalDiagnosticReport);
     }
 
